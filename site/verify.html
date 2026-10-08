@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How good is it?</title>
+<style>
+ :root{--ink:#1a1a1a;--mut:#6a6a6a;--line:#e3e3e3;--bg:#fbfaf8;--card:#fff}
+ @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#ececec;--mut:#a3a3a3;--line:#333;--bg:#161616;--card:#1f1f1f}}
+ :root[data-theme="dark"]{--ink:#ececec;--mut:#a3a3a3;--line:#333;--bg:#161616;--card:#1f1f1f}
+ body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+ .wrap{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+ h1{font-size:22px;margin:0 0 4px} h2{font-size:17px;margin:30px 0 4px}
+ p{margin:4px 0} .note{color:var(--mut);font-size:13px} a{color:#2b7fd4}
+ nav{font-size:13.5px;margin:10px 0 0} nav a{margin-right:12px;white-space:nowrap}
+ img{width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:#fff;margin:6px 0 2px}
+ .cap{color:var(--mut);font-size:13px;margin:0 0 14px}
+</style></head><body><div class="wrap">
+<p><a href="index.html">← back to the forecasts</a> · <a href="method.html">Method</a> · <a href="inputs.html">Inputs by year</a></p>
+<h1>How good is it?</h1>
+<p class="note">Past cases only: each chart compares the site with what the Hong Kong Observatory (HKO) recorded. Click a chart to enlarge it.
+Words are explained on <a href="inputs.html">Inputs by year</a>. State of 8 Oct 2026.</p>
+<nav><a href="#signals">Signals</a><a href="#strength">Storm strength</a><a href="#reach">Gale-wind reach</a><a href="#stations">Gale stations</a><a href="#wind">Wind index</a><a href="#methods">Methods compared</a></nav>
+
+<h2 id="signals">Signals</h2>
+<a href="verify/verify_signal_calls.png"><img src="verify/verify_signal_calls.png" alt="What each page called against HKO's highest signal, per source" loading="lazy"></a>
+<p class="cap">The page's call = the highest signal at least 8 forecast versions reach (Pangu: its single forecast), from any storm at any time in the run; a run near two storms counts once for each.</p>
+<a href="verify/verify_signal_two_storms.png"><img src="verify/verify_signal_two_storms.png" alt="Runs where another storm of the same run drives the page's call" loading="lazy"></a>
+<p class="cap">Two-storm runs, shown apart: versions that also carry this storm are drawn on another storm whose signal sets the call (e.g. Mitag's runs and Ragasa's No. 10). The storm is found by its track, never by distance to Hong Kong.</p>
+<a href="verify/verify_signal_lead.png"><img src="verify/verify_signal_lead.png" alt="Right, too low or too high by days before HKO's highest signal" loading="lazy"></a>
+<p class="cap">By how many days before HKO's highest signal the forecast started.</p>
+
+<h2 id="strength">Storm strength</h2>
+<a href="inputs/scatter_intensity.png"><img src="inputs/scatter_intensity.png" alt="Strength each page used against HKO's recorded strength, per source" loading="lazy"></a>
+<p class="cap">On the dashed line = same as HKO; above = too strong; below = too weak.</p>
+
+<h2 id="reach">Gale-wind reach toward Hong Kong</h2>
+<a href="inputs/scatter_rings.png"><img src="inputs/scatter_rings.png" alt="Gale-wind reach each page drew against HKO's, per source" loading="lazy"></a>
+<p class="cap">How far gale winds (63 km/h) reach on the side facing Hong Kong.</p>
+
+<h2 id="stations">Gale stations</h2>
+<a href="verify/verify_gale_stations.png"><img src="verify/verify_gale_stations.png" alt="Number of HKO reference stations with gale: page against HKO, per source" loading="lazy"></a>
+<p class="cap">How many of HKO's 8 reference stations had gale winds.</p>
+
+<h2 id="wind">Wind index</h2>
+<a href="verify/wind_index_series.png"><img src="verify/wind_index_series.png" alt="Hong Kong wind index through six storms: observed against estimated" loading="lazy"></a>
+<p class="cap">The wind index checked on HKO's own records.</p>
+<a href="verify/wind_index_peaks.png"><img src="verify/wind_index_peaks.png" alt="Storm peak of the wind index: estimated against observed and against HKCOC's published peaks" loading="lazy"></a>
+<p class="cap">Storm peaks: since 2021 against HKO's station winds; 2004–2021 against the peaks HKCOC published.</p>
+
+<h2 id="methods">Methods compared</h2>
+<a href="verify/verify_methods.png"><img src="verify/verify_methods.png" alt="No. 8 score of the methods we compared" loading="lazy"></a>
+<p class="cap">Darker bar = the one in use. Lower is better.</p>
+<a href="inputs/scatter_methods_intensity.png"><img src="inputs/scatter_methods_intensity.png" alt="Three ways to estimate strength on old ECMWF forecasts" loading="lazy"></a>
+<a href="inputs/scatter_methods_rings.png"><img src="inputs/scatter_methods_rings.png" alt="Typical size against the storm's own size on old ECMWF forecasts" loading="lazy"></a>
+</div></body></html>

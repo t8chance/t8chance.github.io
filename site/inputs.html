@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inputs by year</title>
+<style>
+ :root{--ink:#1a1a1a;--mut:#6a6a6a;--line:#e3e3e3;--bg:#fbfaf8;--card:#fff;--hi:rgba(43,127,212,.10)}
+ @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#ececec;--mut:#a3a3a3;--line:#333;--bg:#161616;--card:#1f1f1f;--hi:rgba(43,127,212,.22)}}
+ :root[data-theme="dark"]{--ink:#ececec;--mut:#a3a3a3;--line:#333;--bg:#161616;--card:#1f1f1f;--hi:rgba(43,127,212,.22)}
+ body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+ .wrap{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+ h1{font-size:22px;margin:0 0 4px} h2{font-size:17px;margin:30px 0 6px}
+ p{margin:6px 0;max-width:860px} .note{color:var(--mut);font-size:13px} a{color:#2b7fd4}
+ .sx{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch}
+ table{border-collapse:collapse;font-size:13px;margin:8px 0;background:var(--card)}
+ th,td{border:1px solid var(--line);padding:5px 8px;vertical-align:top} th{text-align:center;font-weight:600}
+ th span,td span{font-weight:400;color:var(--mut);font-size:11.5px}
+ table.in td{text-align:left;min-width:80px} table.in td:nth-child(4),table.in td:nth-child(5){min-width:230px}
+ table.iv td{text-align:center} table.iv td:first-child{text-align:left} tr.all td{background:var(--hi)}
+ img{width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:#fff;margin:8px 0}
+ .box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 16px;margin:12px 0}
+ .box dt{font-weight:600;margin-top:6px} .box dd{margin:0 0 4px 0;color:var(--ink)}
+ .read{color:var(--mut);font-size:13.5px}
+ @media (max-width:520px){th,td{padding:4px 5px}}
+</style></head><body><div class="wrap">
+<p><a href="index.html">← back to the forecasts</a> · <a href="method.html">Method</a> · <a href="verify.html">How good is it?</a></p>
+<h1>Inputs by year</h1>
+<p class="note">For each year of forecasts on this site: where the forecast comes from, how we estimate the storm's strength and how far its
+gale winds reach, and how close those estimates came to what the Hong Kong Observatory (HKO) recorded. State of 8 Oct 2026.</p>
+
+<div class="box"><b>Words used on this site</b><dl>
+<dt>Forecast, version</dt><dd>ECMWF runs each forecast 50 times with small changes (an "ensemble"); each copy is one version (a "member"). How much the versions disagree shows how uncertain the forecast is.</dd>
+<dt>Storm strength: S1, S2, S3</dt><dd><b>S1</b> = from each version's weather maps around the storm, on HKO's scale. Where those maps were not kept, the strength is worked out from the few numbers in ECMWF's storm list: <b>S2</b> for the older forecasts (2008–2023), <b>S3</b> for the 2024 versions.</dd>
+<dt>Gale-wind reach: R1, R2</dt><dd><b>R1</b> = the storm's own reach toward Hong Kong, put on HKO's scale. <b>R2</b> = a typical reach for the storm's strength.</dd>
+<dt>Gale-wind reach toward Hong Kong ("ring")</dt><dd>How far from the storm's centre gale winds (34 knots, 63 km/h, Beaufort 8) reach on the side facing Hong Kong. Hong Kong inside the ring means gale winds are likely there.</dd>
+<dt>Knot</dt><dd>1 knot = 1.85 km/h.</dd>
+</dl></div>
+
+<h2>1. Where each year's forecasts come from</h2>
+<div class="sx"><table class="in">
+<tr><th>Years</th><th>Forecasts from</th><th>How many on this site</th><th>Storm strength from</th><th>Gale-wind reach from</th><th>A fair test? (not used to set up the site)</th></tr>
+<tr><td>2008–2023</td><td>ECMWF's ensemble of that time (old forecasts from the TIGGE archive; 50 versions + 1 control)</td><td>119 (incl. Koinu 2023)</td><td><b>S2</b> · estimated from ECMWF's storm list (the storm's pressure and wind) — these old forecasts do not keep the weather maps S1 reads</td><td><b>R1</b> · the storm's own reach toward Hong Kong, radius measured on the forecast's winds 10 m above the sea, put on HKO's scale</td><td>no</td></tr><tr><td>2018–2022</td><td>Pangu-Weather (Huawei's AI weather model), one forecast per start time, re-run from ECMWF's reanalysis</td><td>87</td><td><b>S1</b> · from Pangu's weather maps</td><td><b>R2</b> · a typical reach for the storm's strength (one value for all directions) — R1 did worse here</td><td>no</td></tr><tr><td>2024</td><td>ECMWF ensemble (50 versions)</td><td>7</td><td><b>S1</b> on the main forecast; the 50 versions <b>S3</b> · estimated from ECMWF's storm list (the free data of 2024 does not keep all the weather maps)</td><td><b>R1</b> · the storm's own reach toward Hong Kong, radius from ECMWF's storm list, put on HKO's scale</td><td>no</td></tr><tr><td>2025</td><td>ECMWF ensemble (50 versions)</td><td>25</td><td><b>S1</b> · from each version's weather maps</td><td><b>R1</b> · the storm's own reach toward Hong Kong, radius from ECMWF's storm list, put on HKO's scale</td><td>no</td></tr><tr><td>2025</td><td>ECMWF AI model (AIFS), 51 versions, storms found by our own tracker</td><td>28</td><td><b>S1</b> · from each version's weather maps</td><td><b>R1</b> · the storm's own reach toward Hong Kong, radius measured by our tracker in four directions, put on HKO's scale</td><td>no</td></tr><tr><td>2026</td><td>ECMWF ensemble (50 versions)</td><td>21</td><td><b>S1</b> · from each version's weather maps</td><td><b>R1</b> · the storm's own reach toward Hong Kong, radius from ECMWF's storm list, put on HKO's scale</td><td>yes</td></tr><tr><td>2026</td><td>ECMWF AI model (AIFS), 51 versions</td><td>30</td><td><b>S1</b> · from each version's weather maps</td><td><b>R1</b> · the storm's own reach toward Hong Kong, radius from ECMWF's storm list, put on HKO's scale</td><td>yes</td></tr>
+</table></div>
+<p class="note">Every page also uses the same station model (which of HKO's 8 reference stations will see gale, storm or hurricane winds), and the same rule near the rings: when Hong Kong is inside a drawn ring, the chance of that signal cannot fall far below HKO's own record
+(about seven in ten hours inside the gale ring had No. 8). Since 7 Oct 2026 this minimum fades in over 50 km either side of the ring's edge instead
+of switching on at the edge. 2025 and 2026 were not used to set up the site, so those years are a fair test.</p>
+
+<h2>2. How strong — what each page used against what HKO recorded</h2>
+<a href="inputs/scatter_intensity.png"><img src="inputs/scatter_intensity.png" alt="Scatter plots of the strength each page used against HKO's recorded strength, one panel per source" loading="lazy"></a>
+<p class="read">How to read it: each dot is one storm at one time in one forecast (the middle of all versions). Dots on the dashed line match HKO;
+dots above it are too strong, below it too weak. The grey lines mark HKO's classes. Numbers in the corner: how far off on average, and the typical miss.</p>
+<div class="sx"><table class="iv">
+<tr><th>HKO class</th><th>ECMWF 2025<br><span>8 storms</span></th><th>ECMWF AI 2025<br><span>6 storms</span></th><th>ECMWF 2024<br><span>5 storms</span></th><th>Pangu 2018–22<br><span>19 storms</span></th><th>Old ECMWF 2008–23<br><span>39 storms</span></th></tr>
+<tr><td>Tropical depression (up to 33 kt)</td><td><b>7 kt too high</b><br><span>misses by 10 kt · 4 storms</span></td><td><b>5 kt too high</b><br><span>misses by 10 kt · 3 storms</span></td><td><b>10 kt too high</b><br><span>misses by 11 kt · 3 storms</span></td><td><b>6 kt too high</b><br><span>misses by 7 kt · 15 storms</span></td><td><b>18 kt too high</b><br><span>misses by 18 kt · 31 storms</span></td></tr><tr><td>Tropical storm (34–47 kt)</td><td><b>6 kt too high</b><br><span>misses by 13 kt · 7 storms</span></td><td><b>5 kt too high</b><br><span>misses by 12 kt · 6 storms</span></td><td><b>7 kt too high</b><br><span>misses by 12 kt · 3 storms</span></td><td><b>1 kt too low</b><br><span>misses by 7 kt · 18 storms</span></td><td><b>13 kt too high</b><br><span>misses by 15 kt · 34 storms</span></td></tr><tr><td>Severe tropical storm (48–63 kt)</td><td><b>1 kt too low</b><br><span>misses by 16 kt · 7 storms</span></td><td><b>2 kt too high</b><br><span>misses by 15 kt · 6 storms</span></td><td><b>8 kt too high</b><br><span>misses by 12 kt · 3 storms</span></td><td><b>6 kt too low</b><br><span>misses by 12 kt · 11 storms</span></td><td><b>7 kt too high</b><br><span>misses by 16 kt · 24 storms</span></td></tr><tr><td>Typhoon (64–80 kt)</td><td><b>6 kt too low</b><br><span>misses by 14 kt · 4 storms</span></td><td><b>0 kt about right</b><br><span>misses by 13 kt · 3 storms</span></td><td><b>2 kt too high</b><br><span>misses by 10 kt · 3 storms</span></td><td><b>14 kt too low</b><br><span>misses by 18 kt · 8 storms</span></td><td><b>1 kt too low</b><br><span>misses by 14 kt · 22 storms</span></td></tr><tr><td>Severe typhoon (81–99 kt)</td><td><b>8 kt too low</b><br><span>misses by 13 kt · 1 storm</span></td><td><b>12 kt too low</b><br><span>misses by 16 kt · 1 storm</span></td><td><b>7 kt too low</b><br><span>misses by 8 kt · 1 storm</span></td><td><b>5 kt too low</b><br><span>misses by 5 kt · 1 storm</span></td><td><b>13 kt too low</b><br><span>misses by 16 kt · 9 storms</span></td></tr><tr><td>Super typhoon (100 kt and more)</td><td><b>10 kt too low</b><br><span>misses by 13 kt · 1 storm</span></td><td><b>12 kt too low</b><br><span>misses by 13 kt · 1 storm</span></td><td><b>24 kt too low</b><br><span>misses by 24 kt · 1 storm</span></td><td><b>6 kt too low</b><br><span>misses by 6 kt · 1 storm</span></td><td><b>7 kt too low</b><br><span>misses by 16 kt · 3 storms</span></td></tr><tr class="all"><td>All storms</td><td><b>3 kt too low</b><br><span>misses by 13 kt · 8 storms</span></td><td><b>0 kt about right</b><br><span>misses by 12 kt · 6 storms</span></td><td><b>1 kt too high</b><br><span>misses by 13 kt · 5 storms</span></td><td><b>4 kt too low</b><br><span>misses by 8 kt · 19 storms</span></td><td><b>7 kt too high</b><br><span>misses by 15 kt · 39 storms</span></td></tr>
+</table></div>
+<p class="note">Each storm counts once (its own average first, then the average over storms). Lead times up to 5 days; the main (unperturbed)
+forecast left out. The sources cover different years and storms, so compare columns with care; classes with one storm are single cases.
+2026 is not shown because HKO has not yet published its 2026 storm records.</p>
+
+<h2>3. How far gale winds reach toward Hong Kong — page against HKO</h2>
+<a href="inputs/scatter_rings.png"><img src="inputs/scatter_rings.png" alt="Scatter plots of the gale-wind reach each page drew against HKO's, one panel per source" loading="lazy"></a>
+<p class="read">How to read it: as above, for the gale-wind reach toward Hong Kong in km. HKO often records the reach in round steps (for
+example 56, 111, 167 and 222 km), so many dots line up in columns. All sources miss by roughly 60–80 km for a typical storm; Pangu's typical
+size is about 60 km too small on average.</p>
+
+<h2>4. Methods we compared</h2>
+<p>Old ECMWF forecasts (2008–2024) do not keep the weather maps our strength estimate reads, so the strength has to be estimated from ECMWF's
+storm list. Three ways, checked on all 163 storms that came near Hong Kong (more storms than this site's past cases):</p>
+<a href="inputs/scatter_methods_intensity.png"><img src="inputs/scatter_methods_intensity.png" alt="Three ways to estimate strength on old ECMWF forecasts against HKO" loading="lazy"></a>
+<p class="read">The wind worked out from the central pressure is close for weak storms but far too weak for typhoons (the right half of the
+first panel). S2 and S3 keep typhoons much closer to HKO.</p>
+<p class="read"><b>Why S2 for 2008–2023 and S3 for 2024?</b> Each is matched to its kind of forecast: the 2024 ensemble ran at 9 km,
+the old ones at about 50 km until 2010, 32 km until 2016 and 18 km until June 2023. On the old forecasts S3 makes typhoons about 6 kt
+too weak and, in a test fixed in advance on 28 old runs, did worse for No. 8 (score 0.256 against 0.192; lower is better), so each kind keeps its own.
+The choice follows the kind of forecast, not how any one storm turned out. Two caveats: it was made on these same past cases, so their numbers flatter
+S2 a little; and Saola and Koinu 2023, which came after ECMWF's switch to 9 km in June 2023, still use S2.</p>
+<a href="inputs/scatter_methods_rings.png"><img src="inputs/scatter_methods_rings.png" alt="R2 (typical reach) against R1 (the storm's own reach) on old ECMWF forecasts" loading="lazy"></a>
+<p class="read">For the gale-wind reach, R1 (the storm's own reach, radius measured on the forecast's winds) beats R2 (a typical reach for the storm's strength):
+about 3 km too large on average instead of 18 km too small, and a typical miss of 71 km instead of 82 km. On these 112 old forecasts it also
+caught three more No. 8 storms (one more false No. 10).</p>
+</div></body></html>
