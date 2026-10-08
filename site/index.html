@@ -1,71 +1,139 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Hong Kong typhoon signal forecasts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap">
 <style>
- :root{--ink:#1a1a1a;--mut:#5f5e5a;--line:#e2e1dc;--no3:#d98c1a;--no8:#b2182b;--no9:#d6457f;--no10:#5b2a86;--bg:#f6f5f2;--card:#fff;--link:#1f5fbf;--soft:#f0efeb;--no1:#c9c8c2}
- @media (prefers-color-scheme:dark){:root{--ink:#ecebe7;--mut:#a4a39e;--line:#35342f;--bg:#141413;--card:#1e1e1c;--link:#8ab8ff;--soft:#262624;--no3:#f0a23a;--no8:#f0625e;--no9:#ef6fa2;--no10:#b08ae8;--no1:#8a8984}.tt-w{fill:#141413}}
- *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
- a{color:var(--link)}
- header{padding:18px 0 10px;border-bottom:1px solid var(--line);margin-bottom:4px}
- h1{margin:0;font-size:21px;letter-spacing:-.01em} .sub{color:var(--mut);font-size:12.5px;margin-top:4px}
- .wrap{max-width:1080px;margin:0 auto;padding:0 16px 48px}
- .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}
- .toolbar{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:12px 0 14px}
- .grp{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
- .lbl{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--mut);margin-right:4px}
- select,button{font:inherit;font-size:14px;padding:6px 11px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);cursor:pointer}
- button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
- .status{margin:4px 0 16px}
- .hero{display:flex;flex-wrap:wrap;gap:12px;margin:0 0 12px}
- .ans{flex:1 1 320px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
- .ans .k{font-size:11.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;font-weight:700}
- .badge{font-size:32px;font-weight:800;line-height:1.15;margin:2px 0 4px}
- .ans .v{font-size:15px;font-variant-numeric:tabular-nums}
- .lvgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
- .lv{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:12px;padding:10px 12px}
- .lv h3{margin:0 0 6px;font-size:15px;color:var(--c)}
- .lv dl{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;margin:0;font-size:13.5px}
- .lv dt{color:var(--mut)} .lv dd{margin:0;font-variant-numeric:tabular-nums}
- .rng{color:var(--mut);font-size:12px}
- .kv{display:inline-block;padding:2px 9px;margin:3px 6px 3px 0;border:1px solid var(--line);border-radius:999px;background:var(--card);font-size:12.5px;line-height:1.5}
- h2{font-size:16px;margin:26px 0 8px;font-weight:650}
- .note{color:var(--mut);font-size:12px;margin:8px 0 0}
- table.tl{border-collapse:collapse;font-size:13px;margin:6px 0 2px;width:100%} table.tl th,table.tl td{border-bottom:1px solid var(--line);padding:5px 7px;text-align:center}
- table.tl tr[data-c]{cursor:pointer} table.tl tr.on td{font-weight:700;background:var(--card)}
- svg{width:100%;height:auto;display:block;background:var(--card);border:1px solid var(--line);border-radius:12px}
- footer{color:var(--mut);font-size:11.5px;border-top:1px solid var(--line);margin-top:30px;padding-top:12px}
- .tlcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px 10px;margin:0 0 12px}
- .tlcard .k{font-size:11.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:6px}
- #tl svg{border:0;border-radius:0;background:transparent}
- .tlleg{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--mut);margin-top:8px}
- .tlleg i{display:inline-block;width:22px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
- .tt-k{fill:#1a1a1a} .tt-w{fill:#fff}
- details.nums>summary{cursor:pointer;color:var(--link);font-size:13.5px;margin:2px 0 10px}
- .gs{margin:6px 0 2px} .gl{font-size:11.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-right:4px}
- .gd{display:inline-flex;gap:3px;vertical-align:-1px;margin-right:4px} .gd i{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--ink);opacity:.35}
- .gd i.f{background:var(--ink);opacity:1} .gd i.p{background:var(--mut);opacity:.6} .gn{font-size:21px;font-weight:800}
- @media (max-width:700px){.lvgrid{grid-template-columns:1fr}.toolbar{flex-direction:column;align-items:flex-start;gap:8px}.badge{font-size:28px}h1{font-size:19px}}
- table.sg{border-collapse:collapse;font-size:13px;margin:4px 0} .sg th,.sg td{border-bottom:1px solid var(--line);padding:3px 8px;text-align:left} .sg td:nth-child(n+2){text-align:right}
- #stationchart{overflow-x:auto} .sgm .dg{color:#1a7f37;font-weight:600} .sgm .dr{color:#c62828;font-weight:600} @media (prefers-color-scheme:dark){.sgm .dg{color:#5cc97a}.sgm .dr{color:#ff7b72}} table.sgm{border-collapse:collapse;font-size:13px;margin:4px 0;min-width:650px} .sgm th,.sgm td{border-bottom:1px solid var(--line);padding:5px 8px;text-align:right;white-space:nowrap} .sgm th:first-child,.sgm td:first-child{text-align:left} .sgcounts{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+/* Layout: a signal board -- masthead; one run strip; the answer as the loudest block; then the timeline, the map with its own
+   controls, and the charts. Neutrals are the map's cool sea-greys; HKO's signal colours are the only strong colour. */
+:root{
+ --bg:#edf1f4;--card:#fff;--soft:#e3e9ee;--ink:#13202b;--mut:#55636f;--line:#d3dbe2;--link:#1a5ea8;
+ --no1:#c3cad1;--no3:#d98c1a;--no8:#b2182b;--no9:#d6457f;--no10:#5b2a86;
+ --good:#1a7f37;--bad:#c62828;--halo:#fff;--raise:#fff;--shadow:0 1px 2px rgba(19,32,43,.06),0 10px 28px rgba(19,32,43,.07);
+ --disp:"Barlow Condensed","Roboto Condensed","Arial Narrow",sans-serif;
+ --body:"Barlow",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+@media (prefers-color-scheme:dark){:root{
+ --bg:#0f1923;--card:#16222e;--soft:#1c2a37;--ink:#e2e9ef;--mut:#93a3b1;--line:#273746;--link:#8cbcff;
+ --no1:#6f7a84;--no3:#f0a23a;--no8:#f0625e;--no9:#ef6fa2;--no10:#b08ae8;
+ --good:#5cc97a;--bad:#ff7b72;--halo:#16222e;--raise:#33475a;--shadow:0 1px 0 rgba(255,255,255,.03);color-scheme:dark}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15.5px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+a{color:var(--link);text-underline-offset:2px}
+b,strong{font-weight:650}
+:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px 56px}
+
+/* masthead */
+.mast{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 28px;padding:24px 0 18px}
+.mast h1{margin:0;font:700 clamp(26px,3.3vw,35px)/1.05 var(--disp);letter-spacing:.005em;text-wrap:balance}
+.mast nav{display:flex;flex-wrap:wrap;gap:4px 20px;font-size:14.5px;font-weight:500}
+.mast nav a{color:var(--ink);text-decoration:none}
+.mast nav a:hover{color:var(--link);text-decoration:underline}
+.mast nav a.tour{color:var(--link);font-weight:650}
+.disc{flex-basis:100%;margin:0;color:var(--mut);font-size:13px;max-width:72ch}
+
+/* the run strip */
+.toolbar{display:flex;flex-direction:column;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin:0 0 20px}
+.grp{display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-width:0}
+.lbl{flex:none;width:78px;font:600 15px/1 var(--disp);color:var(--mut)}
+.sub{color:var(--mut);font-size:13px;margin:0}
+.toolbar .sub{padding-left:86px}
+.toolbar .sub b{color:var(--ink)}
+select,button{font:500 14.5px/1.2 var(--body);color:var(--ink);border:1px solid var(--line);border-radius:10px;background:var(--card);padding:8px 12px;cursor:pointer;max-width:100%}
+select{-webkit-appearance:none;appearance:none;background:var(--soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%237d8b97' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 11px center/10px 6px;border-color:transparent;padding-right:32px;font-weight:600}
+button:hover,select:hover{border-color:var(--mut)}
+button.on{background:var(--ink);border-color:var(--ink);color:var(--card)}
+.seg{display:inline-flex;flex-wrap:wrap;gap:2px;padding:3px;background:var(--soft);border-radius:12px}
+.seg button{border:0;background:transparent;border-radius:9px;padding:7px 13px;color:var(--mut)}
+.seg button:hover{color:var(--ink)}
+.seg button.on{background:var(--raise);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.16)}
+#checks{margin:0 0 0 4px}
+input[type=checkbox],input[type=range]{accent-color:var(--ink)}
+
+/* the answer */
+.status{margin:0 0 20px}
+.hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px;margin:0 0 14px}
+.hero>.ans:only-child{grid-column:1/-1}
+.ans{min-width:0;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px 16px;box-shadow:var(--shadow)}
+.hero>.ans+.ans{background:var(--soft);border-color:transparent;box-shadow:none}
+.ans .k,.tlcard .k{font:600 16px/1.2 var(--disp);color:var(--mut)}
+.badge{font:700 clamp(48px,7.4vw,80px)/.92 var(--disp);letter-spacing:-.005em;margin:8px 0 10px}
+.hero>.ans+.ans .badge{font-size:clamp(38px,4.8vw,54px);margin:8px 0 8px}
+.ans .v{font-size:15.5px;font-variant-numeric:tabular-nums}
+.ans{container-type:inline-size}
+.gs{margin:9px 0 0} .gl{display:inline-block;min-width:8.4em;font:600 15px/1 var(--disp);color:var(--mut)}
+.gd{display:inline-flex;gap:3px;vertical-align:-1px;margin-right:6px} .gd i{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--ink);opacity:.3}
+.gd i.f{background:var(--ink);opacity:1} .gd i.p{background:var(--mut);opacity:.6}
+.gn{font:700 24px/1 var(--disp)}
+@container (max-width:470px){.gl{display:block;min-width:0;margin:0 0 5px}}   /* a narrow card: the label above its dots, so '1 of 8' never splits (after .gl, so it wins) */
+.rng{color:var(--mut);font-size:12.5px}
+.note{color:var(--mut);font-size:13px;margin:8px 0 0}
+.tlcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px 12px;margin:0 0 12px}
+.tlcard .k{margin-bottom:8px}
+#tl svg{border:0;border-radius:0;background:transparent;box-shadow:none}
+.tlleg{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:12.5px;color:var(--mut);margin-top:8px}
+.tlleg i{display:inline-block;width:22px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+details.nums>summary{cursor:pointer;color:var(--link);font-weight:600;font-size:14px;margin:4px 0 12px}
+.lvgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.lv{min-width:0;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.lv h3{margin:0 0 8px;font:700 21px/1 var(--disp);color:var(--c)}
+.lv dl{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;margin:0;font-size:13.5px}
+.lv dt{color:var(--mut)} .lv dd{margin:0;font-variant-numeric:tabular-nums}
+
+/* map */
+.mapcard{margin:26px 0 0}
+.mapbar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin:0 0 10px}
+.mapbar .lbl{width:auto;margin-right:4px}
+.mapbar .note{margin:0}
+.scrollx{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:16px}
+svg{width:100%;height:auto;display:block;background:var(--card);border:1px solid var(--line);border-radius:16px}
+#map{box-shadow:var(--shadow)}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}
+
+/* charts */
+h2{font:700 25px/1.1 var(--disp);letter-spacing:.005em;margin:36px 0 10px;text-wrap:balance}
+#tabs{gap:2px 20px;border-bottom:1px solid var(--line);margin:0 0 14px}
+#tabs button{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;padding:9px 1px;margin-bottom:-1px;color:var(--mut);font-weight:600}
+#tabs button:hover{color:var(--ink)}
+#tabs button.on{background:none;color:var(--ink);border-bottom-color:var(--ink)}
+#tabs label{font-size:13px;color:var(--mut)}
+.kv{display:inline-block;padding:3px 10px;margin:3px 6px 3px 0;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:13px;line-height:1.5}
+table.tl{border-collapse:collapse;font-size:13px;margin:6px 0 2px;width:100%} table.tl th,table.tl td{border-bottom:1px solid var(--line);padding:5px 7px;text-align:center}
+table.tl tr[data-c]{cursor:pointer} table.tl tr.on td{font-weight:700;background:var(--card)}
+.tt-k{fill:#1a1a1a} .tt-w{fill:var(--halo)}
+table.sg{border-collapse:collapse;font-size:13px;margin:4px 0} .sg th,.sg td{border-bottom:1px solid var(--line);padding:3px 8px;text-align:left} .sg td:nth-child(n+2){text-align:right}
+#stationchart{overflow-x:auto} .sgm .dg{color:var(--good);font-weight:600} .sgm .dr{color:var(--bad);font-weight:600}
+table.sgm{border-collapse:collapse;font-size:13.5px;margin:4px 0;min-width:650px;font-variant-numeric:tabular-nums} .sgm th,.sgm td{border-bottom:1px solid var(--line);padding:6px 9px;text-align:right;white-space:nowrap} .sgm th{font-weight:600;color:var(--mut)} .sgm th:first-child,.sgm td:first-child{text-align:left}
+.sgcounts{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin-top:36px;padding-top:14px}
+
+@media (max-width:760px){
+ .mast{padding-top:16px} .hero{grid-template-columns:1fr} .lvgrid{grid-template-columns:1fr}
+ .lbl{width:100%} .toolbar .sub{padding-left:0} .mapbar .lbl{width:100%}
+ #map{min-width:680px} #chart{min-width:640px}   /* a phone scrolls the map and the chart sideways instead of shrinking their labels */
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style></head><body>
 <div class="wrap">
-<header><h1>Hong Kong typhoon signal forecasts</h1>
-<div class="sub">ECMWF ensemble forecasts turned into Hong Kong signal chances. Research output — the Hong Kong Observatory is the only authority for actual signals.</div>
-<div class="sub" id="stamp"></div>
-<div class="sub"><a href="guide.html"><b>New here? Take the tour</b></a> · <a href="method.html">Method</a> · <a href="verify.html">How good is it?</a> · <a href="inputs.html">Inputs by year</a></div></header>
+<header class="mast"><h1>Hong Kong typhoon signal forecasts</h1>
+<nav aria-label="pages"><a class="tour" href="guide.html">New here? Take the tour</a><a href="method.html">Method</a><a href="verify.html">How good is it?</a><a href="inputs.html">Inputs by year</a></nav>
+<p class="disc">ECMWF ensemble forecasts turned into Hong Kong signal chances. Research output — the Hong Kong Observatory is the only authority for actual signals.</p></header>
 
  <div class="toolbar">
   <div class="grp"><span class="lbl">Run</span><select id="yearSel" aria-label="year" title="1. the year (or the latest runs)"></select><select id="stormSel" aria-label="storm" title="2. the storm"></select><select id="cyc" aria-label="run" title="3. the run (start time, UTC)"></select></div>
-  <div class="grp"><span class="lbl">Forecast</span><span id="ensbtns" title="the forecasts that exist for this run -- each is its own system, judged on its own past"></span><span id="checks" class="note" style="margin:0 0 0 4px"></span></div>
-  <div class="grp"><span class="lbl">Map</span><button id="zoomBtn">zoom to Hong Kong</button>
-   <span style="display:inline-flex;gap:6px;align-items:center;white-space:nowrap"><span class="note" style="margin:0 0 0 4px">colour by</span><span id="colbtns"><button data-c="signal" title="colour every member's track by the highest signal it gives">signal</button> <button data-c="intensity" title="colour every member's track by its intensity class (HKO: 10-minute mean wind)">intensity</button></span></span>
-   <button id="detBtn" style="display:none" title="the deterministic run on its own, like a member: track, rings, time bar, charts">deterministic run</button>
-   <button id="allPlay" title="every member's storm together through time, 12 forecast hours per second">▶ all members</button>
-   <label class="note" style="margin:0 0 0 4px"><input type="checkbox" id="only150"> within 150 km only</label></div>
+  <div class="grp"><span class="lbl">Forecast</span><span id="ensbtns" class="seg" title="the forecasts that exist for this run -- each is its own system, judged on its own past"></span><span id="checks" class="note"></span></div>
+  <div class="sub" id="stamp"></div>
  </div>
  <div class="status" id="status"></div>
 
- <svg id="map" viewBox="0 0 1000 600"></svg>
+ <div class="mapcard">
+ <div class="mapbar"><span class="lbl">Map</span><button id="zoomBtn">zoom to Hong Kong</button>
+   <span style="display:inline-flex;gap:6px;align-items:center;white-space:nowrap"><span class="note" style="margin:0 0 0 4px">colour by</span><span id="colbtns" class="seg"><button data-c="signal" title="colour every member's track by the highest signal it gives">signal</button> <button data-c="intensity" title="colour every member's track by its intensity class (HKO: 10-minute mean wind)">intensity</button></span></span>
+   <button id="detBtn" style="display:none" title="the deterministic run on its own, like a member: track, rings, time bar, charts">deterministic run</button>
+   <button id="allPlay" title="every member's storm together through time, 12 forecast hours per second">▶ all members</button>
+   <label class="note"><input type="checkbox" id="only150"> within 150 km only</label></div>
+ <div class="scrollx"><svg id="map" viewBox="0 0 1000 600"></svg></div>
  <div class="bar" id="player" style="display:none;margin:8px 0 0">
   <button id="play" title="play this member's storm through time">▶ play</button>
   <input type="range" id="slider" min="0" max="1" step="0.25" value="0" style="flex:1;min-width:160px" aria-label="time along this member's track">
@@ -73,11 +141,12 @@
   <select id="speed" title="animation speed"><option value="6">6 h per second</option><option value="12" selected>12 h per second</option><option value="24">24 h per second</option></select>
  </div>
  <div id="selbar" style="display:none;margin:8px 0 0"><button id="showAll" title="back to every member of this run">← back to all members</button></div>   
- <p class="note" id="maphint">Colour = highest signal (chance ≥ 0.30; No. 10 ≥ 0.40): <b style="color:#e08c1a">No. 3</b> <b style="color:#c62828">No. 8</b> <b style="color:#d6457f">near No. 10</b> <b style="color:#5b2a86">No. 10</b>, grey none · dashed = another storm of the same member · click a track</p>
+ <p class="note" id="maphint">Colour = highest signal (chance ≥ 0.30; No. 10 ≥ 0.40): <b style="color:var(--no3)">No. 3</b> <b style="color:var(--no8)">No. 8</b> <b style="color:var(--no9)">near No. 10</b> <b style="color:var(--no10)">No. 10</b>, grey none · dashed = another storm of the same member · click a track</p>
+ </div>
 
  <h2 id="chead">Most threatening member</h2>
  <div class="bar" id="tabs"></div>
- <svg id="chart" viewBox="0 0 1000 320"></svg>
+ <div class="scrollx"><svg id="chart" viewBox="0 0 1000 320"></svg></div>
  <div id="stationchart" style="display:none"></div>
  <p class="note" id="cnote"></p>
 
