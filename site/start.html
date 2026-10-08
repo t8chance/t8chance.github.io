@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Open the forecasts</title>
+<meta name="description" content="Choose today's forecast or a past storm.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: one question, two equal choices side by side (stacked on a phone), left-aligned under the masthead. */
+:root{
+ --bg:#edf1f4;--card:#fff;--soft:#e3e9ee;--ink:#13202b;--mut:#55636f;--line:#d3dbe2;--link:#1a5ea8;--warn:#9a5b00;
+ --shadow:0 1px 2px rgba(19,32,43,.06),0 12px 32px rgba(19,32,43,.09);
+ --disp:"Barlow Condensed","Roboto Condensed","Arial Narrow",sans-serif;
+ --body:"Barlow",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+@media (prefers-color-scheme:dark){:root{
+ --bg:#0f1923;--card:#16222e;--soft:#1c2a37;--ink:#e2e9ef;--mut:#93a3b1;--line:#273746;--link:#8cbcff;--warn:#f0b35a;
+ --shadow:0 1px 0 rgba(255,255,255,.03);color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+a{color:var(--link)}
+:focus-visible{outline:2px solid var(--link);outline-offset:3px}
+.wrap{max-width:1060px;margin:0 auto;padding:0 16px}
+.mast{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 28px;padding:24px 0 18px}
+.mast .name{font:700 clamp(24px,3vw,30px)/1.05 var(--disp);color:var(--ink);text-decoration:none}
+.mast nav{display:flex;flex-wrap:wrap;gap:4px 20px;font-size:15px;font-weight:500}
+.mast nav a{color:var(--ink);text-decoration:none}
+.mast nav a:hover{color:var(--link);text-decoration:underline}
+.ask{padding:min(10vh,90px) 0 80px}
+.ask h1{margin:0 0 32px;font:700 clamp(36px,5vw,58px)/1.02 var(--disp);text-wrap:balance}
+.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.choice{display:flex;flex-direction:column;gap:10px;min-width:0;padding:26px 26px 24px;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);color:var(--ink);text-decoration:none;transition:border-color .15s,transform .15s}
+.choice:hover{border-color:var(--ink);transform:translateY(-2px)}
+.choice .t{font:700 clamp(28px,3vw,36px)/1.05 var(--disp)}
+.choice .d{color:var(--mut)}
+.choice .w{color:var(--warn);font-weight:600}
+.choice .go{margin-top:auto;padding-top:10px;font-weight:600;color:var(--link)}
+.fine{margin:28px 0 0;color:var(--mut);font-size:14px}
+@media (max-width:700px){.choices{grid-template-columns:1fr}.ask{padding-top:28px}}
+@media (prefers-reduced-motion:reduce){.choice{transition:none}.choice:hover{transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="mast"><a class="name" href="index.html">Hong Kong typhoon signal forecasts</a>
+ <nav aria-label="pages"><a href="guide.html">Tour</a><a href="method.html">Method</a><a href="verify.html">How good is it?</a><a href="inputs.html">Inputs by year</a></nav></header>
+
+<main class="ask">
+ <h1>What would you like to see?</h1>
+ <div class="choices">
+  <a class="choice" id="today" href="index.html">
+   <span class="t">Today's forecast</span>
+   <span class="d" id="todayInfo">The newest run.</span>
+   <span class="w" id="stale" hidden></span>
+   <span class="go">Open today's forecast</span>
+  </a>
+  <a class="choice" href="index.html?run=2025092112&amp;f=ifsens">
+   <span class="t">A past storm</span>
+   <span class="d">Starts with Typhoon Ragasa in 2025, when HKO issued No.&nbsp;10. You can then pick any other storm since 2008.</span>
+   <span class="go">Open Ragasa</span>
+  </a>
+ </div>
+ <p class="fine">Research output. The Hong Kong Observatory is the only authority for actual signals.</p>
+</main>
+</div>
+<script>
+(()=>{
+const FCN={ifsens:"ECMWF physics",aifsens:"ECMWF AI",tigge:"Old ECMWF",pangu:"Pangu-Weather"};
+const DAY=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function show(L){
+ if(!L||!L.cycle)return; const c=L.cycle, t=Date.UTC(+c.slice(0,4),+c.slice(4,6)-1,+c.slice(6,8),+c.slice(8,10)), d=new Date(t);
+ const f=(L.ens||[]).map(e=>FCN[e]||e).join(" and ");
+ document.getElementById("todayInfo").textContent=`Newest run: ${DAY[d.getUTCDay()]} ${d.getUTCDate()} ${MON[d.getUTCMonth()]}, ${c.slice(8,10)}Z${f?` (${f})`:""}.`;
+ const h=(Date.now()-t)/36e5;
+ if(h>30){const s=document.getElementById("stale"); s.textContent=`Not updating right now: this run is ${h>=48?Math.floor(h/24)+" days":Math.round(h)+" hours"} old.`; s.hidden=false}
+}
+function fromAll(){const H=window.HK||{}, cs=Object.keys(H).sort(); if(!cs.length)return; const c=cs[cs.length-1]; show({cycle:c,ens:Object.keys(H[c])})}
+const s=document.createElement("script"); s.src="../data/latest.js";
+s.onload=()=>window.HK_LATEST?show(window.HK_LATEST):null;
+s.onerror=()=>{const a=document.createElement("script"); a.src="../data/all.js"; a.onload=fromAll; document.body.appendChild(a)};
+document.body.appendChild(s);
+})();
+</script>
+</body>
+</html>

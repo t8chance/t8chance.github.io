@@ -918,5 +918,6 @@ function chart(){
        tab==="intensity"&&whkPk?`wind at HK ~${Math.round(whkPk[1])} kt (${CLSN[clsOf(whkPk[1])]}) ${fmtH(whkPk[0])}`:"",
        drv, obs])+`<br>${wind}`;
 }
+try{const q=new URLSearchParams(location.search), r=q.get("run"), f=q.get("f"); if(r&&HK[r]){cyc=r; if(f&&HK[r][f]){ens=f; mode=modeOf(f)||mode}}}catch(e){}
 head();load();
 </script></body></html>
