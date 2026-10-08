@@ -75,7 +75,7 @@ figure.tile img{border-radius:14px;box-shadow:var(--shadow)}   /* the check page
 .where button.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
 @media (min-width:900px){
  .js .story{display:grid;grid-template-columns:minmax(330px,420px) minmax(0,1fr);gap:56px}
- .js .steps{grid-column:1;grid-row:1;padding-bottom:18vh}
+ .js .col{grid-column:1;grid-row:1;padding-bottom:18vh}
  .js .stage{display:flex;flex-direction:column;gap:14px;grid-column:2;grid-row:1;position:sticky;top:0;height:100vh;padding:24px 0}
  .js .step{min-height:78vh;align-content:center}
  .js .step figure{display:none}
@@ -94,6 +94,15 @@ figure.tile img{border-radius:14px;box-shadow:var(--shadow)}   /* the check page
  .step{grid-template-columns:44px minmax(0,1fr);padding:36px 0}
  .num{font-size:40px;color:var(--mut)}
 }
+
+/* the Short / Full switch (user: 'way too many words! Maybe let them choose easy/hard version?') */
+.modebar{position:sticky;top:12px;z-index:6;display:inline-flex;align-items:center;gap:2px;padding:3px 3px 3px 12px;background:var(--soft);border-radius:12px;margin:8px 0 0;font-size:14px;color:var(--mut)}
+.modebar span{margin-right:8px}
+.modebar button{border:0;background:transparent;border-radius:9px;padding:7px 14px;font:600 15px/1 var(--body);color:var(--mut);cursor:pointer}
+.modebar button[aria-pressed=true]{background:var(--raise);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.16)}
+.step p.s{font-size:19px;line-height:1.5;max-width:26em}
+html.full .step .s{display:none}
+html:not(.full) .step .f{display:none}
 
 /* end */
 .end{padding:72px 0 80px;border-top:1px solid var(--line)}
@@ -115,12 +124,12 @@ figure.tile img{border-radius:14px;box-shadow:var(--shadow)}   /* the check page
 
 <section class="hero">
  <div>
-  <h1>37 of 50 forecasts gave No.&nbsp;10 for Ragasa, more than two days before HKO raised it.</h1>
-  <p>ECMWF runs each forecast about 50 times with small changes. This site turns every version into Hong Kong signal chances. The tour below reads one real forecast, from 21 September 2025, the way the page shows it.</p>
-  <p class="fine">Ragasa was not used to set up the site, so it is a fair test.</p>
+  <h1>Chances of signals No.&nbsp;3, 8 and 10 for Hong Kong</h1>
+  <p>From every ECMWF forecast, updated every 6&nbsp;hours.</p>
+  <p class="fine">Research output. The Hong Kong Observatory is the only authority for actual signals.</p>
   <div class="acts"><a class="btn" href="index.html">Open the forecasts</a><a href="#s1">Start the tour</a></div>
  </div>
- <figure><picture><source srcset="guide/dark/answer.png 2x" media="(prefers-color-scheme: dark)"><img src="guide/light/answer.png" srcset="guide/light/answer.png 2x" width="760" height="472" alt="The answer cards: No. 10 from 37 of 50 members, and HKO's actual No. 10 for 11 hours"></picture></figure>
+ <figure><picture><source srcset="guide/dark/answer.png 2x" media="(prefers-color-scheme: dark)"><img src="guide/light/answer.png" srcset="guide/light/answer.png 2x" width="760" height="472" alt="The answer cards for Typhoon Ragasa: No. 10 from 37 of 50 members, beside HKO's actual No. 10"></picture></figure>
 </section>
 </div>
 
@@ -129,40 +138,57 @@ figure.tile img{border-radius:14px;box-shadow:var(--shadow)}   /* the check page
   <div class="where"><span>On the page</span><button type="button" data-w="run">Run</button><button type="button" data-w="answer">Answer</button><button type="button" data-w="timeline">Timeline</button><button type="button" data-w="map">Map</button><button type="button" data-w="charts">Charts</button></div>
   <div class="slides" id="slides"></div>
  </aside>
+ <div class="col">
+ <div class="modebar" role="group" aria-label="How much text"><span>Text</span><button type="button" data-m="short" aria-pressed="true">Short</button><button type="button" data-m="full" aria-pressed="false">Full</button></div>
  <ol class="steps">
 
   <li class="step" id="s1" data-k="toolbar" data-w="run"><span class="num">1</span>
    <h2>Pick a storm and a run</h2>
+   <p class="s">Pick a year, a storm and a run. <span class="ui">Latest runs</span> has the newest forecasts.</p>
+   <div class="f">
    <p>Choose the year, then the storm, then the run. A run is named after the time its forecast started, in UTC. <span class="ui">Latest runs</span> holds the newest forecasts.</p>
    <p>The buttons below switch between ECMWF's physics model (IFS) and its AI model (AIFS). Older years use ECMWF's archived forecasts (2008–2023) or Pangu-Weather (2018–2022).</p>
+   </div>
    <figure><picture><source srcset="guide/dark/toolbar.png 2x" media="(prefers-color-scheme: dark)"><img src="guide/light/toolbar.png" srcset="guide/light/toolbar.png 2x" width="620" height="265" loading="lazy" alt="The run picker: year, storm and run menus, and the forecast buttons"></picture></figure>
   </li>
 
   <li class="step" data-k="answer" data-w="answer"><span class="num">2</span>
    <h2>Read the answer</h2>
+   <p class="s">The big number is the signal most of the ~50 forecast versions reach.</p>
+   <div class="f">
    <p>ECMWF runs each forecast about 50 times. The page calls each version a member. The big number is the highest signal that most members reach, with when it starts and ends in Hong Kong time.</p>
    <p>Below it you see how many of HKO's eight reference stations get gale, storm or hurricane winds. For a past storm, HKO's own record sits next to it.</p>
    <p class="ex">Here 37 of 50 members give <span class="c10">No.&nbsp;10</span>, for about 8&nbsp;hours. HKO kept No.&nbsp;10 up for 11&nbsp;hours.</p>
+   </div>
    <figure><picture><source srcset="guide/dark/answer.png 2x" media="(prefers-color-scheme: dark)"><img src="guide/light/answer.png" srcset="guide/light/answer.png 2x" width="760" height="472" loading="lazy" alt="The answer cards"></picture></figure>
   </li>
 
   <li class="step" data-k="timeline" data-w="timeline"><span class="num">3</span>
    <h2>See when each signal is up</h2>
+   <p class="s">Bars show when each signal starts and ends, in Hong Kong time.</p>
+   <div class="f">
    <p>Each bar covers one signal, in Hong Kong time. The solid part runs from the members' middle start to their middle end. The pale part spans the earliest 10% to the latest 90%.</p>
    <p>The thin line is the deterministic run, ECMWF's single main forecast. HKO's real signals run along the top.</p>
+   </div>
    <figure><picture><source srcset="guide/dark/timeline.png 2x" media="(prefers-color-scheme: dark)"><img src="guide/light/timeline.png" srcset="guide/light/timeline.png 2x" width="1000" height="266" loading="lazy" alt="Timeline with bars for No. 3, No. 8 and No. 10 under HKO's own signals"></picture></figure>
   </li>
 
   <li class="step" data-k="map_signal" data-w="map"><span class="num">4</span>
    <h2>Every line is one member</h2>
+   <p class="s">Each line is one forecast version, coloured by the signal it brings.</p>
+   <div class="f">
    <p>Each line is one member's storm track, coloured by the highest signal it gives Hong Kong: <span class="c3">No.&nbsp;3</span>, <span class="c8">No.&nbsp;8</span> or <span class="c10">No.&nbsp;10</span>.</p>
    <p><span class="c9">Pink</span> means near No.&nbsp;10. It is not expected, but a track 50&nbsp;km off or a slightly stronger storm would bring it. The dashed black line is where the storm really went, and the circles mark distances from Hong Kong.</p>
+   </div>
    <figure><picture><source srcset="guide/dark/map_signal.png" media="(prefers-color-scheme: dark)"><img src="guide/light/map_signal.png" width="1000" height="765" loading="lazy" alt="Map of the members' tracks coloured by signal, with the actual track dashed"></picture></figure>
   </li>
 
   <li class="step" data-k="map_intensity" data-w="map"><span class="num">5</span>
    <h2>Switch to storm strength</h2>
+   <p class="s"><span class="ui">colour by intensity</span> shows each storm's strength class instead.</p>
+   <div class="f">
    <p>The map's own buttons sit right above it. <span class="ui">colour by intensity</span> paints each stretch of track by HKO's storm class, from tropical depression in black to super typhoon in purple.</p>
+   </div>
    <figure><div class="pair">
     <picture><source srcset="guide/dark/mapbar.png 2x" media="(prefers-color-scheme: dark)"><img src="guide/light/mapbar.png" srcset="guide/light/mapbar.png 2x" width="841" height="67" loading="lazy" alt="The map buttons: zoom to Hong Kong, colour by signal or intensity, deterministic run, all members"></picture>
     <picture><source srcset="guide/dark/map_intensity.png" media="(prefers-color-scheme: dark)"><img src="guide/light/map_intensity.png" width="1000" height="765" loading="lazy" alt="The same tracks coloured by HKO intensity class"></picture>
@@ -171,15 +197,21 @@ figure.tile img{border-radius:14px;box-shadow:var(--shadow)}   /* the check page
 
   <li class="step" data-k="play" data-w="map"><span class="num">6</span>
    <h2>Watch all members move</h2>
+   <p class="s"><span class="ui">▶ all members</span> plays every storm forward, 12 hours a second.</p>
+   <div class="f">
    <p><span class="ui">▶ all members</span> moves every member's storm forward together, 12 forecast hours a second. The large black dot is the deterministic run.</p>
    <p>You can watch the spread grow, and see whether it closes on Hong Kong.</p>
+   </div>
    <figure><div class="frames" data-frames="0,12,24,36,48,60,72"><button class="pp" type="button" aria-label="Pause the animation">Pause</button></div></figure>
   </li>
 
   <li class="step" data-k="member" data-w="map"><span class="num">7</span>
    <h2>Follow one member</h2>
+   <p class="s">Click a line to see its wind rings and play it hour by hour.</p>
+   <div class="f">
    <p>Click any line to see that member alone. Its four rings show how far strong, gale, storm and hurricane winds reach on the side facing Hong Kong.</p>
    <p>The player under the map steps through the hours. <span class="ui">← back to all members</span>, under the player, brings everyone back.</p>
+   </div>
    <figure><div class="pair">
     <picture><source srcset="guide/dark/member.png" media="(prefers-color-scheme: dark)"><img src="guide/light/member.png" width="1000" height="900" loading="lazy" alt="One member's track with its four wind rings around Hong Kong"></picture>
     <picture><source srcset="guide/dark/player.png 2x" media="(prefers-color-scheme: dark)"><img src="guide/light/player.png" srcset="guide/light/player.png 2x" width="1000" height="64" loading="lazy" alt="The player: play button, time slider and speed menu"></picture>
@@ -188,26 +220,36 @@ figure.tile img{border-radius:14px;box-shadow:var(--shadow)}   /* the check page
 
   <li class="step" data-k="stations_map" data-w="map"><span class="num">8</span>
    <h2>Zoom in on the eight stations</h2>
+   <p class="s"><span class="ui">zoom to Hong Kong</span> colours HKO's eight stations by expected wind.</p>
+   <div class="f">
    <p><span class="ui">zoom to Hong Kong</span> shows HKO's eight reference stations. Each dot is coloured by the station's expected wind, with its Beaufort force next to the name.</p>
    <p class="ex">In this run Cheung Chau reaches F12.</p>
+   </div>
    <figure><picture><source srcset="guide/dark/stations_map.png" media="(prefers-color-scheme: dark)"><img src="guide/light/stations_map.png" width="1000" height="804" loading="lazy" alt="Close-up map of Hong Kong with the eight stations coloured by expected wind and labelled with Beaufort forces"></picture></figure>
   </li>
 
   <li class="step" data-k="stations_table" data-w="charts"><span class="num">9</span>
    <h2>Compare each station with HKO</h2>
+   <p class="s">The <span class="ui">Station guide</span> tab sets each station beside what HKO recorded.</p>
+   <div class="f">
    <p>The <span class="ui">Station guide</span> tab under the map lists each station's chance of gale (63&nbsp;km/h), storm force (88&nbsp;km/h) and hurricane force (118&nbsp;km/h), with a rough expected wind.</p>
    <p>For past storms it adds what HKO recorded and the difference. <span class="down">Red</span> means the forecast was too low, <span class="up">green</span> too high.</p>
+   </div>
    <figure><picture><source srcset="guide/dark/stations_table.png 2x" media="(prefers-color-scheme: dark)"><img src="guide/light/stations_table.png" srcset="guide/light/stations_table.png 2x" width="750" height="481" loading="lazy" alt="Station table with chances, expected wind, HKO's recorded wind and the difference"></picture></figure>
   </li>
 
   <li class="step" data-k="check" data-w="run"><span class="num">10</span>
    <h2>Check how good it is</h2>
+   <p class="s"><span class="ui">Compared with HKO</span> shows how past forecasts did, storm by storm.</p>
+   <div class="f">
    <p>Every run links to <span class="ui">Compared with HKO</span>, next to the forecast buttons. There each dot is one storm at one time, set against what HKO recorded, and the storm you are viewing is red.</p>
    <p class="ex">Across ECMWF's 2025 physics forecasts, Ragasa's strength came out about 5&nbsp;kt too low on average.</p>
    <p><a href="verify.html">How good is it?</a> has the full record, signal by signal and station by station.</p>
+   </div>
    <figure class="tile"><picture><source srcset="guide/dark/check.png 2x" media="(prefers-color-scheme: dark)"><img src="guide/light/check.png" srcset="guide/light/check.png 2x" width="780" height="874" loading="lazy" alt="Forecast against recorded storm strength, with Ragasa's dots in red"></picture></figure>
   </li>
  </ol>
+ </div>
 </main>
 
 <div class="wrap">
@@ -225,6 +267,11 @@ figure.tile img{border-radius:14px;box-shadow:var(--shadow)}   /* the check page
 const D=document, R=D.documentElement, reduce=matchMedia("(prefers-reduced-motion: reduce)").matches, wide=matchMedia("(min-width: 900px)");
 R.classList.add("js");
 const steps=[...D.querySelectorAll(".step")];
+
+const mb=[...D.querySelectorAll(".modebar button")];
+function setMode(m){R.classList.toggle("full",m==="full"); mb.forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.m===m))); try{localStorage.setItem("tour_text",m)}catch(e){}}
+let m0="short"; try{m0=localStorage.getItem("tour_text")||"short"}catch(e){}
+setMode(m0); mb.forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.m)));
 
 const pic=f=>`<picture><source srcset="guide/dark/play_${f}.png" media="(prefers-color-scheme: dark)"><img src="guide/light/play_${f}.png" width="1000" height="765" loading="lazy" alt="All members at +${f} h"></picture>`;
 function buildFrames(box){
