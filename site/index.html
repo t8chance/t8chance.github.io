@@ -9,13 +9,13 @@
 :root{
  --bg:#edf1f4;--card:#fff;--soft:#e3e9ee;--ink:#13202b;--mut:#55636f;--line:#d3dbe2;--link:#1a5ea8;
  --no1:#c3cad1;--no3:#d98c1a;--no8:#b2182b;--no9:#d6457f;--no10:#5b2a86;
- --good:#1a7f37;--bad:#c62828;--halo:#fff;--raise:#fff;--shadow:0 1px 2px rgba(19,32,43,.06),0 10px 28px rgba(19,32,43,.07);
+ --good:#1a7f37;--bad:#c62828;--halo:#fff;--raise:#fff;--warn:#9a5b00;--shadow:0 1px 2px rgba(19,32,43,.06),0 10px 28px rgba(19,32,43,.07);
  --disp:"Barlow Condensed","Roboto Condensed","Arial Narrow",sans-serif;
  --body:"Barlow",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 @media (prefers-color-scheme:dark){:root{
  --bg:#0f1923;--card:#16222e;--soft:#1c2a37;--ink:#e2e9ef;--mut:#93a3b1;--line:#273746;--link:#8cbcff;
  --no1:#6f7a84;--no3:#f0a23a;--no8:#f0625e;--no9:#ef6fa2;--no10:#b08ae8;
- --good:#5cc97a;--bad:#ff7b72;--halo:#16222e;--raise:#33475a;--shadow:0 1px 0 rgba(255,255,255,.03);color-scheme:dark}}
+ --good:#5cc97a;--bad:#ff7b72;--halo:#16222e;--raise:#33475a;--warn:#f0b35a;--shadow:0 1px 0 rgba(255,255,255,.03);color-scheme:dark}}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 15.5px/1.55 var(--body);-webkit-font-smoothing:antialiased}
@@ -40,6 +40,8 @@ b,strong{font-weight:650}
 .sub{color:var(--mut);font-size:13px;margin:0}
 .toolbar .sub{padding-left:86px}
 .toolbar .sub b{color:var(--ink)}
+.stale{margin:0;padding-left:86px;color:var(--warn);font-weight:600;font-size:14.5px}
+@media (max-width:760px){.stale{padding-left:0}}
 select,button{font:500 14.5px/1.2 var(--body);color:var(--ink);border:1px solid var(--line);border-radius:10px;background:var(--card);padding:8px 12px;cursor:pointer;max-width:100%}
 select{-webkit-appearance:none;appearance:none;background:var(--soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%237d8b97' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 11px center/10px 6px;border-color:transparent;padding-right:32px;font-weight:600}
 button:hover,select:hover{border-color:var(--mut)}
@@ -121,8 +123,10 @@ footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin
 <p class="disc">ECMWF ensemble forecasts turned into Hong Kong signal chances. Research output — the Hong Kong Observatory is the only authority for actual signals.</p></header>
 
  <div class="toolbar">
+  <div class="grp"><span class="lbl">Show</span><span id="viewbtns" class="seg"><button type="button" data-v="today">Today</button><button type="button" data-v="past">Past storms</button></span></div>
   <div class="grp"><span class="lbl">Run</span><select id="yearSel" aria-label="year" title="1. the year (or the latest runs)"></select><select id="stormSel" aria-label="storm" title="2. the storm"></select><select id="cyc" aria-label="run" title="3. the run (start time, UTC)"></select></div>
   <div class="grp"><span class="lbl">Forecast</span><span id="ensbtns" class="seg" title="the forecasts that exist for this run -- each is its own system, judged on its own past"></span><span id="checks" class="note"></span></div>
+  <p class="stale" id="stale" hidden></p>
   <div class="sub" id="stamp"></div>
  </div>
  <div class="status" id="status"></div>
@@ -355,10 +359,13 @@ function head(){
  const stormsIn=y=>Object.keys(ST).filter(k=>yrOf(k)===y).sort((a,b)=>ST[b][0].localeCompare(ST[a][0]));
  const years=[...new Set(Object.keys(ST).map(yrOf))].sort().reverse();
  const curS=rec.includes(cyc)?"__recent":ST[pickedStorm]&&ST[pickedStorm].includes(cyc)?pickedStorm:(casesOf(cyc).find(k=>ST[k])||Object.keys(ST).find(k=>ST[k].includes(cyc))||null);
- const curY=curS==="__recent"?"__recent":curS?yrOf(curS):null;
- $("#yearSel").innerHTML=(rec.length?`<option value="__recent"${curY==="__recent"?" selected":""}>Latest runs</option>`:"")
-  +years.map(y=>`<option value="${y}"${y===curY?" selected":""}>${y}</option>`).join("")+(curY===null?`<option value="" selected disabled>year</option>`:"");
- $("#stormSel").innerHTML=curY==="__recent"?`<option value="__recent" selected>Recent runs</option>`
+ const curY=curS==="__recent"?"__recent":curS?yrOf(curS):null, today=curS==="__recent";
+ $("#viewbtns").querySelectorAll("button").forEach(b=>{b.classList.toggle("on",(b.dataset.v==="today")===today); b.disabled=b.dataset.v==="today"&&!rec.length});
+ $("#yearSel").hidden=today; $("#stormSel").hidden=today;
+ {const st=$("#stale"), n=rec[0]; let h=0; if(today&&n) h=(Date.now()-Date.UTC(+n.slice(0,4),+n.slice(4,6)-1,+n.slice(6,8),+n.slice(8,10)))/36e5;
+  st.hidden=!(h>30); if(h>30) st.textContent=`Not updating right now: the newest run is ${h>=48?Math.floor(h/24)+" days":Math.round(h)+" hours"} old.`}
+ $("#yearSel").innerHTML=years.map(y=>`<option value="${y}"${y===curY?" selected":""}>${y}</option>`).join("")+(curY===null||today?`<option value="" selected disabled>year</option>`:"");
+ $("#stormSel").innerHTML=today?""
   :curY?stormsIn(curY).map(k=>`<option value="${k}"${k===curS?" selected":""}>${(LAB[k]||k).replace(" "+curY,"")}</option>`).join(""):"";
  const runs=curS==="__recent"?rec:curS?ST[curS]:[];
  $("#cyc").innerHTML=runs.map(c=>`<option value="${c}"${c===cyc?" selected":""}>${fmtc(c)}</option>`).join("");
@@ -367,6 +374,11 @@ function head(){
  $("#yearSel").onchange=e=>{const y=e.target.value; if(y==="__recent"){pickedStorm=null;go(pick(rec));return} const k=stormsIn(y).find(x=>ST[x].some(fam))||stormsIn(y)[0]; pickedStorm=k; go(pick(ST[k]))};
  $("#stormSel").onchange=e=>{const k=e.target.value; if(k==="__recent"){go(pick(rec));return} pickedStorm=k; go(pick(ST[k]))};
  $("#cyc").onchange=e=>go(e.target.value);
+ $("#viewbtns").querySelectorAll("button").forEach(b=>b.onclick=()=>{
+  if(b.dataset.v==="today"){if(!today&&rec.length){pickedStorm=null;go(pick(rec))} return}
+  if(!today)return; const R0="2025092112", k=casesOf(R0).find(x=>ST[x]);
+  if(HK[R0]&&k){pickedStorm=k; if(HK[R0].ifsens){ens="ifsens";mode=modeOf(ens)||mode} go(R0); return}
+  const y=years[0], k2=y&&stormsIn(y)[0]; if(k2){pickedStorm=k2; go(pick(ST[k2]))}});
  const avE=HK[cyc]||{};
  $("#ensbtns").innerHTML=ORDER.filter(e=>avE[e]).map(e=>`<button data-e="${e}" class="${e===ens?"on":""}">${FCN[e]}</button>`).join(" ");
  {const y=cyc.slice(0,4), k=ens==="ifsens"?(y==="2024"?"ifs2024":"ifs2025"):ens==="aifsens"?"aifs2025":ens==="pangu"?"pangu":ens==="tigge"?"tigge":null;
