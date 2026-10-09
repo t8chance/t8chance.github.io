@@ -12,20 +12,54 @@
  nav{font-size:13.5px;margin:10px 0 0} nav a{margin-right:12px;white-space:nowrap}
  img{width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:#fff;margin:6px 0 2px}
  .cap{color:var(--mut);font-size:13px;margin:0 0 14px}
+ .lede{max-width:72ch;margin:6px 0 8px} .sum{margin:6px 0 10px}
+ .tw{overflow-x:auto;margin:6px 0 4px} table.mw{border-collapse:collapse;font-size:13.5px;min-width:760px;width:100%;font-variant-numeric:tabular-nums}
+ .mw th,.mw td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top} .mw th{color:var(--mut);font-weight:600;font-size:12.5px}
+ .mw td.n{text-align:right;white-space:nowrap} .mw .t{color:var(--mut);font-size:12px} .mw .ai{color:var(--mut)}
+ .mw td.v{font-weight:600;white-space:nowrap} .mw td.us{color:#1a7f37} .mw td.them{color:#b4531a} .mw td.na{color:var(--mut);font-weight:400}
+ @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .mw td.us{color:#5cc97a}:root:not([data-theme="light"]) .mw td.them{color:#f0a23a}}
+ :root[data-theme="dark"] .mw td.us{color:#5cc97a} :root[data-theme="dark"] .mw td.them{color:#f0a23a}
 </style></head><body><div class="wrap">
 <p><a href="index.html">← back to the forecasts</a> · <a href="method.html">Method</a> · <a href="inputs.html">Inputs by year</a></p>
 <h1>How good is it?</h1>
-<p class="note">Past cases only: each chart compares the site with what the Hong Kong Observatory (HKO) recorded. Click a chart to enlarge it.
-Words are explained on <a href="inputs.html">Inputs by year</a>. State of 8 Oct 2026.</p>
+<p class="note">Past cases only: each section compares the site with what the Hong Kong Observatory (HKO) recorded. Click a chart to enlarge it.
+Words are explained on <a href="inputs.html">Inputs by year</a>. State of 9 Oct 2026.</p>
 <nav><a href="#signals">Signals</a><a href="#strength">Storm strength</a><a href="#reach">Gale-wind reach</a><a href="#stations">Gale stations</a><a href="#wind">Wind index</a><a href="#methods">Methods compared</a></nav>
 
-<h2 id="signals">Signals</h2>
-<a href="verify/verify_signal_calls.png"><img src="verify/verify_signal_calls.png" alt="What each page called against HKO's highest signal, per source" loading="lazy"></a>
-<p class="cap">The page's call = the highest signal at least 8 forecast versions reach (Pangu: its single forecast), from any storm at any time in the run; a run near two storms counts once for each.</p>
-<a href="verify/verify_signal_two_storms.png"><img src="verify/verify_signal_two_storms.png" alt="Runs where another storm of the same run drives the page's call" loading="lazy"></a>
-<p class="cap">Two-storm runs, shown apart: versions that also carry this storm are drawn on another storm whose signal sets the call (e.g. Mitag's runs and Ragasa's No. 10). The storm is found by its track, never by distance to Hong Kong.</p>
-<a href="verify/verify_signal_lead.png"><img src="verify/verify_signal_lead.png" alt="Right, too low or too high by days before HKO's highest signal" loading="lazy"></a>
-<p class="cap">By how many days before HKO's highest signal the forecast started.</p>
+
+<h2 id="signals">Signals, storm by storm</h2>
+<p class="lede">MET WARN, an unofficial Hong Kong weather channel, posts its own chance that HKO will raise a signal. Each row is one such post
+for a named storm in 2025–26, storms not used to set up this site, beside this site's chance for the same storm from the forecast that was
+available when the post went out. A row goes to whichever side leaned the right way when the other did not. On both sides 40–59% counts as a
+50-50, which is MET WARN's own definition of 中等.</p>
+<p class="sum">Of the 15 rows both can be judged on: <b>12 level</b>, <b>2 to MET WARN</b>, <b>1 to this site</b>. 3 rows wait for this site's forecasts, which are being added.</p>
+<div class="tw"><table class="mw"><thead><tr><th>Posted (HK time)</th><th>Storm</th><th>Signal</th><th>MET WARN said</th><th>This site<br><span class="t">physics / AI</span></th>
+<th>Forecast age</th><th>HKO raised it?</th><th>Leaned the right way</th></tr></thead><tbody>
+<tr><td>13 Jun 2025<br><span class="t">23:29</span></td><td>Wutip</td><td>No. 8</td><td>中等至低 <span class="t">(medium to low)</span></td><td class="n">0%<span class="ai"></span></td><td class="n">27 h</td><td>no <span class="t">(HKO No. 3)</span></td><td class="v tie">level</td></tr>
+<tr><td>18 Jul 2025<br><span class="t">13:01</span></td><td>Wipha</td><td>No. 8</td><td>極高 <span class="t">(very high)</span></td><td class="n">70%<span class="ai"> / 80%</span></td><td class="n">17 h</td><td>yes <span class="t">(HKO No. 10)</span></td><td class="v tie">level</td></tr>
+<tr><td>20 Jul 2025<br><span class="t">01:01</span></td><td>Wipha</td><td>No. 9</td><td>高 <span class="t">(high)</span></td><td class="n"></td><td class="n"></td><td>yes <span class="t">(HKO No. 10)</span></td><td class="v na">the site does not forecast No. 9</td></tr>
+<tr><td>20 Jul 2025<br><span class="t">07:34</span></td><td>Wipha</td><td>No. 10</td><td>中等 <span class="t">(medium, 40–59%)</span></td><td class="n">18%<span class="ai"> / 25%</span></td><td class="n">36 h</td><td>yes <span class="t">(HKO No. 10)</span></td><td class="v them">MET WARN</td></tr>
+<tr><td>13 Aug 2025<br><span class="t">11:45</span></td><td>Podul</td><td>No. 3</td><td>中等 <span class="t">(medium, 40–59%)</span></td><td class="n"></td><td class="n"></td><td>no <span class="t">(HKO No. 1)</span></td><td class="v na">forecast being added</td></tr>
+<tr><td>06 Sep 2025<br><span class="t">23:44</span></td><td>Tapah</td><td>No. 8</td><td>中等 <span class="t">(medium, 40–59%)</span></td><td class="n">58%<span class="ai"> / 35%</span></td><td class="n">28 h</td><td>yes <span class="t">(HKO No. 8)</span></td><td class="v tie">level</td></tr>
+<tr><td>07 Sep 2025<br><span class="t">11:45</span></td><td>Tapah</td><td>No. 8</td><td>中等至高 <span class="t">(medium to high)</span></td><td class="n">58%<span class="ai"> / 35%</span></td><td class="n">40 h</td><td>yes <span class="t">(HKO No. 8)</span></td><td class="v them">MET WARN</td></tr>
+<tr><td>18 Sep 2025<br><span class="t">23:39</span></td><td>Mitag</td><td>No. 8</td><td>中等 <span class="t">(medium, 40–59%)</span></td><td class="n">46%<span class="ai"> / 8%</span></td><td class="n">28 h</td><td>no <span class="t">(HKO No. 3)</span></td><td class="v tie">level</td></tr>
+<tr><td>20 Sep 2025<br><span class="t">12:31</span></td><td>Ragasa</td><td>No. 8</td><td>極高 <span class="t">(very high)</span></td><td class="n">90%<span class="ai"> / 88%</span></td><td class="n">17 h</td><td>yes <span class="t">(HKO No. 10)</span></td><td class="v tie">level</td></tr>
+<tr><td>22 Sep 2025<br><span class="t">23:45</span></td><td>Ragasa</td><td>No. 10</td><td>高 <span class="t">(high)</span></td><td class="n">74%<span class="ai"> / 35%</span></td><td class="n">28 h</td><td>yes <span class="t">(HKO No. 10)</span></td><td class="v tie">level</td></tr>
+<tr><td>02 Oct 2025<br><span class="t">21:29</span></td><td>Matmo</td><td>No. 3</td><td>高 <span class="t">(high)</span></td><td class="n">92%<span class="ai"> / 90%</span></td><td class="n">25 h</td><td>yes <span class="t">(HKO No. 3)</span></td><td class="v tie">level</td></tr>
+<tr><td>04 Oct 2025<br><span class="t">14:00</span></td><td>Matmo</td><td>No. 8</td><td>低至中等 <span class="t">(low to medium)</span></td><td class="n">18%<span class="ai"> / 39%</span></td><td class="n">18 h</td><td>no <span class="t">(HKO No. 3)</span></td><td class="v tie">level</td></tr>
+<tr><td>19 Oct 2025<br><span class="t">11:44</span></td><td>Fengshen</td><td>No. 3</td><td>高 <span class="t">(high)</span></td><td class="n">82%<span class="ai"> / 73%</span></td><td class="n">16 h</td><td>yes <span class="t">(HKO No. 3)</span></td><td class="v tie">level</td></tr>
+<tr><td>20 Oct 2025<br><span class="t">11:45</span></td><td>Fengshen</td><td>No. 8</td><td>低 <span class="t">(low)</span></td><td class="n">0%<span class="ai"> / 0%</span></td><td class="n">16 h</td><td>no <span class="t">(HKO No. 3)</span></td><td class="v tie">level</td></tr>
+<tr><td>09 Nov 2025<br><span class="t">21:31</span></td><td>Fung-Wong</td><td>No. 3</td><td>高 <span class="t">(high)</span></td><td class="n"></td><td class="n"></td><td>no <span class="t">(HKO No. 1)</span></td><td class="v na">forecast being added</td></tr>
+<tr><td>10 Nov 2025<br><span class="t">12:01</span></td><td>Fung-Wong</td><td>No. 3</td><td>中等 <span class="t">(medium, 40–59%)</span></td><td class="n"></td><td class="n"></td><td>no <span class="t">(HKO No. 1)</span></td><td class="v na">forecast being added</td></tr>
+<tr><td>24 Jul 2026<br><span class="t">13:00</span></td><td>Noul</td><td>No. 3</td><td>中等至高 <span class="t">(medium to high)</span></td><td class="n">92%<span class="ai"> / 98%</span></td><td class="n">17 h</td><td>yes <span class="t">(HKO No. 9)</span></td><td class="v tie">level</td></tr>
+<tr><td>25 Jul 2026<br><span class="t">00:15</span></td><td>Noul</td><td>No. 8</td><td>中等 <span class="t">(medium, 40–59%)</span></td><td class="n">66%<span class="ai"> / 71%</span></td><td class="n">28 h</td><td>yes <span class="t">(HKO No. 9)</span></td><td class="v us">this site</td></tr>
+<tr><td>25 Jul 2026<br><span class="t">13:45</span></td><td>Noul</td><td>No. 8</td><td>高 <span class="t">(high)</span></td><td class="n">94%<span class="ai"> / 88%</span></td><td class="n">18 h</td><td>yes <span class="t">(HKO No. 9)</span></td><td class="v tie">level</td></tr>
+</tbody></table></div>
+<p class="cap">This site's chance is the share of its forecast versions (about 50) that reach the signal for this storm; physics and AI are ECMWF's two
+forecasts. Forecast age is the time from the forecast's start to MET WARN's post: past storms are re-run once a day and appear about 13 hours
+after the start, so this site's forecast was often a day older. The site does not forecast No. 9. Sources: MET WARN's posts on its public
+channel (<a href="https://t.me/s/metwarn">t.me/s/metwarn</a>, read October 2026) and HKO's signal records.</p>
+
 
 <h2 id="strength">Storm strength</h2>
 <a href="inputs/scatter_intensity.png"><img src="inputs/scatter_intensity.png" alt="Strength each page used against HKO's recorded strength, per source" loading="lazy"></a>
