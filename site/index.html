@@ -124,7 +124,7 @@ footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin
 
  <div class="toolbar">
   <div class="grp"><span class="lbl">Show</span><span id="viewbtns" class="seg"><button type="button" data-v="today">Today</button><button type="button" data-v="past">Past storms</button></span></div>
-  <div class="grp"><span class="lbl">Run</span><select id="yearSel" aria-label="year" title="1. the year (or the latest runs)"></select><select id="stormSel" aria-label="storm" title="2. the storm"></select><select id="cyc" aria-label="run" title="3. the run (start time, UTC)"></select></div>
+  <div class="grp"><span class="lbl">Run</span><select id="yearSel" aria-label="HKO's highest signal" title="1. the highest signal HKO issued for the storm"></select><select id="stormSel" aria-label="storm" title="2. the storm"></select><select id="cyc" aria-label="run" title="3. the run (start time, UTC)"></select></div>
   <div class="grp"><span class="lbl">Forecast</span><span id="ensbtns" class="seg" title="the forecasts that exist for this run -- each is its own system, judged on its own past"></span><span id="checks" class="note"></span></div>
   <p class="stale" id="stale" hidden></p>
   <div class="sub" id="stamp"></div>
@@ -356,17 +356,18 @@ function head(){
  const ST={}; past.forEach(c=>{const cs=casesOf(c); (cs.length?cs:[`Other runs ${c.slice(0,4)}`]).forEach(k=>(ST[k]=ST[k]||[]).push(c))});
  Object.values(ST).forEach(a=>a.sort().reverse());
  const yrOf=k=>k.slice(-4), LAB=Object.fromEntries(PAST.map(p=>[p[2].split(" — ")[0],p[2]]));
- const stormsIn=y=>Object.keys(ST).filter(k=>yrOf(k)===y).sort((a,b)=>ST[b][0].localeCompare(ST[a][0]));
- const years=[...new Set(Object.keys(ST).map(yrOf))].sort().reverse();
+ const lvOf=k=>{const t=(HKOEV[k]||{}).top; return t!=null?String(t):"other"};
+ const stormsIn=y=>Object.keys(ST).filter(k=>lvOf(k)===y).sort((a,b)=>ST[b][0].localeCompare(ST[a][0]));
+ const years=[...new Set(Object.keys(ST).map(lvOf))].sort((a,b)=>a==="other"?1:b==="other"?-1:+b-+a);
  const curS=rec.includes(cyc)?"__recent":ST[pickedStorm]&&ST[pickedStorm].includes(cyc)?pickedStorm:(casesOf(cyc).find(k=>ST[k])||Object.keys(ST).find(k=>ST[k].includes(cyc))||null);
- const curY=curS==="__recent"?"__recent":curS?yrOf(curS):null, today=curS==="__recent";
+ const curY=curS==="__recent"?"__recent":curS?lvOf(curS):null, today=curS==="__recent";
  $("#viewbtns").querySelectorAll("button").forEach(b=>{b.classList.toggle("on",(b.dataset.v==="today")===today); b.disabled=b.dataset.v==="today"&&!rec.length});
  $("#yearSel").hidden=today; $("#stormSel").hidden=today;
  {const st=$("#stale"), n=rec[0]; let h=0; if(today&&n) h=(Date.now()-Date.UTC(+n.slice(0,4),+n.slice(4,6)-1,+n.slice(6,8),+n.slice(8,10)))/36e5;
   st.hidden=!(h>30); if(h>30) st.textContent=`Not updating right now: the newest run is ${h>=48?Math.floor(h/24)+" days":Math.round(h)+" hours"} old.`}
- $("#yearSel").innerHTML=years.map(y=>`<option value="${y}"${y===curY?" selected":""}>${y}</option>`).join("")+(curY===null||today?`<option value="" selected disabled>year</option>`:"");
+ $("#yearSel").innerHTML=years.map(y=>{const n=stormsIn(y).length; return `<option value="${y}"${y===curY?" selected":""}>${y==="other"?"Other runs":"No. "+y} (${n} storm${n>1?"s":""})</option>`}).join("")+(curY===null||today?`<option value="" selected disabled>signal</option>`:"");
  $("#stormSel").innerHTML=today?""
-  :curY?stormsIn(curY).map(k=>`<option value="${k}"${k===curS?" selected":""}>${(LAB[k]||k).replace(" "+curY,"")}</option>`).join(""):"";
+  :curY?stormsIn(curY).map(k=>`<option value="${k}"${k===curS?" selected":""}>${(LAB[k]||k).replace(/ — HKO No\. \d+ on /," — ")}</option>`).join(""):"";
  const runs=curS==="__recent"?rec:curS?ST[curS]:[];
  $("#cyc").innerHTML=runs.map(c=>`<option value="${c}"${c===cyc?" selected":""}>${fmtc(c)}</option>`).join("");
  const go=c=>{if(!c)return; cyc=c;NOSAME=null;sel=null;selH=null; chooseEns(c); head();load()};
