@@ -356,7 +356,7 @@ function head(){
  const ST={}; past.forEach(c=>{const cs=casesOf(c); (cs.length?cs:[`Other runs ${c.slice(0,4)}`]).forEach(k=>(ST[k]=ST[k]||[]).push(c))});
  Object.values(ST).forEach(a=>a.sort().reverse());
  const yrOf=k=>k.slice(-4), LAB=Object.fromEntries(PAST.map(p=>[p[2].split(" — ")[0],p[2]]));
- const lvOf=k=>{const t=(HKOEV[k]||{}).top; return t!=null?String(t):"other"};
+ const lvOf=k=>{const t=(HKOEV[k]||{}).top; return t==null?"other":t===9?"8":String(t)};
  const stormsIn=y=>Object.keys(ST).filter(k=>lvOf(k)===y).sort((a,b)=>ST[b][0].localeCompare(ST[a][0]));
  const years=[...new Set(Object.keys(ST).map(lvOf))].sort((a,b)=>a==="other"?1:b==="other"?-1:+b-+a);
  const curS=rec.includes(cyc)?"__recent":ST[pickedStorm]&&ST[pickedStorm].includes(cyc)?pickedStorm:(casesOf(cyc).find(k=>ST[k])||Object.keys(ST).find(k=>ST[k].includes(cyc))||null);
@@ -365,9 +365,9 @@ function head(){
  $("#yearSel").hidden=today; $("#stormSel").hidden=today;
  {const st=$("#stale"), n=rec[0]; let h=0; if(today&&n) h=(Date.now()-Date.UTC(+n.slice(0,4),+n.slice(4,6)-1,+n.slice(6,8),+n.slice(8,10)))/36e5;
   st.hidden=!(h>30); if(h>30) st.textContent=`Not updating right now: the newest run is ${h>=48?Math.floor(h/24)+" days":Math.round(h)+" hours"} old.`}
- $("#yearSel").innerHTML=years.map(y=>{const n=stormsIn(y).length; return `<option value="${y}"${y===curY?" selected":""}>${y==="other"?"Other runs":"No. "+y} (${n} storm${n>1?"s":""})</option>`}).join("")+(curY===null||today?`<option value="" selected disabled>signal</option>`:"");
+ $("#yearSel").innerHTML=years.map(y=>{const n=stormsIn(y).length; return `<option value="${y}"${y===curY?" selected":""}>${y==="other"?"Other runs":y==="8"?"No. 8 and 9":"No. "+y} (${n} storm${n>1?"s":""})</option>`}).join("")+(curY===null||today?`<option value="" selected disabled>signal</option>`:"");
  $("#stormSel").innerHTML=today?""
-  :curY?stormsIn(curY).map(k=>`<option value="${k}"${k===curS?" selected":""}>${(LAB[k]||k).replace(/ — HKO No\. \d+ on /," — ")}</option>`).join(""):"";
+  :curY?stormsIn(curY).map(k=>`<option value="${k}"${k===curS?" selected":""}>${(LAB[k]||k).replace(/ — HKO No\. (\d+) on /,(m,g)=>g===curY?" — ":m)}</option>`).join(""):"";
  const runs=curS==="__recent"?rec:curS?ST[curS]:[];
  $("#cyc").innerHTML=runs.map(c=>`<option value="${c}"${c===cyc?" selected":""}>${fmtc(c)}</option>`).join("");
  const go=c=>{if(!c)return; cyc=c;NOSAME=null;sel=null;selH=null; chooseEns(c); head();load()};
