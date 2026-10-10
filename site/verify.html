@@ -12,6 +12,8 @@
  nav{font-size:13.5px;margin:10px 0 0} nav a{margin-right:12px;white-space:nowrap}
  img{width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:#fff;margin:6px 0 2px}
  .cap{color:var(--mut);font-size:13px;margin:0 0 14px}
+/*charts*/ h3{font-size:15px;margin:18px 0 2px} .vlede{max-width:72ch;margin:6px 0 4px}
+/*/charts*/
  .lede{max-width:72ch;margin:6px 0 10px} .how{max-width:72ch;color:var(--mut);font-size:13.5px;margin:8px 0 10px}
  :root{--soft:#efece6;--raise:#fff;--us:#1a7f37;--mw:#b4531a}
  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--soft:#2a2a2a;--raise:#3a3a3a;--us:#5cc97a;--mw:#f0a23a}}
@@ -36,9 +38,9 @@
 </style></head><body><div class="wrap">
 <p><a href="index.html">← back to the forecasts</a> · <a href="method.html">Method</a> · <a href="inputs.html">Inputs by year</a></p>
 <h1>How good is it?</h1>
-<p class="note">Past cases only: each section compares the site with what the Hong Kong Observatory (HKO) recorded. Click a chart to enlarge it.
+<p class="note">Past cases only: each section compares the site with what the Hong Kong Observatory (HKO) recorded. Hover or tap a dot for details.
 Words are explained on <a href="inputs.html">Inputs by year</a>. State of 10 Oct 2026.</p>
-<nav><a href="#signals">Signals</a><a href="#strength">Storm strength</a><a href="#reach">Gale-wind reach</a><a href="#stations">Gale stations</a><a href="#wind">Wind index</a><a href="#methods">Methods compared</a></nav>
+<nav><a href="#signals">Signals</a><a href="#strength">Storm strength</a><a href="#reach">Gale-wind reach</a><a href="#stations">Gale stations</a><a href="#wind">Wind index</a></nav>
 
 
 <h2 id="signals">Signals: this site and MET WARN, storm by storm</h2>
@@ -48,22 +50,22 @@ were not used to set up this site.</p>
 <div class="pick"><span class="lbl">Signal</span><span id="mwsig" class="seg"><button type="button" data-v="10">No. 10 <span class="cnt">2</span></button><button type="button" data-v="8">No. 8 and 9 <span class="cnt">11</span></button><button type="button" data-v="3">No. 3 <span class="cnt">12</span></button><button type="button" data-v="all">All <span class="cnt">25</span></button></span></div>
 <p class="how">MET WARN gives a range, for example "high" = 80–89%. If this site's chance is inside that range, it is the same call.
 If it is outside, the side nearer to what HKO did is closer.</p>
-<div class="mwp" data-v="10"><div class="score"><div class="t-us"><span class="n">0</span>this site closer</div><div class="t-mw"><span class="n">2</span>MET WARN closer</div><div class="t-same"><span class="n">0</span>same call</div></div>
+<div class="mwp" data-v="10" hidden><div class="score"><div class="t-us"><span class="n">0</span>this site closer</div><div class="t-mw"><span class="n">2</span>MET WARN closer</div><div class="t-same"><span class="n">0</span>same call</div></div>
 <div class="st"><div class="sh"><span><b>Wipha</b>, July 2025</span><span class="top">HKO went up to No.&nbsp;10</span></div>
 <div class="qh"><span>Question</span><span>MET WARN said</span><span>This site said</span><span>HKO raised it?</span><span>Who was closer</span></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;10?<span class="sm">asked 20 Jul, 07:34 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">medium</span> <span class="rg">40–59%</span><span class="sm">中等</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">18%</span><span class="sm">AI forecast 25% · forecast 36 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">18%</span><span class="sm">forecast 36 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v mw"><span class="lab">Who was closer</span>MET WARN closer<span class="sm">18% is below MET WARN's 40–59%</span></div></div></div>
 <div class="st"><div class="sh"><span><b>Ragasa</b>, September 2025</span><span class="top">HKO went up to No.&nbsp;10</span></div>
 <div class="qh"><span>Question</span><span>MET WARN said</span><span>This site said</span><span>HKO raised it?</span><span>Who was closer</span></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;10?<span class="sm">asked 22 Sep, 23:45 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">high</span> <span class="rg">80–89%</span><span class="sm">高</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">74%</span><span class="sm">AI forecast 35% · forecast 28 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">74%</span><span class="sm">forecast 28 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v mw"><span class="lab">Who was closer</span>MET WARN closer<span class="sm">74% is below MET WARN's 80–89%</span></div></div></div></div>
-<div class="mwp" data-v="8" hidden><div class="score"><div class="t-us"><span class="n">4</span>this site closer</div><div class="t-mw"><span class="n">2</span>MET WARN closer</div><div class="t-same"><span class="n">4</span>same call</div></div>
+<div class="mwp" data-v="8"><div class="score"><div class="t-us"><span class="n">4</span>this site closer</div><div class="t-mw"><span class="n">2</span>MET WARN closer</div><div class="t-same"><span class="n">4</span>same call</div></div>
 <div class="st"><div class="sh"><span><b>Wutip</b>, June 2025</span><span class="top">HKO went up to No.&nbsp;3</span></div>
 <div class="qh"><span>Question</span><span>MET WARN said</span><span>This site said</span><span>HKO raised it?</span><span>Who was closer</span></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;8?<span class="sm">asked 13 Jun, 23:29 HK time</span></div>
@@ -75,7 +77,7 @@ If it is outside, the side nearer to what HKO did is closer.</p>
 <div class="qh"><span>Question</span><span>MET WARN said</span><span>This site said</span><span>HKO raised it?</span><span>Who was closer</span></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;8?<span class="sm">asked 18 Jul, 13:01 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">very high</span> <span class="rg">90–100%</span><span class="sm">極高</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">70%</span><span class="sm">AI forecast 80% · forecast 17 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">70%</span><span class="sm">forecast 17 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v mw"><span class="lab">Who was closer</span>MET WARN closer<span class="sm">70% is below MET WARN's 90–100%</span></div></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;9?<span class="sm">asked 20 Jul, 01:01 HK time</span></div>
@@ -87,52 +89,52 @@ If it is outside, the side nearer to what HKO did is closer.</p>
 <div class="qh"><span>Question</span><span>MET WARN said</span><span>This site said</span><span>HKO raised it?</span><span>Who was closer</span></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;8?<span class="sm">asked 6 Sep, 23:44 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">medium</span> <span class="rg">40–59%</span><span class="sm">中等</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">58%</span><span class="sm">AI forecast 35% · forecast 28 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">58%</span><span class="sm">forecast 28 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v same"><span class="lab">Who was closer</span>same call<span class="sm">58% is inside MET WARN's 40–59%</span></div></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;8?<span class="sm">asked 7 Sep, 11:45 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">medium-high</span> <span class="rg">60–79%</span><span class="sm">中等至高 = 中高</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">58%</span><span class="sm">AI forecast 35% · forecast 40 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">58%</span><span class="sm">forecast 40 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v mw"><span class="lab">Who was closer</span>MET WARN closer<span class="sm">58% is below MET WARN's 60–79%</span></div></div></div>
 <div class="st"><div class="sh"><span><b>Mitag</b>, September 2025</span><span class="top">HKO went up to No.&nbsp;3</span></div>
 <div class="qh"><span>Question</span><span>MET WARN said</span><span>This site said</span><span>HKO raised it?</span><span>Who was closer</span></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;8?<span class="sm">asked 18 Sep, 23:39 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">medium</span> <span class="rg">40–59%</span><span class="sm">中等</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">46%</span><span class="sm">AI forecast 8% · forecast 28 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">46%</span><span class="sm">forecast 28 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">No</span></div>
 <div class="c v same"><span class="lab">Who was closer</span>same call<span class="sm">46% is inside MET WARN's 40–59%</span></div></div></div>
 <div class="st"><div class="sh"><span><b>Ragasa</b>, September 2025</span><span class="top">HKO went up to No.&nbsp;10</span></div>
 <div class="qh"><span>Question</span><span>MET WARN said</span><span>This site said</span><span>HKO raised it?</span><span>Who was closer</span></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;8?<span class="sm">asked 20 Sep, 12:31 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">very high</span> <span class="rg">90–100%</span><span class="sm">極高</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">90%</span><span class="sm">AI forecast 88% · forecast 17 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">90%</span><span class="sm">forecast 17 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v same"><span class="lab">Who was closer</span>same call<span class="sm">90% is inside MET WARN's 90–100%</span></div></div></div>
 <div class="st"><div class="sh"><span><b>Matmo</b>, October 2025</span><span class="top">HKO went up to No.&nbsp;3</span></div>
 <div class="qh"><span>Question</span><span>MET WARN said</span><span>This site said</span><span>HKO raised it?</span><span>Who was closer</span></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;8?<span class="sm">asked 4 Oct, 14:00 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">medium-low</span> <span class="rg">25–39%</span><span class="sm">低至中等 = 中低</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">18%</span><span class="sm">AI forecast 39% · forecast 18 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">18%</span><span class="sm">forecast 18 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">No</span></div>
 <div class="c v us"><span class="lab">Who was closer</span>this site closer<span class="sm">18% is below MET WARN's 25–39%</span></div></div></div>
 <div class="st"><div class="sh"><span><b>Fengshen</b>, October 2025</span><span class="top">HKO went up to No.&nbsp;3</span></div>
 <div class="qh"><span>Question</span><span>MET WARN said</span><span>This site said</span><span>HKO raised it?</span><span>Who was closer</span></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;8?<span class="sm">asked 20 Oct, 11:45 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">low</span> <span class="rg">0–24%</span><span class="sm">低</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">0%</span><span class="sm">AI forecast 0% · forecast 16 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">0%</span><span class="sm">forecast 16 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">No</span></div>
 <div class="c v same"><span class="lab">Who was closer</span>same call<span class="sm">0% is inside MET WARN's 0–24%</span></div></div></div>
 <div class="st"><div class="sh"><span><b>Noul</b>, July 2026</span><span class="top">HKO went up to No.&nbsp;9</span></div>
 <div class="qh"><span>Question</span><span>MET WARN said</span><span>This site said</span><span>HKO raised it?</span><span>Who was closer</span></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;8?<span class="sm">asked 25 Jul, 00:15 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">medium</span> <span class="rg">40–59%</span><span class="sm">中等</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">66%</span><span class="sm">AI forecast 71% · forecast 28 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">66%</span><span class="sm">forecast 28 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v us"><span class="lab">Who was closer</span>this site closer<span class="sm">66% is above MET WARN's 40–59%</span></div></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;8?<span class="sm">asked 25 Jul, 13:45 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">high</span> <span class="rg">80–89%</span><span class="sm">高</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">94%</span><span class="sm">AI forecast 88% · forecast 18 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">94%</span><span class="sm">forecast 18 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v us"><span class="lab">Who was closer</span>this site closer<span class="sm">94% is above MET WARN's 80–89%</span></div></div></div></div>
 <div class="mwp" data-v="3" hidden><div class="score"><div class="t-us"><span class="n">2</span>this site closer</div><div class="t-mw"><span class="n">1</span>MET WARN closer</div><div class="t-same"><span class="n">1</span>same call</div><div class="t-wait"><span class="n">8</span>waiting for this site</div></div>
@@ -154,7 +156,7 @@ If it is outside, the side nearer to what HKO did is closer.</p>
 <div class="qh"><span>Question</span><span>MET WARN said</span><span>This site said</span><span>HKO raised it?</span><span>Who was closer</span></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;3?<span class="sm">asked 16 Jul, 22:29 HK time · picture post</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">very high</span> <span class="rg">90–100%</span><span class="sm">極高</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">68%</span><span class="sm">AI forecast 53% · forecast 26 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">68%</span><span class="sm">forecast 26 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v mw"><span class="lab">Who was closer</span>MET WARN closer<span class="sm">68% is below MET WARN's 90–100%</span></div></div></div>
 <div class="st"><div class="sh"><span><b>Podul</b>, August 2025</span><span class="top">HKO went up to No.&nbsp;1</span></div>
@@ -182,14 +184,14 @@ If it is outside, the side nearer to what HKO did is closer.</p>
 <div class="qh"><span>Question</span><span>MET WARN said</span><span>This site said</span><span>HKO raised it?</span><span>Who was closer</span></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;3?<span class="sm">asked 2 Oct, 21:29 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">high</span> <span class="rg">80–89%</span><span class="sm">高</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">92%</span><span class="sm">AI forecast 90% · forecast 25 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">92%</span><span class="sm">forecast 25 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v us"><span class="lab">Who was closer</span>this site closer<span class="sm">92% is above MET WARN's 80–89%</span></div></div></div>
 <div class="st"><div class="sh"><span><b>Fengshen</b>, October 2025</span><span class="top">HKO went up to No.&nbsp;3</span></div>
 <div class="qh"><span>Question</span><span>MET WARN said</span><span>This site said</span><span>HKO raised it?</span><span>Who was closer</span></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;3?<span class="sm">asked 19 Oct, 11:44 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">high</span> <span class="rg">80–89%</span><span class="sm">高</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">82%</span><span class="sm">AI forecast 73% · forecast 16 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">82%</span><span class="sm">forecast 16 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v same"><span class="lab">Who was closer</span>same call<span class="sm">82% is inside MET WARN's 80–89%</span></div></div></div>
 <div class="st"><div class="sh"><span><b>Fung-Wong</b>, November 2025</span><span class="top">HKO went up to No.&nbsp;1</span></div>
@@ -215,7 +217,7 @@ If it is outside, the side nearer to what HKO did is closer.</p>
 <div class="qh"><span>Question</span><span>MET WARN said</span><span>This site said</span><span>HKO raised it?</span><span>Who was closer</span></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;3?<span class="sm">asked 24 Jul, 13:00 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">medium-high</span> <span class="rg">60–79%</span><span class="sm">中等至高 = 中高</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">92%</span><span class="sm">AI forecast 98% · forecast 17 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">92%</span><span class="sm">forecast 17 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v us"><span class="lab">Who was closer</span>this site closer<span class="sm">92% is above MET WARN's 60–79%</span></div></div></div></div>
 <div class="mwp" data-v="all" hidden><div class="score"><div class="t-us"><span class="n">6</span>this site closer</div><div class="t-mw"><span class="n">5</span>MET WARN closer</div><div class="t-same"><span class="n">5</span>same call</div><div class="t-wait"><span class="n">8</span>waiting for this site</div></div>
@@ -244,12 +246,12 @@ If it is outside, the side nearer to what HKO did is closer.</p>
 <div class="qh"><span>Question</span><span>MET WARN said</span><span>This site said</span><span>HKO raised it?</span><span>Who was closer</span></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;3?<span class="sm">asked 16 Jul, 22:29 HK time · picture post</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">very high</span> <span class="rg">90–100%</span><span class="sm">極高</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">68%</span><span class="sm">AI forecast 53% · forecast 26 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">68%</span><span class="sm">forecast 26 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v mw"><span class="lab">Who was closer</span>MET WARN closer<span class="sm">68% is below MET WARN's 90–100%</span></div></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;8?<span class="sm">asked 18 Jul, 13:01 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">very high</span> <span class="rg">90–100%</span><span class="sm">極高</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">70%</span><span class="sm">AI forecast 80% · forecast 17 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">70%</span><span class="sm">forecast 17 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v mw"><span class="lab">Who was closer</span>MET WARN closer<span class="sm">70% is below MET WARN's 90–100%</span></div></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;9?<span class="sm">asked 20 Jul, 01:01 HK time</span></div>
@@ -259,7 +261,7 @@ If it is outside, the side nearer to what HKO did is closer.</p>
 <div class="c v na"><span class="lab">Who was closer</span>not compared<span class="sm">this site does not forecast No. 9</span></div></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;10?<span class="sm">asked 20 Jul, 07:34 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">medium</span> <span class="rg">40–59%</span><span class="sm">中等</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">18%</span><span class="sm">AI forecast 25% · forecast 36 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">18%</span><span class="sm">forecast 36 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v mw"><span class="lab">Who was closer</span>MET WARN closer<span class="sm">18% is below MET WARN's 40–59%</span></div></div></div>
 <div class="st"><div class="sh"><span><b>Podul</b>, August 2025</span><span class="top">HKO went up to No.&nbsp;1</span></div>
@@ -287,55 +289,55 @@ If it is outside, the side nearer to what HKO did is closer.</p>
 <div class="qh"><span>Question</span><span>MET WARN said</span><span>This site said</span><span>HKO raised it?</span><span>Who was closer</span></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;8?<span class="sm">asked 6 Sep, 23:44 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">medium</span> <span class="rg">40–59%</span><span class="sm">中等</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">58%</span><span class="sm">AI forecast 35% · forecast 28 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">58%</span><span class="sm">forecast 28 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v same"><span class="lab">Who was closer</span>same call<span class="sm">58% is inside MET WARN's 40–59%</span></div></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;8?<span class="sm">asked 7 Sep, 11:45 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">medium-high</span> <span class="rg">60–79%</span><span class="sm">中等至高 = 中高</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">58%</span><span class="sm">AI forecast 35% · forecast 40 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">58%</span><span class="sm">forecast 40 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v mw"><span class="lab">Who was closer</span>MET WARN closer<span class="sm">58% is below MET WARN's 60–79%</span></div></div></div>
 <div class="st"><div class="sh"><span><b>Mitag</b>, September 2025</span><span class="top">HKO went up to No.&nbsp;3</span></div>
 <div class="qh"><span>Question</span><span>MET WARN said</span><span>This site said</span><span>HKO raised it?</span><span>Who was closer</span></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;8?<span class="sm">asked 18 Sep, 23:39 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">medium</span> <span class="rg">40–59%</span><span class="sm">中等</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">46%</span><span class="sm">AI forecast 8% · forecast 28 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">46%</span><span class="sm">forecast 28 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">No</span></div>
 <div class="c v same"><span class="lab">Who was closer</span>same call<span class="sm">46% is inside MET WARN's 40–59%</span></div></div></div>
 <div class="st"><div class="sh"><span><b>Ragasa</b>, September 2025</span><span class="top">HKO went up to No.&nbsp;10</span></div>
 <div class="qh"><span>Question</span><span>MET WARN said</span><span>This site said</span><span>HKO raised it?</span><span>Who was closer</span></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;8?<span class="sm">asked 20 Sep, 12:31 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">very high</span> <span class="rg">90–100%</span><span class="sm">極高</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">90%</span><span class="sm">AI forecast 88% · forecast 17 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">90%</span><span class="sm">forecast 17 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v same"><span class="lab">Who was closer</span>same call<span class="sm">90% is inside MET WARN's 90–100%</span></div></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;10?<span class="sm">asked 22 Sep, 23:45 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">high</span> <span class="rg">80–89%</span><span class="sm">高</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">74%</span><span class="sm">AI forecast 35% · forecast 28 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">74%</span><span class="sm">forecast 28 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v mw"><span class="lab">Who was closer</span>MET WARN closer<span class="sm">74% is below MET WARN's 80–89%</span></div></div></div>
 <div class="st"><div class="sh"><span><b>Matmo</b>, October 2025</span><span class="top">HKO went up to No.&nbsp;3</span></div>
 <div class="qh"><span>Question</span><span>MET WARN said</span><span>This site said</span><span>HKO raised it?</span><span>Who was closer</span></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;3?<span class="sm">asked 2 Oct, 21:29 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">high</span> <span class="rg">80–89%</span><span class="sm">高</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">92%</span><span class="sm">AI forecast 90% · forecast 25 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">92%</span><span class="sm">forecast 25 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v us"><span class="lab">Who was closer</span>this site closer<span class="sm">92% is above MET WARN's 80–89%</span></div></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;8?<span class="sm">asked 4 Oct, 14:00 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">medium-low</span> <span class="rg">25–39%</span><span class="sm">低至中等 = 中低</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">18%</span><span class="sm">AI forecast 39% · forecast 18 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">18%</span><span class="sm">forecast 18 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">No</span></div>
 <div class="c v us"><span class="lab">Who was closer</span>this site closer<span class="sm">18% is below MET WARN's 25–39%</span></div></div></div>
 <div class="st"><div class="sh"><span><b>Fengshen</b>, October 2025</span><span class="top">HKO went up to No.&nbsp;3</span></div>
 <div class="qh"><span>Question</span><span>MET WARN said</span><span>This site said</span><span>HKO raised it?</span><span>Who was closer</span></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;3?<span class="sm">asked 19 Oct, 11:44 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">high</span> <span class="rg">80–89%</span><span class="sm">高</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">82%</span><span class="sm">AI forecast 73% · forecast 16 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">82%</span><span class="sm">forecast 16 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v same"><span class="lab">Who was closer</span>same call<span class="sm">82% is inside MET WARN's 80–89%</span></div></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;8?<span class="sm">asked 20 Oct, 11:45 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">low</span> <span class="rg">0–24%</span><span class="sm">低</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">0%</span><span class="sm">AI forecast 0% · forecast 16 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">0%</span><span class="sm">forecast 16 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">No</span></div>
 <div class="c v same"><span class="lab">Who was closer</span>same call<span class="sm">0% is inside MET WARN's 0–24%</span></div></div></div>
 <div class="st"><div class="sh"><span><b>Fung-Wong</b>, November 2025</span><span class="top">HKO went up to No.&nbsp;1</span></div>
@@ -361,50 +363,49 @@ If it is outside, the side nearer to what HKO did is closer.</p>
 <div class="qh"><span>Question</span><span>MET WARN said</span><span>This site said</span><span>HKO raised it?</span><span>Who was closer</span></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;3?<span class="sm">asked 24 Jul, 13:00 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">medium-high</span> <span class="rg">60–79%</span><span class="sm">中等至高 = 中高</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">92%</span><span class="sm">AI forecast 98% · forecast 17 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">92%</span><span class="sm">forecast 17 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v us"><span class="lab">Who was closer</span>this site closer<span class="sm">92% is above MET WARN's 60–79%</span></div></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;8?<span class="sm">asked 25 Jul, 00:15 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">medium</span> <span class="rg">40–59%</span><span class="sm">中等</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">66%</span><span class="sm">AI forecast 71% · forecast 28 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">66%</span><span class="sm">forecast 28 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v us"><span class="lab">Who was closer</span>this site closer<span class="sm">66% is above MET WARN's 40–59%</span></div></div>
 <div class="q"><div class="c ask"><span class="lab">Question</span>Will HKO raise No.&nbsp;8?<span class="sm">asked 25 Jul, 13:45 HK time</span></div>
 <div class="c"><span class="lab">MET WARN</span><span class="big">high</span> <span class="rg">80–89%</span><span class="sm">高</span></div>
-<div class="c"><span class="lab">This site</span><span class="big">94%</span><span class="sm">AI forecast 88% · forecast 18 h old</span></div>
+<div class="c"><span class="lab">This site</span><span class="big">94%</span><span class="sm">forecast 18 h old</span></div>
 <div class="c"><span class="lab">HKO raised it?</span><span class="big">Yes</span></div>
 <div class="c v us"><span class="lab">Who was closer</span>this site closer<span class="sm">94% is above MET WARN's 80–89%</span></div></div></div></div>
 <p class="cap">This site's chance is the share of its forecast versions (about 50) that reach the signal for that storm, from ECMWF's
-physics forecast; the AI forecast's number is in small print. Past storms are re-run once a day and appear about 13 hours after the
+physics forecast. Past storms are re-run once a day and appear about 13 hours after the
 start, so this site's forecast was often a day older than the post. MET WARN posts some forecasts as pictures only; those are marked.
 Sources: MET WARN's posts on its public channel (<a href="https://t.me/s/metwarn">t.me/s/metwarn</a>, read October 2026) and HKO's
 signal records.</p>
 <script>(()=>{const b=[...document.querySelectorAll("#mwsig button")],p=[...document.querySelectorAll(".mwp")];
 const show=v=>{b.forEach(x=>x.classList.toggle("on",x.dataset.v===v));p.forEach(x=>x.hidden=x.dataset.v!==v)};
-b.forEach(x=>x.onclick=()=>show(x.dataset.v));show("10")})()</script>
+b.forEach(x=>x.onclick=()=>show(x.dataset.v));show("8")})()</script>
+
 
 
 <h2 id="strength">Storm strength</h2>
-<a href="inputs/scatter_intensity.png"><img src="inputs/scatter_intensity.png" alt="Strength each page used against HKO's recorded strength, per source" loading="lazy"></a>
-<p class="cap">On the dashed line = same as HKO; above = too strong; below = too weak.</p>
+<p class="vlede">How strong the storm was in each forecast, against what HKO recorded. Each dot = one storm at one time in one forecast
+(the middle of all its versions).</p>
+<div class="vc" data-kind="strength"></div>
 
 <h2 id="reach">Gale-wind reach toward Hong Kong</h2>
-<a href="inputs/scatter_rings.png"><img src="inputs/scatter_rings.png" alt="Gale-wind reach each page drew against HKO's, per source" loading="lazy"></a>
-<p class="cap">How far gale winds (63 km/h) reach on the side facing Hong Kong.</p>
+<p class="vlede">How far gale winds (63 km/h) reach on the side facing Hong Kong, against HKO's record.</p>
+<div class="vc" data-kind="reach"></div>
 
 <h2 id="stations">Gale stations</h2>
-<a href="verify/verify_gale_stations.png"><img src="verify/verify_gale_stations.png" alt="Number of HKO reference stations with gale: page against HKO, per source" loading="lazy"></a>
-<p class="cap">How many of HKO's 8 reference stations had gale winds.</p>
+<p class="vlede">How many of HKO's 8 reference stations had gale winds, against what HKO recorded.</p>
+<div class="vc" data-kind="gale"></div>
 
 <h2 id="wind">Wind index</h2>
 <a href="verify/wind_index_series.png"><img src="verify/wind_index_series.png" alt="Hong Kong wind index through six storms: observed against estimated" loading="lazy"></a>
 <p class="cap">The wind index checked on HKO's own records.</p>
-<a href="verify/wind_index_peaks.png"><img src="verify/wind_index_peaks.png" alt="Storm peak of the wind index: estimated against observed and against HKCOC's published peaks" loading="lazy"></a>
-<p class="cap">Storm peaks: since 2021 against HKO's station winds; 2004–2021 against the peaks HKCOC published.</p>
+<h3>Storm peaks</h3>
+<div class="vc" data-kind="wipeak"></div>
+<p class="cap">Since Aug 2021 against HKO's station winds; 2004–2021 against the peaks HKCOC published.</p>
+<script src="inputs/check_points.js"></script><script src="verify/verify_points.js"></script><script src="verify/charts.js"></script>
 
-<h2 id="methods">Methods compared</h2>
-<a href="verify/verify_methods.png"><img src="verify/verify_methods.png" alt="No. 8 score of the methods we compared" loading="lazy"></a>
-<p class="cap">Darker bar = the one in use. Lower is better.</p>
-<a href="inputs/scatter_methods_intensity.png"><img src="inputs/scatter_methods_intensity.png" alt="Three ways to estimate strength on old ECMWF forecasts" loading="lazy"></a>
-<a href="inputs/scatter_methods_rings.png"><img src="inputs/scatter_methods_rings.png" alt="Typical size against the storm's own size on old ECMWF forecasts" loading="lazy"></a>
 </div></body></html>

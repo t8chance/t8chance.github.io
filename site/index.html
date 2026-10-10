@@ -474,7 +474,7 @@ function load(){
         :`<p><b>Members.</b> ECMWF runs each forecast ${d.members||50} times, each from slightly different starting conditions. Each run is a member. A count like "20 of ${d.members||50} members" means 20 of those runs give that signal at some point, so it works like a chance.</p>`
          +`<p><b>The times.</b> The members that give the signal do not agree to the minute. The start and end shown are the middle ones: half of those members start earlier, half later, and the same for the end. The hours are the middle length. The timeline below shows how far they spread (earliest 10% to latest 90%).</p>`)
    +`<p><b>Gale stations.</b> HKO decides No. 3 and No. 8 by the winds at 8 reference stations near sea level: Cheung Chau, Chek Lap Kok, Kai Tak, Lau Fau Shan, Sai Kung, Sha Tin, Ta Kwu Ling and Tsing Yi. It raises No. 8 when half or more of them (4 of 8) get, or are expected to get, gale winds of 63 to 117 km/h. A count like "6 of 8 (4–6)" means the middle member expects 6 of the 8 stations to get gale winds, and most members expect 4 to 6.</p>`
-   +`<p><b>Storm and hurricane force</b> count the same 8 stations, at 88 and 118 km/h (10-minute average wind). Each station's own chance and expected wind are in <b>Stations — rough wind guide</b> just above, and in the Station guide tab under the map.</p></details></div>`;
+   +`<p><b>Storm and hurricane force</b> count the same 8 stations, at 88 and 118 km/h (10-minute average wind). Each station's own chance and expected wind are in <b>Stations</b> just above, for the deterministic run, and in the Station guide tab under the map, which shows the same run until you click another track.</p></details></div>`;
   const hko=hcases.length?`<div class="ans"><div class="k">HKO actually issued</div><div class="badge" style="color:${colL[clsL(hkoTop)]}">No. ${hkoTop}</div>`
    +hcases.map(c=>{const t=HKOEV[c].top, y=HKOEV[c]["L"+clsL(t)];return `<div class="v">${c}: No. ${t}${y?` · ${hkS(y[0])} → ${hkS(y[1])} HKT · <b>${Math.round(y[2])}&nbsp;h</b>`:""}</div>${HKOGALE[c]!=null?`<div class="v gs"><span class="gl">Gale stations</span> ${gdots(HKOGALE[c],HKOGALE[c])} <b class="gn">${HKOGALE[c]}</b> of 8</div>`:""}${HKOSH[c]?[["Storm force",0],["Hurricane force",1]].map(([l,i])=>`<div class="v gs"><span class="gl" title="from HKO's reported maximum hourly mean winds (80 / 107 km/h)">${l}</span> ${gdots(HKOSH[c][i],HKOSH[c][i])} <b class="gn">${HKOSH[c][i]}</b> of 8</div>`).join(""):""}`}).join("")+`</div>`:"";
   const card=([sg,lab,L,col])=>{const x_=E&&E[sg], a=d[sg]&&d[sg].any, n=nOf(sg);
@@ -582,21 +582,14 @@ const ivt=v=>v<=50?"<53":v===999?"118+":v===75.5?"73–78":v===103?"98–108":Ma
 const beaufort=v=>{const b=[2,7,13,20,31,41,52,63,76,88,104,118];v=Math.round(v);let i=0;while(i<b.length&&v>=b[i])i++;return i};
 const windLabel=v=>typeof v==="number"?`${Math.round(v)} (F${beaufort(v)})`:v;
 const SGNOTE="A rough guide read back from the model's chances, not a wind forecast: it is sharpest within 10 km/h of 63 and 88 km/h and gives only a range between them; as storm force becomes likely (from a 50% chance, fully at 100%) the value is lifted gradually toward each station's share of the open-sea wind given by the storm's rings, so it can go above 118 — for close, intense storms it gives the wind the track implies, and the real one can come out lower (Saola 2023: about 177 given, 126 recorded). Median over members (10–90% in brackets); 10-minute mean. HKO: the highest 10-minute mean recorded.";
-function stationGuide(){const M=GA.members, by={};
- TR.tracks.forEach(t=>{if((t.m!==52||M<=1)&&t.gst&&(!by[t.m]||(t.gale||0)>(by[t.m].gale||0)))by[t.m]=t});
- const mem=Object.values(by); if(!mem.length)return "";
+function stationGuide(){if(!TR)return "";
+ const k=DEFM(), ts=TR.tracks.filter(x=>x.m===k), t=ts.filter(x=>x.gst).sort((a,b)=>(b.gale||0)-(a.gale||0))[0]||(TR.tracks.some(x=>x.gst)?ts[0]:null); if(!t)return "";
  const act=casesOf(cyc).map(c=>HKOWIND[c]).find(x=>x);
- const q=(a,p)=>a[Math.min(a.length-1,Math.round(p*(a.length-1)))];
- const rows=SGN.map(([k,nm],i)=>{const pg=[],v=[]; const wr=TR.wx_range||[1,1];
-  mem.forEach(t=>{const g=t.gst[i],s=t.sst?t.sst[i]:0,h=t.hst?t.hst[i]:0; pg.push(g); let x=ivs(g,s,h);
-   const w=t.wx?ivw(s):0;
-   if(w>0){const b=x===999?118:x, e=t.wx[i], up=q=>b+w*Math.max(q-b,0); v.push(up(e*wr[0]),up(e),up(e*wr[1]))}
-   else v.push(x,x,x)});
-  while(v.length<3*M){v.push(50)} while(pg.length<M)pg.push(0); v.sort((a,b)=>a-b); pg.sort((a,b)=>a-b);
-  const md=q(v,.5), lo=q(v,.1), hi=q(v,.9), rg=M>1&&lo!==hi?` <span class="rng">(${ivt(lo)}–${ivt(hi)})</span>`:"";
-  return `<tr><td>${nm}</td><td>${Math.round(100*q(pg,.5))}%</td><td>${typeof ivt(md)==="number"?"≈ "+windLabel(ivt(md)):ivt(md)}${rg}</td>${act?`<td>${act[i]!=null?windLabel(act[i]):"–"}</td>`:""}</tr>`}).join("");
- return `<details class="nums"><summary>Stations — rough wind guide</summary><table class="sg"><tr><th>Station</th><th>Gale chance</th><th>Wind guide, km/h</th>${act?"<th>HKO</th>":""}</tr>${rows}</table>`
-  +`<p class="note">${SGNOTE.replace(" HKO: the highest 10-minute mean recorded.",act?" HKO: the highest 10-minute mean recorded.":"")}</p></details>`}
+ const rows=SGN.map(([key,nm],i)=>{const {g,guide,range}=stationWind(t,i);
+  return `<tr><td>${nm}</td><td>${Math.round(100*g)}%</td><td>${guide}${range}</td>${act?`<td>${act[i]!=null?windLabel(act[i]):"–"}</td>`:""}</tr>`}).join("");
+ const who=memLab(t.m,0).replace(/^the /,"")+(t.m===TR.top&&k!==52&&k!==51?" (most threatening)":"");
+ return `<details class="nums"><summary>Stations — ${who}</summary><table class="sg"><tr><th>Station</th><th>Gale chance</th><th>Wind guide, km/h</th>${act?"<th>HKO</th>":""}</tr>${rows}</table>`
+  +`<p class="note">${SGNOTE.replace("Median over members (10–90% in brackets); 10-minute mean.","The same forecast as the Station guide tab under the map and the station dots on the map; in brackets, where the exposure wind is used, its usual range (0.70–1.12 times); 10-minute mean.").replace(" HKO: the highest 10-minute mean recorded.",act?" HKO: the highest 10-minute mean recorded.":"")}</p></details>`}
 const SGC=[[22.2011,114.0267],[22.3094,113.9219],[22.3097,114.2133],[22.4689,113.9836],[22.3756,114.2744],[22.4025,114.21],[22.5286,114.1567],[22.3467,114.0864]];
 const WCAT=[["#9e9e9e","below 53 km/h"],["#2ca25f","strong 53–62"],["#2171b5","gale 63–87"],["#f28e2b","storm 88–117"],["#d73027","hurricane 118+"]];
 const windCat=(fv,fb)=>{if(fv!=null)return fv>=118?4:fv>=88?3:fv>=63?2:fv>=53?1:0; if(!fb)return 0; const lo=fb[0]; return lo>=118?4:lo>=88?3:lo>=63?2:0};
@@ -632,7 +625,7 @@ function memberStationGuide(t){
   rows.push(`<tr><td>${SGN[i][1]}</td><td>${pct(g)}</td><td>${pct(s)}</td><td>${pct(h)}</td><td>${guide}${range}</td><td>${hko&&hko[i]!=null?windLabel(hko[i]):""}</td>${hko?`<td>${diffCell(fv,fb,hko[i])}</td>`:""}</tr>`);
  }
  $("#chead").textContent=`${memLab(t.m,1)}${t.m===TR.top?" (most threatening)":""} — station guide`;
- $("#stationchart").innerHTML=`<div class="sgcounts">${count("Gale stations",t.gale,t.gale_lo,t.gale_hi)}${count("Storm force",t.storm_n,t.storm_lo,t.storm_hi)}${count("Hurricane force",t.hur_n,t.hur_lo,t.hur_hi)}</div><table class="sgm"><thead><tr><th>Station</th><th>Gale</th><th>Storm</th><th>Hurricane</th><th>Expected wind, km/h</th><th>HKO, km/h</th>${hko?"<th>Difference, km/h</th>":""}</tr></thead><tbody>${rows.join("")}</tbody></table><p class="note">${SGNOTE.replace("Median over members (10–90% in brackets); 10-minute mean.","This member; in brackets, where the exposure wind is used, its usual range (0.70–1.12 times); 10-minute mean.")}</p>`;
+ $("#stationchart").innerHTML=`<div class="sgcounts">${count("Gale stations",t.gale,t.gale_lo,t.gale_hi)}${count("Storm force",t.storm_n,t.storm_lo,t.storm_hi)}${count("Hurricane force",t.hur_n,t.hur_lo,t.hur_hi)}</div><table class="sgm"><thead><tr><th>Station</th><th>Gale</th><th>Storm</th><th>Hurricane</th><th>Expected wind, km/h</th><th>HKO, km/h</th>${hko?"<th>Difference, km/h</th>":""}</tr></thead><tbody>${rows.join("")}</tbody></table><p class="note">${SGNOTE.replace("Median over members (10–90% in brackets); 10-minute mean.","This forecast, the same as Stations in the answer card; in brackets, where the exposure wind is used, its usual range (0.70–1.12 times); 10-minute mean.")}</p>`;
  $("#cnote").textContent="Gale, storm and hurricane are the model's station chances; the wind guide uses the gradual storm-force ramp and the station's exposure wind when available.";
 }
 function fillGale(){const f=document.getElementById("galeF"); if(!f)return;
