@@ -70,13 +70,14 @@ a{color:var(--link)}
 const FCN={ifsens:"ECMWF physics",aifsens:"ECMWF AI",tigge:"Old ECMWF",pangu:"Pangu-Weather"};
 const DAY=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 function show(L){
- if(!L||!L.cycle)return; const c=L.cycle, t=Date.UTC(+c.slice(0,4),+c.slice(4,6)-1,+c.slice(6,8),+c.slice(8,10)), d=new Date(t);
- const f=(L.ens||[]).map(e=>FCN[e]||e).join(" and ");
+ if(!L||!L.cycle)return; const ifs=L.by&&L.by.ifsens;
+ const c=ifs||L.cycle, t=Date.UTC(+c.slice(0,4),+c.slice(4,6)-1,+c.slice(6,8),+c.slice(8,10)), d=new Date(t);
+ const f=ifs?FCN.ifsens:(L.ens||[]).map(e=>FCN[e]||e).join(" and "), tn=Date.UTC(+L.cycle.slice(0,4),+L.cycle.slice(4,6)-1,+L.cycle.slice(6,8),+L.cycle.slice(8,10));
  document.getElementById("todayInfo").textContent=`Newest run: ${DAY[d.getUTCDay()]} ${d.getUTCDate()} ${MON[d.getUTCMonth()]}, ${c.slice(8,10)}Z${f?` (${f})`:""}.`;
- const h=(Date.now()-t)/36e5;
+ const h=(Date.now()-tn)/36e5;
  if(h>30){const s=document.getElementById("stale"); s.textContent=`Not updating right now: this run is ${h>=48?Math.floor(h/24)+" days":Math.round(h)+" hours"} old.`; s.hidden=false}
 }
-function fromAll(){const H=window.HK||{}, cs=Object.keys(H).sort(); if(!cs.length)return; const c=cs[cs.length-1]; show({cycle:c,ens:Object.keys(H[c])})}
+function fromAll(){const H=window.HK||{}, cs=Object.keys(H).sort(); if(!cs.length)return; const c=cs[cs.length-1], fi=cs.filter(x=>H[x].ifsens).pop(); show({cycle:c,ens:Object.keys(H[c]),by:fi?{ifsens:fi}:{}})}
 const s=document.createElement("script"); s.src="../data/latest.js";
 s.onload=()=>window.HK_LATEST?show(window.HK_LATEST):null;
 s.onerror=()=>{const a=document.createElement("script"); a.src="../data/all.js"; a.onload=fromAll; document.body.appendChild(a)};

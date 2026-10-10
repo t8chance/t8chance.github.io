@@ -22,7 +22,7 @@ const ST=document.createElement("style"); ST.textContent=`
 .vc svg{width:100%;max-width:600px;height:auto;display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;margin:6px 0;touch-action:pan-y}
 .vc svg text{fill:var(--mut);font-size:11px;font-variant-numeric:tabular-nums} .vc svg .axl{font-size:12px} .vc svg .catl{font-size:10px}
 .vc svg .gr{stroke:var(--vgrid)} .vc svg .cat{stroke:var(--vcat)} .vc svg .ax{fill:none;stroke:var(--line)} .vc svg .one{stroke:var(--ink);stroke-dasharray:5 4;opacity:.7}
-.vc svg .d{fill:var(--vdot);fill-opacity:.35} .vc svg .b{fill:var(--vdot);fill-opacity:.3;stroke:var(--vdot);stroke-width:1.2}
+.vc svg .d{fill:var(--vdot);fill-opacity:.35} .vc svg .dense .d{fill-opacity:.1} .vc svg .b{fill:var(--vdot);fill-opacity:.3;stroke:var(--vdot);stroke-width:1.2}
 .vc svg .bn{fill:var(--ink);font-size:11px;font-weight:600} .vc svg .lab{fill:var(--ink);font-size:11px;paint-order:stroke;stroke:var(--card);stroke-width:3px}
 .vc svg .ring{fill:none;stroke:var(--ink);stroke-width:1.6}
 .vtip{position:fixed;z-index:10;max-width:260px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font-size:12.5px;line-height:1.4;box-shadow:0 4px 16px rgba(0,0,0,.18);pointer-events:none}`;
@@ -40,7 +40,13 @@ const bias=(b,u,hi,lo)=>Math.round(b)===0?[`0 ${u}`,"about right on average"]:[`
 function xy(m,lim,u,what,keys,hi,lo){   // strength / reach points of check_points.js
  return {pts:m.pts.map(p=>({x:p[0],y:p[1],t:nm(keys[p[2]]),s:`forecast from ${run(p[3])}, for ${p[4]}Z`,v:`HKO ${Math.round(p[0])} ${u} · this site ${Math.round(p[1])} ${u}`})),
   tiles:[[m.stats[2],"storms"],bias(m.stats[0],u,hi,lo),[`${Math.round(m.stats[1])} ${u}`,"typical miss"]]}}
+const CM=window.CMPTS||{};   // Inputs by year, section 4: the methods compared on the old ECMWF forecasts (inputs/compare_points.js)
+function cmp(v,k,lim,step,u,cats,xl,yl,hi,lo){const e=(CM[v]||[])[+k]; if(!e)return null; const nc=key=>(CM.names||{})[key]||nm(key);
+ return {sub:`${e.title} · ${e.sub}`,lo:0,lim,step,cats,xl,yl,pts:e.pts.map(p=>({x:p[0],y:p[1],t:nc(e.keys[p[2]]),s:"",v:`HKO ${Math.round(p[0])} ${u} · estimate ${Math.round(p[1])} ${u}`})),
+  tiles:[[e.stats[2],"storms"],bias(e.stats[0],u,hi,lo),[`${Math.round(e.stats[1])} ${u}`,"typical miss"]],read:`On the dashed line = same as HKO; above = too ${hi}, below = too ${lo}.`}}
 const KINDS={
+ cmp_strength:{opts:[["0","From the pressure"],["1","S2"],["2","S3"]],def:"1",get:k=>cmp("strength",k,150,20,"kt",CLS,"HKO's recorded strength (knots)","estimated strength (knots)","strong","weak")},
+ cmp_reach:{opts:[["0","R2"],["1","R1"]],def:"1",get:k=>cmp("reach",k,500,100,"km",null,"HKO's gale-wind reach toward Hong Kong (km)","reach drawn (km)","far","short")},
  strength:{opts:FC,def:"ifs2025",get:k=>{const m=C.methods[k]; if(!m)return null; return Object.assign(xy(m.strength,150,"kt","strength",m.strength.keys,"strong","weak"),
   {sub:`${m.title} · ${m.sub.strength}`,lo:0,lim:150,step:20,cats:CLS,xl:"HKO's recorded strength (knots)",yl:"strength this site used (knots)",
    read:"On the dashed line = same as HKO; above = too strong, below = too weak."})}},
@@ -82,7 +88,7 @@ function draw(box,k){
  svg.appendChild(el("line",{x1:X(lo),y1:Y(lo),x2:X(lim),y2:Y(lim),class:"one"}));
  const xl=el("text",{x:L+pw/2,y:H-8,"text-anchor":"middle",class:"axl"}); xl.textContent=D.xl; svg.appendChild(xl);
  const yl=el("text",{x:15,y:T+ph/2,"text-anchor":"middle",class:"axl",transform:`rotate(-90 15 ${T+ph/2})`}); yl.textContent=D.yl; svg.appendChild(yl);
- const g=el("g"), marks=D.pts.map(p=>{const r=p.n?Math.min(4+3.4*Math.sqrt(p.n),26):3,cx=X(p.x),cy=Y(p.y); g.appendChild(el("circle",{cx,cy,r,class:p.n?"b":"d"}));
+ const g=el("g",{class:D.pts.length>3000?"dense":""}), marks=D.pts.map(p=>{const r=p.n?Math.min(4+3.4*Math.sqrt(p.n),26):3,cx=X(p.x),cy=Y(p.y); g.appendChild(el("circle",{cx,cy,r,class:p.n?"b":"d"}));
   if(p.n&&r>=10){const t=el("text",{x:cx,y:cy+4,"text-anchor":"middle",class:"bn"}); t.textContent=p.n; g.appendChild(t)} return {cx,cy,r,p}});
  svg.appendChild(g);
  marks.filter(m=>m.p.lab).forEach(m=>{const left=m.cx+7+6.4*m.p.lab.length>W-R, t=el("text",{x:left?m.cx-7:m.cx+7,y:m.cy-6,class:"lab","text-anchor":left?"end":"start"});
@@ -96,7 +102,7 @@ function draw(box,k){
  svg.onpointermove=pick; svg.onpointerdown=pick; svg.onpointerleave=e=>{if(e.pointerType==="mouse")hideTip()};
 }
 document.querySelectorAll(".vc").forEach(box=>{const K=KINDS[box.dataset.kind]; if(!K)return;
- box.innerHTML=`<div class="pick"><span class="lbl">${box.dataset.kind==="wipeak"?"Period":"Forecast"}</span><span class="seg">${K.opts.map(([v,l])=>`<button type="button" data-v="${v}">${l}</button>`).join("")}</span></div>`
+ box.innerHTML=`<div class="pick"><span class="lbl">${box.dataset.kind==="wipeak"?"Period":box.dataset.kind.startsWith("cmp_")?"Method":"Forecast"}</span><span class="seg">${K.opts.map(([v,l])=>`<button type="button" data-v="${v}">${l}</button>`).join("")}</span></div>`
   +`<p class="vsub"></p><div class="vbody"><svg viewBox="0 0 600 560" role="img" aria-label="this site against HKO's record"></svg><div class="vside"><div class="vtiles"></div><p class="vread"></p></div></div>`;
  box.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>draw(box,b.dataset.v)); draw(box,K.def)});
 let rt; addEventListener("resize",()=>{clearTimeout(rt); rt=setTimeout(()=>document.querySelectorAll(".vc").forEach(b=>b.dataset.v&&draw(b,b.dataset.v)),150)});

@@ -91,6 +91,9 @@ details.nums>summary{cursor:pointer;color:var(--link);font-weight:600;font-size:
 .mapbar .note{margin:0}
  .swipe{display:none}
 .scrollx{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:16px}
+.mapwrap{position:relative} #selbar{position:absolute;top:12px;left:12px;z-index:5}
+#showAll{font:600 16px/1.2 var(--body);padding:11px 18px;border:0;border-radius:12px;background:#13202b;color:#fff;box-shadow:0 2px 12px rgba(0,0,0,.28);cursor:pointer}
+#showAll:hover{filter:brightness(1.18)} #showAll:focus-visible{outline:3px solid var(--link);outline-offset:2px}
 svg{width:100%;height:auto;display:block;background:var(--card);border:1px solid var(--line);border-radius:16px}
 #map{box-shadow:var(--shadow)}
 .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}
@@ -141,7 +144,8 @@ footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin
    <button id="detBtn" style="display:none" title="the deterministic run on its own, like a member: track, rings, time bar, charts">deterministic run</button>
    <button id="allPlay" title="every member's storm together through time, 12 forecast hours per second">▶ all members</button>
    <label class="note"><input type="checkbox" id="only150"> within 150 km only</label></div>
- <div class="scrollx"><svg id="map" viewBox="0 0 1000 600"></svg></div>
+ <div class="mapwrap"><div class="scrollx"><svg id="map" viewBox="0 0 1000 600"></svg></div>
+  <div id="selbar" style="display:none"><button id="showAll" title="back to every member of this run">← Back to all members</button></div></div>   
  <p class="note swipe">Swipe the map sideways to see all of it, including its colour key.</p>
  <div class="bar" id="player" style="display:none;margin:8px 0 0">
   <button id="play" title="play this member's storm through time">▶ play</button>
@@ -149,7 +153,6 @@ footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin
   <span id="ptime" class="note" style="margin:0;min-width:250px;font-variant-numeric:tabular-nums"></span>
   <select id="speed" title="animation speed"><option value="6">6 h per second</option><option value="12" selected>12 h per second</option><option value="24">24 h per second</option></select>
  </div>
- <div id="selbar" style="display:none;margin:8px 0 0"><button id="showAll" title="back to every member of this run">← back to all members</button></div>   
  <p class="note" id="maphint">Colour = highest signal (chance ≥ 0.30; No. 10 ≥ 0.40): <b style="color:var(--no3)">No. 3</b> <b style="color:var(--no8)">No. 8</b> <b style="color:var(--no9)">near No. 10</b> <b style="color:var(--no10)">No. 10</b>, grey none · dashed = another storm of the same member · click a track</p>
  </div>
 
@@ -202,7 +205,7 @@ const ENSN={ifsens:"IFS (physics)",aifsens:"AIFS (AI)",tigge:"ECMWF ENS of the t
 const FCN={ifsens:"ECMWF physics (IFS)",aifsens:"ECMWF AI (AIFS)",tigge:"Old ECMWF (physics)",pangu:"Pangu-Weather (AI)"}, ORDER=["ifsens","aifsens","tigge","pangu"];
 const modeOf=e=>Object.keys(MODES).find(k=>MODES[k].includes(e));
 const chooseEns=c=>{const av=HK[c]||{}; if(!av[ens]) ens=MODES[mode].find(e=>av[e])||ORDER.find(e=>av[e])||ens; mode=modeOf(ens)||mode};
-let mode="ai"; try{const m=localStorage.getItem("hkmode"); if(MODES[m]) mode=m}catch(e){}
+let mode="ec";
 const inMode=c=>MODES[mode].some(e=>(HK[c]||{})[e]);
 let NOSAME=null, pickedStorm=null;
 const tUc=c=>Date.UTC(+c.slice(0,4),+c.slice(4,6)-1,+c.slice(6,8),+c.slice(8,10));
@@ -391,7 +394,7 @@ function head(){
   const n26=y>="2026", cs=casesOf(cyc), nm=(pickedStorm&&cs.includes(pickedStorm))?pickedStorm:cs[0], sk=nm?nm.slice(0,nm.lastIndexOf(" ")).toUpperCase().replace(/ /g,"_")+"_"+nm.slice(nm.lastIndexOf(" ")+1):"";
   const u=v=>`check.html?m=${k}&v=${v}${sk?"&s="+encodeURIComponent(sk):""}${n26?"&y26=1":""}`;
   $("#checks").innerHTML=k?`Compared with HKO: <a href="${u("strength")}" title="this forecast's storm strength against HKO's record${nm?", "+nm+" in red":""}">storm strength</a> · <a href="${u("reach")}" title="this forecast's gale-wind reach toward Hong Kong against HKO's record${nm?", "+nm+" in red":""}">gale-wind reach</a>${n26?' <span title="2026 storms are not yet in HKO\'s published record: the 2025 check of the same method">(2025)</span>':""}`:""}
- $("#ensbtns").querySelectorAll("button").forEach(b=>b.onclick=()=>{ens=b.dataset.e; mode=modeOf(ens)||mode; try{localStorage.setItem("hkmode",mode)}catch(e){}; sel=null;selH=null;head();load()});
+ $("#ensbtns").querySelectorAll("button").forEach(b=>b.onclick=()=>{ens=b.dataset.e; mode=modeOf(ens)||mode; sel=null;selH=null;head();load()});
  $("#zoomBtn").onclick=e=>{view=view==="region"?"hk":"region";VB=VIEWS[view].slice();e.target.textContent=view==="region"?"zoom to Hong Kong":"zoom out";drawMap()};
  $("#showAll").onclick=()=>{sel=null;selH=null;drawMap();chart()};
  $("#only150").onchange=drawMap;
@@ -430,7 +433,7 @@ function load(){
      +(Object.keys(other).length?` <a href="#" id="toAifs">Show the AI forecast (AIFS) for this run</a>.`:"")
      +(last?` Latest IFS run: <a href="#" id="toLast">${fmtc(last)}</a>.`:"")
    : "No data for this run.";
-  const a=$("#toAifs"); if(a)a.onclick=e=>{e.preventDefault();NOSAME=null;mode="ai";try{localStorage.setItem("hkmode",mode)}catch(x){};ens="aifsens";sel=null;selH=null;head();load()};
+  const a=$("#toAifs"); if(a)a.onclick=e=>{e.preventDefault();NOSAME=null;mode="ai";ens="aifsens";sel=null;selH=null;head();load()};
   const b=$("#toLast"); if(b)b.onclick=e=>{e.preventDefault();cyc=last;sel=null;selH=null;head();load()};
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";$("#maphint").textContent="";return}
  if(d.quiet){$("#status").innerHTML=`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">No threat</div><div class="v">No member's storm comes within 800 km of Hong Kong; the closest is ${Math.round(d.min_dist_km)} km.</div></div>`;

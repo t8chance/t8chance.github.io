@@ -64,17 +64,17 @@ size is about 60 km too small on average.</p>
 <h2>4. Methods we compared</h2>
 <p>Old ECMWF forecasts (2008–2024) do not keep the weather maps our strength estimate reads, so the strength has to be estimated from ECMWF's
 storm list. Three ways, checked on all 163 storms that came near Hong Kong (more storms than this site's past cases):</p>
-<a href="inputs/scatter_methods_intensity.png"><img src="inputs/scatter_methods_intensity.png" alt="Three ways to estimate strength on old ECMWF forecasts against HKO" loading="lazy"></a>
-<p class="read">The wind worked out from the central pressure is close for weak storms but far too weak for typhoons (the right half of the
-first panel). S2 and S3 keep typhoons much closer to HKO.</p>
+<div class="vc" data-kind="cmp_strength"></div>
+<p class="read">The wind worked out from the central pressure is close for weak storms but far too weak for typhoons (the right half of its
+chart). S2 and S3 keep typhoons much closer to HKO.</p>
 <p class="read"><b>Why S2 for 2008–2023 and S3 for 2024?</b> Each is matched to its kind of forecast: the 2024 ensemble ran at 9 km,
 the old ones at about 50 km until 2010, 32 km until 2016 and 18 km until June 2023. On the old forecasts S3 makes typhoons about 6 kt
 too weak and, in a test fixed in advance on 28 old runs, did worse for No. 8 (score 0.256 against 0.192; lower is better), so each kind keeps its own.
 The choice follows the kind of forecast, not how any one storm turned out. Two caveats: it was made on these same past cases, so their numbers flatter
 S2 a little; and Saola and Koinu 2023, which came after ECMWF's switch to 9 km in June 2023, still use S2.</p>
-<a href="inputs/scatter_methods_rings.png"><img src="inputs/scatter_methods_rings.png" alt="R2 (typical reach) against R1 (the storm's own reach) on old ECMWF forecasts" loading="lazy"></a>
+<div class="vc" data-kind="cmp_reach"></div>
 <p class="read">For the gale-wind reach, R1 (the storm's own reach, radius measured on the forecast's winds) beats R2 (a typical reach for the storm's strength):
 about 3 km too large on average instead of 18 km too small, and a typical miss of 71 km instead of 82 km. On these 112 old forecasts it also
 caught three more No. 8 storms (one more false No. 10).</p>
-<script src="inputs/check_points.js"></script><script src="verify/charts.js"></script>
+<script src="inputs/check_points.js"></script><script src="inputs/compare_points.js"></script><script src="verify/charts.js"></script>
 </div></body></html>
