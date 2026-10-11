@@ -23,7 +23,7 @@ a{color:var(--link);text-underline-offset:2px}
 b,strong{font-weight:650}
 :focus-visible{outline:2px solid var(--link);outline-offset:2px}
 .wrap{max-width:1120px;margin:0 auto;padding:0 16px 56px}
-html.demo .wrap{padding:6px 2px 4px} html.demo-answer .tlcard,html.demo-timeline .hero{display:none} html.demo .toolbar,html.demo #status{margin:0} html.demo body{background:var(--bg)} html.demo .mapcard{margin:0} @media (pointer:coarse){html.demo input[type=range]{pointer-events:none}}
+html.demo .wrap{padding:6px 2px 4px} html.demo-answer .tlcard,html.demo-timeline .hero{display:none} html.demo .toolbar,html.demo #status{margin:0} html.demo body{background:var(--bg)} html.demo .mapcard{margin:0}
 
 /* masthead */
 .mast{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 28px;padding:24px 0 18px}
@@ -46,6 +46,7 @@ html.demo .wrap{padding:6px 2px 4px} html.demo-answer .tlcard,html.demo-timeline
 select,button{font:500 14.5px/1.2 var(--body);color:var(--ink);border:1px solid var(--line);border-radius:10px;background:var(--card);padding:8px 12px;cursor:pointer;max-width:100%}
 select{-webkit-appearance:none;appearance:none;background:var(--soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%237d8b97' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 11px center/10px 6px;border-color:transparent;padding-right:32px;font-weight:600}
 button:hover,select:hover{border-color:var(--mut)}
+button,select,label,input{touch-action:manipulation}   /* no double-tap zoom: quick taps on + / - each count (iOS) */
 button.on{background:var(--ink);border-color:var(--ink);color:var(--card)}
 .seg{display:inline-flex;flex-wrap:wrap;gap:2px;padding:3px;background:var(--soft);border-radius:12px}
 .seg button{border:0;background:transparent;border-radius:9px;padding:7px 13px;color:var(--mut)}
@@ -220,7 +221,7 @@ const CLSN=["below TD","TD","TS","STS","T","ST","SuperT"];
 const clsOf=v=>{let i=0;while(i<7&&v>=CLSE[i+1])i++;return Math.min(i,6)};
 const ramp=p=>{const c=[[205,209,212],[232,179,168],[214,96,77],[178,24,43],[103,0,31]],x=Math.max(0,Math.min(1,p))*(c.length-1),
  i=Math.floor(x),f=x-i,a=c[i],b=c[Math.min(i+1,c.length-1)];return `rgb(${a.map((v,k)=>Math.round(v+(b[k]-v)*f)).join(",")})`};
-const VIEWS={region:[103,143,6,33],hk:[109,121,17,27]};
+const VIEWS={region:[103,143,6,33],hk:[109,121,17,27]}, MINW=1.2;
 let VB=VIEWS.region.slice(), HOME=VIEWS.region.slice(), moved=false;
 const PUB=true;
 let colBy="signal"; 
@@ -671,26 +672,44 @@ function fillGale(){const f=document.getElementById("galeF"); if(!f)return;
  if(!box)return; if(was){box.innerHTML="";return}
  const t=stationTrack(); if(!t)return; tr.classList.add("sgon"); box.innerHTML=stationDist(+tr.dataset.i,t,box.clientWidth-26);
  try{box.scrollIntoView({block:"nearest",behavior:"smooth"})}catch(x){}})}
-(function(){const m=$("#map");let st=null,raf=0;
+(function(){const m=$("#map");let st=null,raf=0,PZ=null;
  const redraw=()=>{if(!raf)raf=requestAnimationFrame(()=>{raf=0;drawMap()})};
  const clamp=()=>{const R=VIEWS.region,w=VB[1]-VB[0],h=VB[3]-VB[2];
   const cx=Math.min(Math.max((VB[0]+VB[1])/2,R[0]),R[1]), cy=Math.min(Math.max((VB[2]+VB[3])/2,R[2]),R[3]);
   VB=[cx-w/2,cx+w/2,cy-h/2,cy+h/2]};
- m.addEventListener("pointerdown",e=>{if(window.HK_DEMO&&e.pointerType==="touch")return; st={x:e.clientX,y:e.clientY,vb:VB.slice()};moved=false});
- m.addEventListener("pointermove",e=>{if(!st)return;const dx=e.clientX-st.x,dy=e.clientY-st.y;
+ m.addEventListener("pointerdown",e=>{if(PZ||(st&&e.pointerType==="touch")){st=null;return}
+  st={id:e.pointerId,x:e.clientX,y:e.clientY,vb:VB.slice()};moved=false});
+ m.addEventListener("pointermove",e=>{if(!st||PZ||e.pointerId!==st.id)return;const dx=e.clientX-st.x,dy=e.clientY-st.y;
   if(!moved&&Math.hypot(dx,dy)<4)return;
   if(!moved){moved=true;try{m.setPointerCapture(e.pointerId)}catch(_){}}
   const r=m.getBoundingClientRect(),w=st.vb[1]-st.vb[0],h=st.vb[3]-st.vb[2];
   VB=[st.vb[0]-dx/r.width*w,st.vb[1]-dx/r.width*w,st.vb[2]+dy/r.height*h,st.vb[3]+dy/r.height*h];clamp();redraw()});
  const end=()=>{st=null;setTimeout(()=>moved=false,0)};
  m.addEventListener("pointerup",end);m.addEventListener("pointercancel",end);m.addEventListener("pointerleave",()=>{if(st&&!moved)st=null});
+ const tm=t=>[(t[0].clientX+t[1].clientX)/2,(t[0].clientY+t[1].clientY)/2], td=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY)||1;
+ const pzStart=e=>{st=null; moved=true; const r=m.getBoundingClientRect(), [x,y]=tm(e.touches), b=m.viewBox.baseVal;
+  PZ={d:td(e.touches),vb:VB.slice(),fx:(x-r.left)/r.width,fy:1-(y-r.top)/r.height,W:b.width,H:b.height}; window.HK_PZ=1};
+ m.addEventListener("touchstart",e=>{if(e.touches.length<2)return; e.preventDefault(); pzStart(e)},{passive:false});
+ const pzMove=e=>{const r=m.getBoundingClientRect(), [x,y]=tm(e.touches), R=VIEWS.region, v=PZ.vb, w0=v[1]-v[0], h0=v[3]-v[2];
+  const nw=Math.min(Math.max(w0*PZ.d/td(e.touches),MINW),R[1]-R[0]), nh=h0*nw/w0, L=v[0]+PZ.fx*w0, B=v[2]+PZ.fy*h0;
+  const fx=(x-r.left)/r.width, fy=1-(y-r.top)/r.height; VB=[L-fx*nw,L+(1-fx)*nw,B-fy*nh,B+(1-fy)*nh]; clamp();
+  m.setAttribute("viewBox",`${(VB[0]-v[0])/w0*PZ.W} ${(v[3]-VB[3])/h0*PZ.H} ${nw/w0*PZ.W} ${nh/h0*PZ.H}`)};
+ m.addEventListener("touchmove",e=>{if(e.touches.length<2){if(st&&e.cancelable)e.preventDefault(); return}
+  if(e.cancelable)e.preventDefault(); if(PZ)pzMove(e); else pzStart(e)},{passive:false});
+ document.addEventListener("touchmove",e=>{if(m.contains(e.target)||e.touches.length<2||![...e.touches].some(t=>m.contains(t.target)))return;
+  if(PZ)pzMove(e); else pzStart(e)},{passive:true});
+ const pzEnd=e=>{if(!PZ||e.touches.length>=2)return; PZ=null; window.HK_PZ=0; const R=VIEWS.region;
+  view=(VB[1]-VB[0])<(R[1]-R[0])*0.99?"hk":"region"; $("#zoomBtn").textContent=view==="region"?"zoom to Hong Kong":"zoom out";
+  drawMap(); setTimeout(()=>moved=false,350)};
+ document.addEventListener("touchend",pzEnd,{passive:true}); document.addEventListener("touchcancel",pzEnd,{passive:true});
+ ["gesturestart","gesturechange","gestureend"].forEach(t=>m.addEventListener(t,e=>e.preventDefault(),{passive:false}));
  m.addEventListener("wheel",e=>{e.preventDefault();const r=m.getBoundingClientRect();
   const fx=(e.clientX-r.left)/r.width, fy=1-(e.clientY-r.top)/r.height, k=e.deltaY>0?1.2:1/1.2;
-  const w=VB[1]-VB[0], h=VB[3]-VB[2], R=VIEWS.region, nw=Math.min(Math.max(w*k,1.5),R[1]-R[0]), nh=h*nw/w;
+  const w=VB[1]-VB[0], h=VB[3]-VB[2], R=VIEWS.region, nw=Math.min(Math.max(w*k,MINW),R[1]-R[0]), nh=h*nw/w;
   const lx=VB[0]+fx*w, ly=VB[2]+fy*h; VB=[lx-fx*nw,lx+(1-fx)*nw,ly-fy*nh,ly+(1-fy)*nh];clamp();
   view=nw<(R[1]-R[0])*0.99?"hk":"region";$("#zoomBtn").textContent=view==="region"?"zoom to Hong Kong":"zoom out";redraw()},{passive:false});
  const nav=k=>{const R=VIEWS.region, w=VB[1]-VB[0], h=VB[3]-VB[2], cx=(VB[0]+VB[1])/2, cy=(VB[2]+VB[3])/2;
-  if(k==="in"||k==="out"){const nw=Math.min(Math.max(k==="in"?w/1.5:w*1.5,1.5),R[1]-R[0]), nh=h*nw/w; VB=[cx-nw/2,cx+nw/2,cy-nh/2,cy+nh/2]}
+  if(k==="in"||k==="out"){const nw=Math.min(Math.max(k==="in"?w/1.5:w*1.5,MINW),R[1]-R[0]), nh=h*nw/w; VB=[cx-nw/2,cx+nw/2,cy-nh/2,cy+nh/2]}
   else if(k==="home") VB=HOME.slice();
   else {const dx={w:-w/4,e:w/4}[k]||0, dy={s:-h/4,n:h/4}[k]||0; VB=[VB[0]+dx,VB[1]+dx,VB[2]+dy,VB[3]+dy]}
   clamp(); view=(VB[1]-VB[0])<(R[1]-R[0])*0.99?"hk":"region"; $("#zoomBtn").textContent=view==="region"?"zoom to Hong Kong":"zoom out"; redraw()};
@@ -699,14 +718,15 @@ function fillGale(){const f=document.getElementById("galeF"); if(!f)return;
   if(!k||e.ctrlKey||e.metaKey||e.altKey)return; e.preventDefault(); nav(k)});
 })();
 function syncNav(){const b=document.getElementById("mapnav"); if(!b)return; const R=VIEWS.region, w=VB[1]-VB[0], q=k=>b.querySelector(`[data-nav="${k}"]`);
- q("in").disabled=w<=1.5+1e-6; q("out").disabled=w>=R[1]-R[0]-1e-6; q("home").disabled=VB.every((v,i)=>Math.abs(v-HOME[i])<1e-6)}
+ q("in").disabled=w<=MINW+1e-6; q("out").disabled=w>=R[1]-R[0]-1e-6; q("home").disabled=VB.every((v,i)=>Math.abs(v-HOME[i])<1e-6)}
 let MAPW=0;
 function drawMap(){
+ if(window.HK_PZ)return;
  const s=$("#map");s.innerHTML="";MC=null;MG=null;if(!TR){syncPlayer();return}
  const dw=s.getBoundingClientRect().width||(s.parentNode&&s.parentNode.clientWidth)||1200, K=dw>=700?1.2:1.1;
  const W=Math.max(300,Math.round(dw/K)),[lo0,lo1,la0,la1]=VB; MAPW=dw;
  $("#selbar").style.display=sel!==null?"":"none"; syncNav();
- s.style.touchAction=window.HK_DEMO?"pan-x pan-y pinch-zoom":view==="hk"?"none":"auto"; s.style.cursor=moved?"grabbing":"grab";
+ s.style.touchAction="none"; s.style.cursor=moved?"grabbing":"grab";
  const H=Math.round(W*(la1-la0)*110.57/((lo1-lo0)*111.32*Math.cos((la0+la1)/2*Math.PI/180)));
  s.setAttribute("viewBox",`0 0 ${W} ${H}`);
  const X=l=>(l-lo0)/(lo1-lo0)*W, Y=b=>H-(b-la0)/(la1-la0)*H, hx=X(114.174), hy=Y(22.302);
