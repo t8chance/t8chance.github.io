@@ -23,7 +23,7 @@ a{color:var(--link);text-underline-offset:2px}
 b,strong{font-weight:650}
 :focus-visible{outline:2px solid var(--link);outline-offset:2px}
 .wrap{max-width:1120px;margin:0 auto;padding:0 16px 56px}
-html.demo .wrap{padding:6px 2px 4px} html.demo body{background:var(--bg)} html.demo .mapcard{margin:0}
+html.demo .wrap{padding:6px 2px 4px} html.demo-answer .tlcard,html.demo-timeline .hero{display:none} html.demo .toolbar,html.demo #status{margin:0} html.demo body{background:var(--bg)} html.demo .mapcard{margin:0}
 
 /* masthead */
 .mast{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 28px;padding:24px 0 18px}
@@ -951,14 +951,17 @@ if(tab==="wi"){const dd=line((TRU.wi||[]).map(([z,v])=>[isoH(z),v]));
 
        drv, obs])+`<br>${wind}`;
 }
-const DEMO=(location.search.match(/[?&]demo=(play|member|map|stations)\b/)||[])[1]||"";
-if(DEMO){document.documentElement.classList.add("demo"); let e=document.querySelector(".mapcard");
- while(e&&e!==document.body){[...e.parentElement.children].forEach(c=>{if(c!==e&&c.tagName!=="SCRIPT")c.style.display="none"}); e=e.parentElement}
+const DEMO=(location.search.match(/[?&]demo=(play|member|map|stations|toolbar|answer|timeline|stationtable)\b/)||[])[1]||"";
+if(DEMO){document.documentElement.classList.add("demo","demo-"+DEMO);
+ const KEEP={toolbar:[".toolbar"],answer:["#status"],timeline:["#status"],stationtable:["#chead","#tabs","#stationchart","#cnote"]}[DEMO]||[".mapcard"];
+ const W=document.querySelector(".wrap"); [...document.body.children].forEach(c=>{if(c!==W&&c.tagName!=="SCRIPT")c.style.display="none"});
+ if(W)[...W.children].forEach(c=>{if(!KEEP.some(k=>c.matches(k)))c.style.display="none"});
  const post=()=>{try{parent.postMessage({hkDemoH:document.documentElement.scrollHeight},"*")}catch(x){}};
  try{new ResizeObserver(post).observe(document.body)}catch(x){} setTimeout(post,300);
  const setup=(n=0)=>{if(!TR){if(n<30)setTimeout(()=>setup(n+1),400);return}
   if(DEMO==="member"){sel=TR.top; selH=null; drawMap(); chart()}
-  if(DEMO==="stations"){view="hk"; VB=[113.55,114.75,21.95,22.75]; drawMap()}};
+  if(DEMO==="stations"){view="hk"; VB=[113.55,114.75,21.95,22.75]; drawMap()}
+  if(DEMO==="stationtable"){tab="sg"; drawTabs(); chart()}};
  setTimeout(setup,300);
  const go=(n=0)=>{if(!TR){if(n<20)setTimeout(()=>go(n+1),500);return}
   if(DEMO==="play"){const b=$("#allPlay"); if(allPlaying)allStop(); allH=null; b.click()}
@@ -968,4 +971,4 @@ if(DEMO){document.documentElement.classList.add("demo"); let e=document.querySel
  if(parent===window&&(DEMO==="play"||DEMO==="member"))setTimeout(go,1200)}
 try{const q=new URLSearchParams(location.search), r=q.get("run"), f=q.get("f"); if(r&&HK[r]){cyc=r; if(f&&HK[r][f]){ens=f; mode=modeOf(f)||mode}}}catch(e){}
 head();load();
-</script><a id="langsw" class="langsw" href="index-zh.html" lang="zh-Hant">中文</a><script>(function(){var a=document.getElementById("langsw");if(!a)return;a.href=a.getAttribute("href")+location.search+location.hash;a.addEventListener("click",function(){try{localStorage.setItem("hk_lang","zh")}catch(e){}})})();</script></body></html>
+</script><a id="langsw" class="langsw" href="index-zh.html" lang="zh-Hant">中文</a><script>(function(){var a=document.getElementById("langsw");if(!a)return;if(window.top!==window.self){a.style.display="none";return}a.href=a.getAttribute("href")+location.search+location.hash;a.addEventListener("click",function(){try{localStorage.setItem("hk_lang","zh")}catch(e){}})})();</script></body></html>

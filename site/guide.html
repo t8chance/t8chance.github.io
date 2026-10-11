@@ -132,13 +132,13 @@ html:not(.full) .step .f{display:none}
   <p class="fine">Research output. The Hong Kong Observatory is the only authority for actual signals.</p>
   <div class="acts"><a class="btn" href="start.html">Open the forecasts</a><a href="#s1">Start the tour</a></div>
  </div>
- <figure><picture><source srcset="guide/dark/answer.png 2x" media="(prefers-color-scheme: dark)"><img src="guide/light/answer.png" srcset="guide/light/answer.png 2x" width="760" height="613" alt="The answer cards for Typhoon Ragasa: No. 10 from 37 of 50 members, beside HKO's actual No. 10"></picture></figure>
+ <figure><div class="live"><iframe src="index.html?run=2025092112&amp;f=ifsens&amp;demo=answer" title="The answer cards for Typhoon Ragasa: No. 10 from 37 of 50 members, beside HKO's actual No. 10" loading="lazy"></iframe></div></figure>
 </section>
 </div>
 
 <main class="wrap story" id="story">
  <aside class="stage" id="stage" aria-hidden="true">
-  <div class="where"><span>On the page</span><button type="button" data-w="run">Run</button><button type="button" data-w="answer">Answer</button><button type="button" data-w="timeline">Timeline</button><button type="button" data-w="map">Map</button><button type="button" data-w="charts">Charts</button></div>
+  <div class="where"><span>On the page</span><button type="button" data-w="run">Run</button><button type="button" data-w="answer">Summary</button><button type="button" data-w="timeline">Timeline</button><button type="button" data-w="map">Map</button><button type="button" data-w="charts">Charts</button></div>
   <div class="slides" id="slides"></div>
  </aside>
  <div class="col">
@@ -152,18 +152,18 @@ html:not(.full) .step .f{display:none}
    <p><span class="ui">Today</span> shows the newest forecasts. <span class="ui">Past storms</span> are grouped by the highest signal HKO issued, No.&nbsp;10 first. Pick a storm, then a run, named after the time its forecast started, in UTC.</p>
    <p>The buttons below switch between ECMWF's physics model (IFS) and its AI model (AIFS). Older years use ECMWF's archived forecasts (2008–2023) or Pangu-Weather (2018–2022).</p>
    </div>
-   <figure><picture><source srcset="guide/dark/toolbar.png 2x" media="(prefers-color-scheme: dark)"><img src="guide/light/toolbar.png" srcset="guide/light/toolbar.png 2x" width="620" height="394" loading="lazy" alt="The run picker: year, storm and run menus, and the forecast buttons"></picture></figure>
+   <figure><div class="live"><iframe data-src="index.html?run=2025092112&amp;f=ifsens&amp;demo=toolbar" title="The run picker: year, storm and run menus, and the forecast buttons"></iframe></div></figure>
   </li>
 
   <li class="step" data-k="answer" data-w="answer"><span class="num">2</span>
-   <h2>Read the answer</h2>
+   <h2>What the forecast says</h2>
    <p class="s">The big number is the signal most of the ~50 forecast versions reach.</p>
    <div class="f">
    <p>ECMWF runs each forecast about 50 times. The page calls each version a member. The big number is the highest signal that most members reach, with when it starts and ends in Hong Kong time.</p>
    <p>Below it you see how many of HKO's eight reference stations get gale, storm or hurricane winds. For a past storm, HKO's own record sits next to it.</p>
    <p class="ex">Here 37 of 50 members give <span class="c10">No.&nbsp;10</span>, for about 8&nbsp;hours. HKO kept No.&nbsp;10 up for 11&nbsp;hours.</p>
    </div>
-   <figure><picture><source srcset="guide/dark/answer.png 2x" media="(prefers-color-scheme: dark)"><img src="guide/light/answer.png" srcset="guide/light/answer.png 2x" width="760" height="613" loading="lazy" alt="The answer cards"></picture></figure>
+   <figure><div class="live"><iframe data-src="index.html?run=2025092112&amp;f=ifsens&amp;demo=answer" title="The answer cards"></iframe></div></figure>
   </li>
 
   <li class="step" data-k="timeline" data-w="timeline"><span class="num">3</span>
@@ -173,7 +173,7 @@ html:not(.full) .step .f{display:none}
    <p>Each bar covers one signal, in Hong Kong time. The solid part runs from the members' middle start to their middle end. The pale part spans the earliest 10% to the latest 90%.</p>
    <p>The thin line is the deterministic run, ECMWF's single main forecast. HKO's real signals run along the top.</p>
    </div>
-   <figure><picture><source srcset="guide/dark/timeline.png 2x" media="(prefers-color-scheme: dark)"><img src="guide/light/timeline.png" srcset="guide/light/timeline.png 2x" width="1000" height="266" loading="lazy" alt="Timeline with bars for No. 3, No. 8 and No. 10 under HKO's own signals"></picture></figure>
+   <figure><div class="live"><iframe data-src="index.html?run=2025092112&amp;f=ifsens&amp;demo=timeline" title="Timeline with bars for No. 3, No. 8 and No. 10 under HKO's own signals"></iframe></div></figure>
   </li>
 
   <li class="step" data-k="map_signal" data-w="map"><span class="num">4</span>
@@ -226,7 +226,7 @@ html:not(.full) .step .f{display:none}
    <p>The <span class="ui">Station guide</span> tab under the map lists each station's chance of gale (63&nbsp;km/h), storm force (88&nbsp;km/h) and hurricane force (118&nbsp;km/h), with a rough expected wind.</p>
    <p>For past storms it adds what HKO recorded and the difference. <span class="down">Red</span> means the forecast was too low, <span class="up">green</span> too high.</p>
    </div>
-   <figure><picture><source srcset="guide/dark/stations_table.png 2x" media="(prefers-color-scheme: dark)"><img src="guide/light/stations_table.png" srcset="guide/light/stations_table.png 2x" width="736" height="420" loading="lazy" alt="Station table with chances, expected wind, HKO's recorded wind and the difference"></picture></figure>
+   <figure><div class="live"><iframe data-src="index.html?run=2025092112&amp;f=ifsens&amp;demo=stationtable" title="Station table with chances, expected wind, HKO's recorded wind and the difference"></iframe></div></figure>
   </li>
 
   <li class="step" data-k="check" data-w="run"><span class="num">9</span>
@@ -236,7 +236,7 @@ html:not(.full) .step .f{display:none}
 <p>For every storm of 2025 and 2026 it sets this site's chance of each signal beside MET WARN's forecast and what HKO raised.</p>
    <p><a href="verify.html">How good is it?</a> has the full record, signal by signal and station by station.</p>
    </div>
-<figure class="tile"><picture><source srcset="guide/dark/check.png 2x" media="(prefers-color-scheme: dark)"><img src="guide/light/check.png" srcset="guide/light/check.png 2x" width="788" height="730" loading="lazy" alt="How good is it?: this site's chance beside MET WARN's forecast and what HKO raised"></picture></figure>
+<figure><div class="live"><iframe data-src="verify.html#signals" title="How good is it?: this site's chance beside MET WARN's forecast and what HKO raised"></iframe></div></figure>
   </li>
  </ol>
  </div>
@@ -308,5 +308,5 @@ D.addEventListener("click",e=>{const im=e.target.closest("figure img"); if(!im||
 const close=()=>lb.classList.remove("on"); lb.addEventListener("click",close); addEventListener("keydown",e=>{if(e.key==="Escape")close()});
 })();
 </script>
-<a id="langsw" class="langsw" href="guide-zh.html" lang="zh-Hant">中文</a><script>(function(){var a=document.getElementById("langsw");if(!a)return;a.href=a.getAttribute("href")+location.search+location.hash;a.addEventListener("click",function(){try{localStorage.setItem("hk_lang","zh")}catch(e){}})})();</script></body>
+<a id="langsw" class="langsw" href="guide-zh.html" lang="zh-Hant">中文</a><script>(function(){var a=document.getElementById("langsw");if(!a)return;if(window.top!==window.self){a.style.display="none";return}a.href=a.getAttribute("href")+location.search+location.hash;a.addEventListener("click",function(){try{localStorage.setItem("hk_lang","zh")}catch(e){}})})();</script></body>
 </html>
