@@ -95,6 +95,10 @@ details.nums>summary{cursor:pointer;color:var(--link);font-weight:600;font-size:
  .swipe{display:none}
 .scrollx{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:16px}
 .mapwrap{position:relative} #selbar{position:absolute;top:12px;left:12px;z-index:5}
+.mapnav{display:flex;gap:5px;align-items:center;margin:8px 0 0}
+.mapnav button{flex:0 1 44px;min-width:32px;height:40px;padding:0;font:600 19px/1 var(--body);display:inline-flex;align-items:center;justify-content:center}
+.mapnav [data-nav=in],.mapnav [data-nav=out]{font-size:25px;font-weight:500}
+.mapnav button:disabled{opacity:.38;cursor:default} .mapnav .gap{flex:0 0 6px}
 #showAll{font:600 16px/1.2 var(--body);padding:11px 18px;border:0;border-radius:12px;background:#13202b;color:#fff;box-shadow:0 2px 12px rgba(0,0,0,.28);cursor:pointer}
 #showAll:hover{filter:brightness(1.18)} #showAll:focus-visible{outline:3px solid var(--link);outline-offset:2px}
 svg{width:100%;height:auto;display:block;background:var(--card);border:1px solid var(--line);border-radius:16px}
@@ -159,8 +163,9 @@ footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin
    <button id="allPlay" title="every member's storm together through time, 12 forecast hours per second">▶ all members</button>
    <label class="note"><input type="checkbox" id="only150"> within 150 km only</label></div>
  <p class="note mapexp" id="mapexp"></p>
- <div class="mapwrap"><div class="scrollx"><svg id="map" viewBox="0 0 1000 600"></svg></div>
+ <div class="mapwrap"><div class="scrollx"><svg id="map" viewBox="0 0 1000 600" tabindex="0" aria-label="Forecast map"></svg></div>
   <div id="selbar" style="display:none"><button id="showAll" title="back to every member of this run">← Back to all members</button></div></div>   
+ <div class="mapnav" id="mapnav" role="group" aria-label="Move and zoom the map"><button type="button" data-nav="in" title="Zoom in" aria-label="Zoom in">+</button><button type="button" data-nav="out" title="Zoom out" aria-label="Zoom out">−</button><span class="gap"></span><button type="button" data-nav="w" title="Move west" aria-label="Move west">←</button><button type="button" data-nav="n" title="Move north" aria-label="Move north">↑</button><button type="button" data-nav="s" title="Move south" aria-label="Move south">↓</button><button type="button" data-nav="e" title="Move east" aria-label="Move east">→</button><span class="gap"></span><button type="button" data-nav="home" title="Back to the starting view" aria-label="Back to the starting view">↺</button></div>
  <div class="bar" id="player" style="display:none;margin:8px 0 0">
   <button id="play" title="play this member's storm through time">▶ play</button>
   <input type="range" id="slider" min="0" max="1" step="0.25" value="0" style="flex:1;min-width:160px" aria-label="time along this member's track">
@@ -216,7 +221,7 @@ const clsOf=v=>{let i=0;while(i<7&&v>=CLSE[i+1])i++;return Math.min(i,6)};
 const ramp=p=>{const c=[[205,209,212],[232,179,168],[214,96,77],[178,24,43],[103,0,31]],x=Math.max(0,Math.min(1,p))*(c.length-1),
  i=Math.floor(x),f=x-i,a=c[i],b=c[Math.min(i+1,c.length-1)];return `rgb(${a.map((v,k)=>Math.round(v+(b[k]-v)*f)).join(",")})`};
 const VIEWS={region:[103,143,6,33],hk:[109,121,17,27]};
-let VB=VIEWS.region.slice(), moved=false;
+let VB=VIEWS.region.slice(), HOME=VIEWS.region.slice(), moved=false;
 const PUB=true;
 let colBy="signal"; 
 let cyc=cycles.find(RECENT)||cycles[0], ens="ifsens", view="region", tab="signal", sel=null, selH=null, TR=null;
@@ -394,7 +399,7 @@ function head(){
  $("#ensbtns").innerHTML=ORDER.filter(e=>avE[e]).map(e=>`<button data-e="${e}" class="${e===ens?"on":""}">${FCN[e]}</button>`).join(" ");
 
  $("#ensbtns").querySelectorAll("button").forEach(b=>b.onclick=()=>{ens=b.dataset.e; mode=modeOf(ens)||mode; sel=null;selH=null;head();load()});
- $("#zoomBtn").onclick=e=>{view=view==="region"?"hk":"region";VB=VIEWS[view].slice();e.target.textContent=view==="region"?"zoom to Hong Kong":"zoom out";drawMap()};
+ $("#zoomBtn").onclick=e=>{view=view==="region"?"hk":"region";VB=VIEWS[view].slice();HOME=VB.slice();e.target.textContent=view==="region"?"zoom to Hong Kong":"zoom out";drawMap()};
  $("#showAll").onclick=()=>{sel=null;selH=null;drawMap();chart()};
  $("#only150").onchange=drawMap;
 
@@ -684,13 +689,23 @@ function fillGale(){const f=document.getElementById("galeF"); if(!f)return;
   const w=VB[1]-VB[0], h=VB[3]-VB[2], R=VIEWS.region, nw=Math.min(Math.max(w*k,1.5),R[1]-R[0]), nh=h*nw/w;
   const lx=VB[0]+fx*w, ly=VB[2]+fy*h; VB=[lx-fx*nw,lx+(1-fx)*nw,ly-fy*nh,ly+(1-fy)*nh];clamp();
   view=nw<(R[1]-R[0])*0.99?"hk":"region";$("#zoomBtn").textContent=view==="region"?"zoom to Hong Kong":"zoom out";redraw()},{passive:false});
+ const nav=k=>{const R=VIEWS.region, w=VB[1]-VB[0], h=VB[3]-VB[2], cx=(VB[0]+VB[1])/2, cy=(VB[2]+VB[3])/2;
+  if(k==="in"||k==="out"){const nw=Math.min(Math.max(k==="in"?w/1.5:w*1.5,1.5),R[1]-R[0]), nh=h*nw/w; VB=[cx-nw/2,cx+nw/2,cy-nh/2,cy+nh/2]}
+  else if(k==="home") VB=HOME.slice();
+  else {const dx={w:-w/4,e:w/4}[k]||0, dy={s:-h/4,n:h/4}[k]||0; VB=[VB[0]+dx,VB[1]+dx,VB[2]+dy,VB[3]+dy]}
+  clamp(); view=(VB[1]-VB[0])<(R[1]-R[0])*0.99?"hk":"region"; $("#zoomBtn").textContent=view==="region"?"zoom to Hong Kong":"zoom out"; redraw()};
+ document.querySelectorAll("#mapnav button").forEach(b=>b.onclick=()=>nav(b.dataset.nav));
+ m.addEventListener("keydown",e=>{const k={ArrowLeft:"w",ArrowRight:"e",ArrowUp:"n",ArrowDown:"s","+":"in","=":"in","-":"out","0":"home"}[e.key];
+  if(!k||e.ctrlKey||e.metaKey||e.altKey)return; e.preventDefault(); nav(k)});
 })();
+function syncNav(){const b=document.getElementById("mapnav"); if(!b)return; const R=VIEWS.region, w=VB[1]-VB[0], q=k=>b.querySelector(`[data-nav="${k}"]`);
+ q("in").disabled=w<=1.5+1e-6; q("out").disabled=w>=R[1]-R[0]-1e-6; q("home").disabled=VB.every((v,i)=>Math.abs(v-HOME[i])<1e-6)}
 let MAPW=0;
 function drawMap(){
  const s=$("#map");s.innerHTML="";MC=null;MG=null;if(!TR){syncPlayer();return}
  const dw=s.getBoundingClientRect().width||(s.parentNode&&s.parentNode.clientWidth)||1200, K=dw>=700?1.2:1.1;
  const W=Math.max(300,Math.round(dw/K)),[lo0,lo1,la0,la1]=VB; MAPW=dw;
- $("#selbar").style.display=sel!==null?"":"none";
+ $("#selbar").style.display=sel!==null?"":"none"; syncNav();
  s.style.touchAction=window.HK_DEMO?"pan-x pan-y pinch-zoom":view==="hk"?"none":"auto"; s.style.cursor=moved?"grabbing":"grab";
  const H=Math.round(W*(la1-la0)*110.57/((lo1-lo0)*111.32*Math.cos((la0+la1)/2*Math.PI/180)));
  s.setAttribute("viewBox",`0 0 ${W} ${H}`);
@@ -961,7 +976,7 @@ if(DEMO){window.HK_DEMO=DEMO; document.documentElement.classList.add("demo","dem
  try{new ResizeObserver(post).observe(document.body)}catch(x){} setTimeout(post,300);
  const setup=(n=0)=>{if(!TR){if(n<30)setTimeout(()=>setup(n+1),400);return}
   if(DEMO==="member"){sel=TR.top; selH=null; drawMap(); chart()}
-  if(DEMO==="stations"){view="hk"; VB=[113.55,114.75,21.95,22.75]; drawMap()}
+  if(DEMO==="stations"){view="hk"; VB=[113.55,114.75,21.95,22.75]; HOME=VB.slice(); $("#zoomBtn").textContent="zoom out"; drawMap()}
   if(DEMO==="stationtable"){tab="sg"; drawTabs(); chart()}};
  setTimeout(setup,300);
  const go=(n=0)=>{if(!TR){if(n<20)setTimeout(()=>go(n+1),500);return}

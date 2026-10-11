@@ -48,7 +48,7 @@ const EX=new Map(Object.entries({
  "HKO actually issued":"天文台實際發出的最高信號","Timeline · Hong Kong time":"時間線（香港時間）","forecast, median start → median end":"預測時段：成員開始及結束時間的中位數",
  "deterministic run":"高解像度預報","Deterministic run":"高解像度預報","control run":"控制預報","Control run":"控制預報","faded: fewer than half the members":"淡色：不足半數成員",
  "Numbers per signal":"各級信號詳細數據","members":"集合成員","starts":"開始","ends":"結束","hours":"時數","deterministic":"高解像度預報","not issued":"沒有發出","main period":"主要時段","other periods":"其他時段",
- "Map":"地圖","zoom to Hong Kong":"放大香港範圍","zoom out":"顯示整個區域","▶ all members":"▶ 播放全部成員","❚❚ pause":"❚❚ 暫停","within 150 km only":"只顯示進入香港 150 公里範圍的預測路徑","▶ play":"▶ 播放",
+ "Map":"地圖","zoom to Hong Kong":"放大香港範圍","zoom out":"顯示整個區域","Zoom in":"放大","Zoom out":"縮小","Move west":"向西移","Move north":"向北移","Move south":"向南移","Move east":"向東移","Back to the starting view":"還原地圖範圍","Move and zoom the map":"移動及縮放地圖","Forecast map":"預報地圖","The buttons under the map zoom in and out (+ −), move it (← ↑ ↓ →) and bring back the starting view (↺).":"地圖下方的按鈕可放大或縮小地圖（+ −）、移動地圖（← ↑ ↓ →）及還原地圖範圍（↺）。","▶ all members":"▶ 播放全部成員","❚❚ pause":"❚❚ 暫停","within 150 km only":"只顯示進入香港 150 公里範圍的預測路徑","▶ play":"▶ 播放",
  "← Back to all members":"← 返回全部成員","Signal along each track":"路徑顏色代表該成員推算的警告信號","another storm of the same member":"同一預報中的其他熱帶氣旋","other tropical cyclones in the same forecast":"同一預報中的其他熱帶氣旋",
  "a signal counts at chance ≥ 0.30 (No. 10: ≥ 0.40)":"推算信號的最低機會率門檻：30%（十號：40%）","Tap or click a line to follow one member.":"按任何一條路徑，可單獨顯示該成員。",
  "Expected signal":"預測信號","Wind index":"風力指數","Station guide":"測站指引","ensemble-mean wind index":"集合平均風力指數","Sequence:":"順序（UTC）：",
