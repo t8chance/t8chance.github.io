@@ -59,6 +59,9 @@ figure.tile img{border-radius:14px;box-shadow:var(--shadow)}   /* the check page
 .step p{margin:0 0 12px;max-width:36em}
 .step p.ex{color:var(--mut);font-size:16px}
 .ui{font-weight:600;white-space:nowrap}
+.mwtiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;max-width:640px}   /* the tour: this site against MET WARN */
+.mwtiles .t{border:1px solid var(--line);border-radius:14px;background:var(--card);padding:14px 16px;font-size:15px;line-height:1.3;color:var(--mut)}
+.mwtiles b{display:block;font:700 44px/1 var(--disp);color:var(--ink);margin:0 0 6px} .mwtiles .us b{color:var(--good)} .mwtiles .mw b{color:var(--no3)}
 .c3{color:var(--no3);font-weight:650}.c8{color:var(--no8);font-weight:650}.c9{color:var(--no9);font-weight:650}.c10{color:var(--no10);font-weight:650}
 .up{color:var(--good);font-weight:650}.down{color:var(--bad);font-weight:650}
 .step figure{margin:18px 0 0}
@@ -232,12 +235,13 @@ html:not(.full) .step .f{display:none}
 
   <li class="step" data-k="check" data-w="run"><span class="num">9</span>
    <h2>Check how good it is</h2>
-   <p class="s"><span class="ui">How good is it?</span> sets past forecasts beside what HKO did, storm by storm.</p>
+   <p class="s">Against MET WARN's 25 forecasts for the storms of 2025 and 2026: this site closer 10 times, MET WARN 7, same call 7.</p>
    <div class="f">
-<p>For every storm of 2025 and 2026 it sets this site's chance of each signal beside MET WARN's forecast and what HKO raised.</p>
-   <p><a href="verify-zh.html">How good is it?</a> has the full record, signal by signal and station by station.</p>
+<p>MET WARN, an unofficial Hong Kong weather channel, posts how likely it thinks HKO is to raise a signal. Each of its 25 forecasts for the storms of 2025 and 2026 is set beside this site's chance from the newest run out before the post, and what HKO did. If this site's chance is inside MET WARN's range, it is the same call; if not, the side nearer to what HKO did is closer. These storms were not used to set up this site.</p>
+   <p>By signal: No. 3, this site 6, MET WARN 3, same 3; No. 8 and 9, 4, 2, 4; No. 10, 0, 2, 0. 1 not compared (No. 9, which this site does not forecast).</p>
+
    </div>
-<figure><div class="live"><iframe data-src="verify-zh.html#signals" title="How good is it?: this site's chance beside MET WARN's forecast and what HKO raised"></iframe></div></figure>
+<figure><div class="mwtiles"><div class="t us"><b>10</b>this site closer</div><div class="t mw"><b>7</b>MET WARN closer</div><div class="t same"><b>7</b>same call</div></div></figure>
   </li>
  </ol>
  </div>

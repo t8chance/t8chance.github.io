@@ -643,14 +643,14 @@ function stationDist(i,t0,Wp){const M=(GA&&GA.members)||50, best={}, hko=casesOf
   g+=`<text x="${x+w/2}" y="${H-B+34}" text-anchor="middle" font-size="${nar?11:12}" style="fill:var(--mut)">${nar&&f===7?"&lt;63":kmh}</text>`;
   if(act===f)g+=`<text x="${x+w/2}" y="${y-26}" text-anchor="middle" font-size="12.5" font-weight="700" style="fill:var(--ink)">▼ HKO</text>`});
  const who=t0.m===52?"the deterministic run":memLab(t0.m,0).replace(/^the /,"");
- return `<div class="sgdist"><p class="sgdh"><b>${SGN[i][1]}</b>: expected wind in each of the ${M} members (bars), ${who} outlined${act!=null?`, ▼ what HKO recorded (${Math.round(hko[i])} km/h)`:""}</p>
+ return `<div class="sgdist"><p class="sgdh"><b>${SGN[i][1]}</b>: forecast wind force in each of the ${M} members; the ${matchMedia("(prefers-color-scheme: dark)").matches?"white":"dark"} outline marks ${who}'s force${act!=null?`; ▼ what HKO recorded (${Math.round(hko[i])} km/h)`:""}.</p>
   <svg viewBox="0 0 ${W} ${H}" width="${W}" role="img" aria-label="${SGN[i][1]}: members by expected wind force">${g}</svg></div>`}
 function memberStationGuide(t){
  if(!t.gst&&t.gale!=null&&Math.round(t.gale)>=1){$("#chead").textContent=`${memLab(t.m,1)} — station guide`;
   $("#stationchart").innerHTML=`<p class="note">Station numbers are not ready for this run yet.</p>`; $("#cnote").textContent=""; return}
  const hko=casesOf(cyc).map(c=>HKOWIND[c]).find(Boolean), rows=[];
  const pct=v=>v==null?"–":`${Math.round(100*v)}%`;
- const count=(label,v,lo,hi)=>{if(v==null)return ""; const rg=lo!=null&&hi!=null&&lo!==hi?` <span class="rng">(${lo}–${hi})</span>`:""; return `<span class="kv"><b>${label}</b> <b>${Math.round(v)}</b> of 8${rg}</span>`};
+ const count=(label,v,lo,hi)=>{if(v==null)return ""; const rg=lo!=null&&hi!=null&&lo!==hi?` <span class="rng">(10th–90th percentile: ${lo}–${hi})</span>`:""; return `<span class="kv"><b>${label}</b> <b>${Math.round(v)}</b> of 8${rg}</span>`};
  for(let i=0;i<SGN.length;i++){
   const {g,s,h,fv,fb,guide,range}=stationWind(t,i);
   rows.push(`<tr class="sgrow" data-i="${i}" title="click: ${SGN[i][1]} in every member"><td>${SGN[i][1]}</td><td>${pct(g)}</td><td>${pct(s)}</td><td>${pct(h)}</td><td>${guide}</td><td>${hko&&hko[i]!=null?windLabel(hko[i]):""}</td>${hko?`<td>${diffCell(fv,fb,hko[i])}</td>`:""}</tr>`);
@@ -666,7 +666,7 @@ function fillGale(){const f=document.getElementById("galeF"); if(!f)return;
   const v=Object.values(by); while(v.length<M)v.push(0); if(!v.length)return ""; v.sort((a,b)=>a-b);
   const q=p=>v[Math.min(v.length-1,Math.round(p*(v.length-1)))], md=q(.5), lo=q(.1), hi=q(.9);
   const dt=TR.tracks.find(t=>t.m===52&&M>1), dg=dt?(dt[k]==null?0:Math.round(dt[k])):null;
-  return `<div><span class="gl">${lab}</span> ${gdots(md,GA.one?md:hi)} <b class="gn">${md}</b> of 8${GA.one||lo===hi?"":` <span class="rng">(${lo}–${hi})</span>`}${dg!=null?` <span class="rng">· deterministic ${dg}</span>`:""}</div>`};
+  return `<div><span class="gl">${lab}</span> ${gdots(md,GA.one?md:hi)} <b class="gn">${md}</b> of 8${GA.one||lo===hi?"":` <span class="rng">(10th–90th percentile: ${lo}–${hi})</span>`}${dg!=null?` <span class="rng">· deterministic run: ${dg}</span>`:""}</div>`};
  f.innerHTML=`<div class="gh">Forecast, at any time from this run onward</div>`+row("gale","Reference stations reaching gale force")+(TR.tracks.some(t=>t.storm_n!=null)?row("storm_n","Reference stations reaching storm force")+row("hur_n","Reference stations reaching hurricane force"):"")+stationGuide()}
 {const sc=document.getElementById("stationchart"); if(sc)sc.addEventListener("click",e=>{const tr=e.target.closest("tr.sgrow"); if(!tr||!TR)return;
  const box=sc.querySelector(".sgdistbox"), was=tr.classList.contains("sgon"); sc.querySelectorAll("tr.sgon").forEach(r=>r.classList.remove("sgon"));
