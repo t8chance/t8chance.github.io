@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How to read the forecasts</title>
+<meta name="description" content="How to read the Hong Kong typhoon signal forecasts, using one real forecast for Typhoon Ragasa.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: left-aligned teaching sheet. Hero = the real result beside the real answer card; then numbered steps (they follow the
+   forecast page from top to bottom) on the left and one sticky picture on the right, with a row naming the part of the page.
+   Same identity as the forecast page: harbour greys, HKO signal colours as the only strong colour, Barlow / Barlow Condensed. */
+:root{
+ --bg:#edf1f4;--card:#fff;--soft:#e3e9ee;--ink:#13202b;--mut:#55636f;--line:#d3dbe2;--link:#1a5ea8;--raise:#fff;
+ --no3:#d98c1a;--no8:#b2182b;--no9:#d6457f;--no10:#5b2a86;--good:#1a7f37;--bad:#c62828;
+ --shadow:0 1px 2px rgba(19,32,43,.06),0 12px 32px rgba(19,32,43,.09);
+ --disp:"Barlow Condensed","Roboto Condensed","Arial Narrow",sans-serif;
+ --body:"Barlow",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+@media (prefers-color-scheme:dark){:root{
+ --bg:#0f1923;--card:#16222e;--soft:#1c2a37;--ink:#e2e9ef;--mut:#93a3b1;--line:#273746;--link:#8cbcff;--raise:#33475a;
+ --no3:#f0a23a;--no8:#f0625e;--no9:#ef6fa2;--no10:#b08ae8;--good:#5cc97a;--bad:#ff7b72;--shadow:0 1px 0 rgba(255,255,255,.03);color-scheme:dark}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 var(--body);-webkit-font-smoothing:antialiased}
+a{color:var(--link);text-underline-offset:2px}
+b{font-weight:650}
+:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+
+/* masthead: the forecast page's own */
+.mast{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 28px;padding:24px 0 18px}
+.mast .name{margin:0;font:700 clamp(24px,3vw,30px)/1.05 var(--disp);color:var(--ink);text-decoration:none}
+.mast nav{display:flex;flex-wrap:wrap;gap:4px 20px;font-size:15px;font-weight:500}
+.mast nav a{color:var(--ink);text-decoration:none}
+.mast nav a:hover{color:var(--link);text-decoration:underline}
+.mast nav a[aria-current]{color:var(--mut)}
+
+/* hero: the real result */
+.hero{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:40px;align-items:center;padding:40px 0 72px}
+.hero h1{margin:0 0 20px;font:700 clamp(38px,4.6vw,60px)/1.02 var(--disp);letter-spacing:-.005em;text-wrap:balance;max-width:14em}
+.hero p{margin:0 0 14px;max-width:34em;font-size:18px}
+.hero .fine{color:var(--mut);font-size:15px}
+.acts{display:flex;flex-wrap:wrap;gap:12px 22px;align-items:center;margin-top:26px}
+.btn{display:inline-block;background:var(--ink);color:var(--bg);text-decoration:none;font-weight:600;padding:12px 22px;border-radius:12px;font-size:17px}
+.btn:hover{background:color-mix(in srgb,var(--ink) 86%,var(--link))}
+.hero figure{margin:0}
+figure img{display:block;width:100%;height:auto;cursor:zoom-in}   /* the pictures carry the page's own background: no frame, they sit on the page */
+figure.tile img{border-radius:14px;box-shadow:var(--shadow)}   /* the check page has its own background */
+
+/* steps + stage */
+.story{position:relative}
+.steps{list-style:none;margin:0;padding:0}
+.step{display:grid;grid-template-columns:64px minmax(0,1fr);column-gap:10px;padding:56px 0}
+.step>*:not(.num){grid-column:2}
+.num{grid-column:1;grid-row:1;font:700 56px/.9 var(--disp);color:var(--line);font-variant-numeric:tabular-nums;transition:color .3s}
+.step h2{margin:0 0 12px;font:700 clamp(28px,3vw,36px)/1.08 var(--disp);text-wrap:balance}
+.step p{margin:0 0 12px;max-width:36em}
+.step p.ex{color:var(--mut);font-size:16px}
+.ui{font-weight:600;white-space:nowrap}
+.c3{color:var(--no3);font-weight:650}.c8{color:var(--no8);font-weight:650}.c9{color:var(--no9);font-weight:650}.c10{color:var(--no10);font-weight:650}
+.up{color:var(--good);font-weight:650}.down{color:var(--bad);font-weight:650}
+.step figure{margin:18px 0 0}
+.step figure .pair{display:flex;flex-direction:column;gap:12px}
+.live{border-radius:14px;overflow:hidden;box-shadow:var(--shadow);background:var(--card);width:100%}
+.live iframe{display:block;width:100%;height:640px;border:0;background:var(--card)}
+.frames{position:relative;aspect-ratio:1000/765;max-width:100%;border-radius:14px;box-shadow:var(--shadow);overflow:hidden;background:var(--card)}
+.frames picture{position:absolute;inset:0;opacity:0;transition:opacity .3s}
+.frames picture.on{opacity:1}
+.frames img{box-shadow:none!important;border-radius:0!important;width:100%;height:100%;cursor:default}
+.frames .pp{position:absolute;right:10px;bottom:10px;z-index:3;border:0;border-radius:10px;padding:7px 13px;font:600 14px/1 var(--body);background:var(--ink);color:var(--bg);cursor:pointer}
+.stage{display:none}
+.where{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:14px;color:var(--mut)}
+.where span{margin-right:4px}
+.where button{font:600 14px/1 var(--body);border:1px solid var(--line);background:transparent;color:var(--mut);border-radius:9px;padding:6px 10px;cursor:pointer}
+.where button.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+@media (min-width:900px){
+ .js .story{display:grid;grid-template-columns:minmax(330px,420px) minmax(0,1fr);gap:56px}
+ .js .col{grid-column:1;grid-row:1;padding-bottom:18vh}
+ .js .stage{display:flex;flex-direction:column;gap:14px;grid-column:2;grid-row:1;position:sticky;top:0;height:100vh;padding:24px 0}
+ .js .step{min-height:78vh;align-content:center}
+ .js .step figure{display:none}
+ .js .step.on .num{color:var(--ink)}
+ .slides{position:relative;flex:1;min-height:0}
+ .slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .45s ease;pointer-events:none}
+ .slide.on{opacity:1;pointer-events:auto}
+ .slide figure{margin:0;width:100%;max-height:100%;display:flex;justify-content:center}
+ .slide figure>picture>img,.slide .pair img{max-height:calc(100vh - 120px);width:auto;max-width:100%;margin:0 auto}
+ .slide .pair{width:100%;align-items:center}
+ .slide .pair picture:first-child img{max-height:calc(100vh - 230px)}
+ .slide .frames{width:100%;max-height:calc(100vh - 120px)}
+ .slide .live{max-height:calc(100vh - 110px);overflow:auto}
+}
+@media (max-width:899px){
+ .hero{grid-template-columns:1fr;gap:28px;padding:24px 0 40px}
+ .step{grid-template-columns:44px minmax(0,1fr);padding:36px 0}
+ .num{font-size:40px;color:var(--mut)}
+}
+
+/* the Short / Full switch (user: 'way too many words! Maybe let them choose easy/hard version?') */
+.modebar{position:sticky;top:12px;z-index:6;display:inline-flex;align-items:center;gap:2px;padding:3px 3px 3px 12px;background:var(--soft);border-radius:12px;margin:8px 0 0;font-size:14px;color:var(--mut)}
+.modebar span{margin-right:8px}
+.modebar button{border:0;background:transparent;border-radius:9px;padding:7px 14px;font:600 15px/1 var(--body);color:var(--mut);cursor:pointer}
+.modebar button[aria-pressed=true]{background:var(--raise);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.16)}
+.step p.s{font-size:19px;line-height:1.5;max-width:26em}
+html.full .step .s{display:none}
+html:not(.full) .step .f{display:none}
+
+/* end */
+.end{padding:72px 0 80px;border-top:1px solid var(--line)}
+.end h2{margin:0 0 18px;font:700 clamp(30px,3.6vw,42px)/1.05 var(--disp)}
+.end nav{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:22px;font-size:16px}
+.end .fine{margin:28px 0 0;color:var(--mut);font-size:14px;max-width:40em}
+
+#lb{position:fixed;inset:0;z-index:50;background:color-mix(in srgb,var(--bg) 95%,transparent);overflow:auto;display:none;cursor:zoom-out}
+#lb.on{display:block}
+#lb img{display:block;margin:60px auto 40px;max-width:none;border-radius:12px;box-shadow:var(--shadow)}
+#lb .x{position:fixed;top:12px;right:14px;border:0;border-radius:10px;padding:9px 14px;font:600 15px/1 var(--body);background:var(--ink);color:var(--bg);cursor:pointer}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<script src="zh.js"></script><style>.langsw{position:fixed;top:10px;right:12px;z-index:60;font:600 14px/1 system-ui,-apple-system,sans-serif;padding:8px 13px;border-radius:999px;background:#fff;color:#13202b;border:1px solid #c9d2db;text-decoration:none;box-shadow:0 1px 4px rgba(0,0,0,.12)}@media (prefers-color-scheme:dark){.langsw{background:#1d2731;color:#e8eef3;border-color:#3a4652}} html.demo .langsw{display:none}</style></head>
+<body>
+<div class="wrap">
+<header class="mast"><a class="name" href="index-zh.html">Hong Kong typhoon signal forecasts</a>
+ <nav aria-label="pages"><a href="index-zh.html">Forecasts</a><a href="guide-zh.html" aria-current="page">Tour</a><a href="verify-zh.html">How good is it?</a></nav></header>
+
+<section class="hero">
+ <div>
+  <h1>Chances of signals No.&nbsp;3, 8 and 10 for Hong Kong</h1>
+  <p>From every ECMWF forecast, updated every 6&nbsp;hours.</p>
+  <p class="fine">Research output. The Hong Kong Observatory is the only authority for actual signals.</p>
+  <div class="acts"><a class="btn" href="start-zh.html">Open the forecasts</a><a href="#s1">Start the tour</a></div>
+ </div>
+ <figure><picture><source srcset="guide/dark/answer.png 2x" media="(prefers-color-scheme: dark)"><img src="guide/light/answer.png" srcset="guide/light/answer.png 2x" width="760" height="472" alt="The answer cards for Typhoon Ragasa: No. 10 from 37 of 50 members, beside HKO's actual No. 10"></picture></figure>
+</section>
+</div>
+
+<main class="wrap story" id="story">
+ <aside class="stage" id="stage" aria-hidden="true">
+  <div class="where"><span>On the page</span><button type="button" data-w="run">Run</button><button type="button" data-w="answer">Answer</button><button type="button" data-w="timeline">Timeline</button><button type="button" data-w="map">Map</button><button type="button" data-w="charts">Charts</button></div>
+  <div class="slides" id="slides"></div>
+ </aside>
+ <div class="col">
+ <div class="modebar" role="group" aria-label="How much text"><span>Text</span><button type="button" data-m="short" aria-pressed="true">Short</button><button type="button" data-m="full" aria-pressed="false">Full</button></div>
+ <ol class="steps">
+
+  <li class="step" id="s1" data-k="toolbar" data-w="run"><span class="num">1</span>
+   <h2>Choose today or a past storm</h2>
+   <p class="s">Choose <span class="ui">Today</span> or <span class="ui">Past storms</span>, then a storm and a run.</p>
+   <div class="f">
+   <p><span class="ui">Today</span> shows the newest forecasts. <span class="ui">Past storms</span> are grouped by the highest signal HKO issued, No.&nbsp;10 first. Pick a storm, then a run, named after the time its forecast started, in UTC.</p>
+   <p>The buttons below switch between ECMWF's physics model (IFS) and its AI model (AIFS). Older years use ECMWF's archived forecasts (2008–2023) or Pangu-Weather (2018–2022).</p>
+   </div>
+   <figure><picture><source srcset="guide/dark/toolbar.png 2x" media="(prefers-color-scheme: dark)"><img src="guide/light/toolbar.png" srcset="guide/light/toolbar.png 2x" width="620" height="336" loading="lazy" alt="The run picker: year, storm and run menus, and the forecast buttons"></picture></figure>
+  </li>
+
+  <li class="step" data-k="answer" data-w="answer"><span class="num">2</span>
+   <h2>Read the answer</h2>
+   <p class="s">The big number is the signal most of the ~50 forecast versions reach.</p>
+   <div class="f">
+   <p>ECMWF runs each forecast about 50 times. The page calls each version a member. The big number is the highest signal that most members reach, with when it starts and ends in Hong Kong time.</p>
+   <p>Below it you see how many of HKO's eight reference stations get gale, storm or hurricane winds. For a past storm, HKO's own record sits next to it.</p>
+   <p class="ex">Here 37 of 50 members give <span class="c10">No.&nbsp;10</span>, for about 8&nbsp;hours. HKO kept No.&nbsp;10 up for 11&nbsp;hours.</p>
+   </div>
+   <figure><picture><source srcset="guide/dark/answer.png 2x" media="(prefers-color-scheme: dark)"><img src="guide/light/answer.png" srcset="guide/light/answer.png 2x" width="760" height="472" loading="lazy" alt="The answer cards"></picture></figure>
+  </li>
+
+  <li class="step" data-k="timeline" data-w="timeline"><span class="num">3</span>
+   <h2>See when each signal is up</h2>
+   <p class="s">Bars show when each signal starts and ends, in Hong Kong time.</p>
+   <div class="f">
+   <p>Each bar covers one signal, in Hong Kong time. The solid part runs from the members' middle start to their middle end. The pale part spans the earliest 10% to the latest 90%.</p>
+   <p>The thin line is the deterministic run, ECMWF's single main forecast. HKO's real signals run along the top.</p>
+   </div>
+   <figure><picture><source srcset="guide/dark/timeline.png 2x" media="(prefers-color-scheme: dark)"><img src="guide/light/timeline.png" srcset="guide/light/timeline.png 2x" width="1000" height="266" loading="lazy" alt="Timeline with bars for No. 3, No. 8 and No. 10 under HKO's own signals"></picture></figure>
+  </li>
+
+  <li class="step" data-k="map_signal" data-w="map"><span class="num">4</span>
+   <h2>Every line is one member</h2>
+   <p class="s">Each line is one forecast run, coloured by the signal it expects along the way.</p>
+   <div class="f">
+   <p>ECMWF runs each forecast 50 times from slightly different starts; each run is a member. Each line is one member's storm track, coloured by the signal it expects Hong Kong to have at that point: grey for No.&nbsp;1, then <span class="c3">No.&nbsp;3</span>, <span class="c8">No.&nbsp;8</span>, <span class="c9">No.&nbsp;9</span> and <span class="c10">No.&nbsp;10</span>, and back down as the storm leaves.</p>
+   <p>The thick black dashed line is the deterministic run. For past storms, the black dashed line with dots is where the storm really went. The circles mark distances from Hong Kong.</p>
+   </div>
+   <figure><div class="live"><iframe data-src="index-zh.html?run=2025092112&amp;f=ifsens&amp;demo=map" title="The real forecast map: Ragasa 2025, ECMWF run of 21 Sep 12Z; every member's track coloured by the signal it expects"></iframe></div></figure>
+  </li>
+
+
+
+  <li class="step" data-k="play" data-w="map"><span class="num">5</span>
+   <h2>Watch all members move</h2>
+   <p class="s"><span class="ui">▶ all members</span> plays every storm forward, 12 hours a second. Try it: this is the real map.</p>
+   <div class="f">
+   <p><span class="ui">▶ all members</span> moves every member's storm forward together, 12 forecast hours a second. The large black dot is the deterministic run.</p>
+   <p>You can watch the spread grow, and see whether it closes on Hong Kong.</p>
+   </div>
+   <figure><div class="live"><iframe data-src="index-zh.html?run=2025092112&amp;f=ifsens&amp;demo=play" title="The real forecast map: Ragasa 2025, ECMWF run of 21 Sep 12Z, every member playing"></iframe></div></figure>
+  </li>
+
+  <li class="step" data-k="member" data-w="map"><span class="num">6</span>
+   <h2>Follow one member</h2>
+   <p class="s">Click a line to see when that member expects each signal, by colour.</p>
+   <div class="f">
+   <p>Click any line to see that member alone, and where its storm is at every hour.</p>
+   <p>Its track changes colour where that member expects each signal: grey for No.&nbsp;1, then <span class="c3">No.&nbsp;3</span>, <span class="c8">No.&nbsp;8</span>, <span class="c9">No.&nbsp;9</span> and <span class="c10">No.&nbsp;10</span>, and back down as the storm leaves.</p>
+   <p>The player under the map steps through the hours. The large <span class="ui">← Back to all members</span> button, at the top left of the map, brings everyone back.</p>
+   </div>
+   <figure><div class="live"><iframe data-src="index-zh.html?run=2025092112&amp;f=ifsens&amp;demo=member" title="The real forecast map: one member of the Ragasa run on its own, its player running"></iframe></div></figure>
+  </li>
+
+  <li class="step" data-k="stations_map" data-w="map"><span class="num">7</span>
+   <h2>Zoom in on the eight stations</h2>
+   <p class="s"><span class="ui">zoom to Hong Kong</span> colours HKO's eight stations by expected wind.</p>
+   <div class="f">
+   <p><span class="ui">zoom to Hong Kong</span> shows HKO's eight reference stations. Each dot is coloured by the station's expected wind, with its Beaufort force next to the name.</p>
+   <p class="ex">In this run Cheung Chau reaches F12.</p>
+   </div>
+   <figure><div class="live"><iframe data-src="index-zh.html?run=2025092112&amp;f=ifsens&amp;demo=stations" title="The real forecast map zoomed on Hong Kong: the eight stations coloured by expected wind, with their Beaufort forces"></iframe></div></figure>
+  </li>
+
+  <li class="step" data-k="stations_table" data-w="charts"><span class="num">8</span>
+   <h2>Compare each station with HKO</h2>
+   <p class="s">The <span class="ui">Station guide</span> tab sets each station beside what HKO recorded.</p>
+   <div class="f">
+   <p>The <span class="ui">Station guide</span> tab under the map lists each station's chance of gale (63&nbsp;km/h), storm force (88&nbsp;km/h) and hurricane force (118&nbsp;km/h), with a rough expected wind.</p>
+   <p>For past storms it adds what HKO recorded and the difference. <span class="down">Red</span> means the forecast was too low, <span class="up">green</span> too high.</p>
+   </div>
+   <figure><picture><source srcset="guide/dark/stations_table.png 2x" media="(prefers-color-scheme: dark)"><img src="guide/light/stations_table.png" srcset="guide/light/stations_table.png 2x" width="750" height="481" loading="lazy" alt="Station table with chances, expected wind, HKO's recorded wind and the difference"></picture></figure>
+  </li>
+
+  <li class="step" data-k="check" data-w="run"><span class="num">9</span>
+   <h2>Check how good it is</h2>
+   <p class="s"><span class="ui">How good is it?</span> sets past forecasts beside what HKO did, storm by storm.</p>
+   <div class="f">
+<p>For every storm of 2025 and 2026 it sets this site's chance of each signal beside MET WARN's forecast and what HKO raised.</p>
+   <p><a href="verify-zh.html">How good is it?</a> has the full record, signal by signal and station by station.</p>
+   </div>
+<figure class="tile"><picture><source srcset="guide/dark/check.png 2x" media="(prefers-color-scheme: dark)"><img src="guide/light/check.png" srcset="guide/light/check.png 2x" width="760" height="560" loading="lazy" alt="How good is it?: this site's chance beside MET WARN's forecast and what HKO raised"></picture></figure>
+  </li>
+ </ol>
+ </div>
+</main>
+
+<div class="wrap">
+<section class="end">
+ <h2>Read today's forecast</h2>
+ <a class="btn" href="start-zh.html">Open the forecasts</a>
+ <nav aria-label="more pages"><a href="verify-zh.html">How good is it?</a></nav>
+ <p class="fine">Research output. The Hong Kong Observatory is the only authority for actual signals.</p>
+</section>
+</div>
+
+<div id="lb" role="dialog" aria-modal="true" aria-label="Picture, full size"><button class="x" type="button">Close</button><img alt=""></div>
+<script>
+(()=>{
+const D=document, R=D.documentElement, reduce=matchMedia("(prefers-reduced-motion: reduce)").matches, wide=matchMedia("(min-width: 900px)");
+R.classList.add("js");
+const steps=[...D.querySelectorAll(".step")];
+
+const mb=[...D.querySelectorAll(".modebar button")];
+function setMode(m){R.classList.toggle("full",m==="full"); mb.forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.m===m))); try{localStorage.setItem("tour_text",m)}catch(e){}}
+let m0="short"; try{m0=localStorage.getItem("tour_text")||"short"}catch(e){}
+setMode(m0); mb.forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.m)));
+
+const pic=f=>`<picture><source srcset="guide/dark/play_${f}.png" media="(prefers-color-scheme: dark)"><img src="guide/light/play_${f}.png" width="1000" height="765" loading="lazy" alt="All members at +${f} h"></picture>`;
+function buildFrames(box){
+ const fr=box.dataset.frames.split(","), btn=box.querySelector(".pp");
+ box.insertAdjacentHTML("afterbegin",fr.map(pic).join(""));
+ const ps=[...box.querySelectorAll("picture")]; let i=reduce?3:0, t=null, paused=reduce;
+ const show=()=>ps.forEach((p,k)=>p.classList.toggle("on",k===i));
+ const lab=()=>{btn.textContent=paused?"Play":"Pause";btn.setAttribute("aria-label",paused?"Play the animation":"Pause the animation")};
+ const run=on=>{clearInterval(t);t=null;if(on&&!paused)t=setInterval(()=>{i=(i+1)%ps.length;show()},1000)};
+ btn.addEventListener("click",()=>{paused=!paused;lab();run(true)});
+ show();lab();box._run=run;
+}
+
+const slides=D.getElementById("slides"), S={};
+steps.forEach(s=>{const f=s.querySelector("figure"), sl=D.createElement("div");sl.className="slide";sl.dataset.k=s.dataset.k;sl.appendChild(f.cloneNode(true));slides.appendChild(sl);S[s.dataset.k]=sl});
+D.querySelectorAll(".frames").forEach(buildFrames);
+const where=[...D.querySelectorAll(".where button")];
+where.forEach(b=>b.addEventListener("click",()=>{const s=steps.find(x=>x.dataset.w===b.dataset.w); if(s)s.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"})}));
+
+function liveCue(box,on){const f=box&&box.querySelector(".live iframe"); if(!f)return; if(f._on===on)return; f._on=on;
+ if(on&&!f.getAttribute("src")&&f.dataset.src)f.setAttribute("src",f.dataset.src);
+ const send=()=>{try{f.contentWindow.postMessage({hkDemo:on?"play":"stop"},"*")}catch(e){}};
+ if(on&&!f._ready)f.addEventListener("load",()=>setTimeout(send,900),{once:true}); else send()}
+addEventListener("message",e=>{if(!e.data||!e.data.hkDemoH)return;
+ D.querySelectorAll(".live iframe").forEach(f=>{if(f.contentWindow===e.source){f._ready=true; f.style.height=Math.min(1400,e.data.hkDemoH+4)+"px"}})});
+let cur=null;
+function activate(s){
+ if(cur===s)return;cur=s;
+ steps.forEach(x=>x.classList.toggle("on",x===s));
+ Object.values(S).forEach(sl=>sl.classList.toggle("on",sl.dataset.k===s.dataset.k));
+ where.forEach(b=>b.classList.toggle("on",b.dataset.w===s.dataset.w));
+ Object.keys(S).forEach(k=>liveCue(S[k],k===s.dataset.k&&wide.matches));
+}
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)activate(e.target)}),{rootMargin:"-48% 0px -48% 0px"});
+steps.forEach(s=>io.observe(s));
+activate(steps[0]);
+steps.filter(st=>st.querySelector(".live")).forEach(st=>new IntersectionObserver(es=>es.forEach(e=>liveCue(st,e.isIntersecting&&!wide.matches)),{threshold:.3}).observe(st.querySelector(".live")));
+
+const lb=D.getElementById("lb"), lbi=lb.querySelector("img");
+D.addEventListener("click",e=>{const im=e.target.closest("figure img"); if(!im||im.closest(".frames"))return;
+ const css=im.naturalWidth, px=/ 2x/.test(im.getAttribute("srcset")||"")?css*2:css;
+ lbi.src=im.currentSrc||im.src; lbi.alt=im.alt; lbi.style.width=(wide.matches?Math.min(px,css*1.6,innerWidth-64):Math.max(css,innerWidth-32))+"px";
+ lb.classList.add("on"); lb.querySelector(".x").focus()});
+const close=()=>lb.classList.remove("on"); lb.addEventListener("click",close); addEventListener("keydown",e=>{if(e.key==="Escape")close()});
+})();
+</script>
+<a id="langsw" class="langsw" href="guide.html" lang="en">English</a><script>(function(){var a=document.getElementById("langsw");if(!a)return;a.href=a.getAttribute("href")+location.search+location.hash;a.addEventListener("click",function(){try{localStorage.setItem("hk_lang","en")}catch(e){}})})();</script></body>
+</html>

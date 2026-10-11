@@ -41,7 +41,7 @@ a{color:var(--link)}
 @media (max-width:700px){.choices{grid-template-columns:1fr}.ask{padding-top:28px}}
 @media (prefers-reduced-motion:reduce){.choice{transition:none}.choice:hover{transform:none}}
 </style>
-</head>
+<style>.langsw{position:fixed;top:10px;right:12px;z-index:60;font:600 14px/1 system-ui,-apple-system,sans-serif;padding:8px 13px;border-radius:999px;background:#fff;color:#13202b;border:1px solid #c9d2db;text-decoration:none;box-shadow:0 1px 4px rgba(0,0,0,.12)}@media (prefers-color-scheme:dark){.langsw{background:#1d2731;color:#e8eef3;border-color:#3a4652}} html.demo .langsw{display:none}</style></head>
 <body>
 <div class="wrap">
 <header class="mast"><a class="name" href="index.html">Hong Kong typhoon signal forecasts</a>
@@ -84,5 +84,5 @@ s.onerror=()=>{const a=document.createElement("script"); a.src="../data/all.js";
 document.body.appendChild(s);
 })();
 </script>
-</body>
+<a id="langsw" class="langsw" href="start-zh.html" lang="zh-Hant">中文</a><script>(function(){var a=document.getElementById("langsw");if(!a)return;a.href=a.getAttribute("href")+location.search+location.hash;a.addEventListener("click",function(){try{localStorage.setItem("hk_lang","zh")}catch(e){}})})();</script></body>
 </html>

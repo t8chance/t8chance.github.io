@@ -63,6 +63,8 @@ figure.tile img{border-radius:14px;box-shadow:var(--shadow)}   /* the check page
 .up{color:var(--good);font-weight:650}.down{color:var(--bad);font-weight:650}
 .step figure{margin:18px 0 0}
 .step figure .pair{display:flex;flex-direction:column;gap:12px}
+.live{border-radius:14px;overflow:hidden;box-shadow:var(--shadow);background:var(--card);width:100%}
+.live iframe{display:block;width:100%;height:640px;border:0;background:var(--card)}
 .frames{position:relative;aspect-ratio:1000/765;max-width:100%;border-radius:14px;box-shadow:var(--shadow);overflow:hidden;background:var(--card)}
 .frames picture{position:absolute;inset:0;opacity:0;transition:opacity .3s}
 .frames picture.on{opacity:1}
@@ -88,6 +90,7 @@ figure.tile img{border-radius:14px;box-shadow:var(--shadow)}   /* the check page
  .slide .pair{width:100%;align-items:center}
  .slide .pair picture:first-child img{max-height:calc(100vh - 230px)}
  .slide .frames{width:100%;max-height:calc(100vh - 120px)}
+ .slide .live{max-height:calc(100vh - 110px);overflow:auto}
 }
 @media (max-width:899px){
  .hero{grid-template-columns:1fr;gap:28px;padding:24px 0 40px}
@@ -116,7 +119,7 @@ html:not(.full) .step .f{display:none}
 #lb .x{position:fixed;top:12px;right:14px;border:0;border-radius:10px;padding:9px 14px;font:600 15px/1 var(--body);background:var(--ink);color:var(--bg);cursor:pointer}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
-</head>
+<style>.langsw{position:fixed;top:10px;right:12px;z-index:60;font:600 14px/1 system-ui,-apple-system,sans-serif;padding:8px 13px;border-radius:999px;background:#fff;color:#13202b;border:1px solid #c9d2db;text-decoration:none;box-shadow:0 1px 4px rgba(0,0,0,.12)}@media (prefers-color-scheme:dark){.langsw{background:#1d2731;color:#e8eef3;border-color:#3a4652}} html.demo .langsw{display:none}</style></head>
 <body>
 <div class="wrap">
 <header class="mast"><a class="name" href="index.html">Hong Kong typhoon signal forecasts</a>
@@ -180,19 +183,19 @@ html:not(.full) .step .f{display:none}
    <p>ECMWF runs each forecast 50 times from slightly different starts; each run is a member. Each line is one member's storm track, coloured by the signal it expects Hong Kong to have at that point: grey for No.&nbsp;1, then <span class="c3">No.&nbsp;3</span>, <span class="c8">No.&nbsp;8</span>, <span class="c9">No.&nbsp;9</span> and <span class="c10">No.&nbsp;10</span>, and back down as the storm leaves.</p>
    <p>The thick black dashed line is the deterministic run. For past storms, the black dashed line with dots is where the storm really went. The circles mark distances from Hong Kong.</p>
    </div>
-   <figure><picture><source srcset="guide/dark/map_signal.png" media="(prefers-color-scheme: dark)"><img src="guide/light/map_signal.png" width="1000" height="765" loading="lazy" alt="Map of the members' tracks, each coloured by the signal it expects along the way"></picture></figure>
+   <figure><div class="live"><iframe data-src="index.html?run=2025092112&amp;f=ifsens&amp;demo=map" title="The real forecast map: Ragasa 2025, ECMWF run of 21 Sep 12Z; every member's track coloured by the signal it expects"></iframe></div></figure>
   </li>
 
 
 
   <li class="step" data-k="play" data-w="map"><span class="num">5</span>
    <h2>Watch all members move</h2>
-   <p class="s"><span class="ui">▶ all members</span> plays every storm forward, 12 hours a second.</p>
+   <p class="s"><span class="ui">▶ all members</span> plays every storm forward, 12 hours a second. Try it: this is the real map.</p>
    <div class="f">
    <p><span class="ui">▶ all members</span> moves every member's storm forward together, 12 forecast hours a second. The large black dot is the deterministic run.</p>
    <p>You can watch the spread grow, and see whether it closes on Hong Kong.</p>
    </div>
-   <figure><div class="frames" data-frames="0,12,24,36,48,60,72"><button class="pp" type="button" aria-label="Pause the animation">Pause</button></div></figure>
+   <figure><div class="live"><iframe data-src="index.html?run=2025092112&amp;f=ifsens&amp;demo=play" title="The real forecast map: Ragasa 2025, ECMWF run of 21 Sep 12Z, every member playing"></iframe></div></figure>
   </li>
 
   <li class="step" data-k="member" data-w="map"><span class="num">6</span>
@@ -203,10 +206,7 @@ html:not(.full) .step .f{display:none}
    <p>Its track changes colour where that member expects each signal: grey for No.&nbsp;1, then <span class="c3">No.&nbsp;3</span>, <span class="c8">No.&nbsp;8</span>, <span class="c9">No.&nbsp;9</span> and <span class="c10">No.&nbsp;10</span>, and back down as the storm leaves.</p>
    <p>The player under the map steps through the hours. The large <span class="ui">← Back to all members</span> button, at the top left of the map, brings everyone back.</p>
    </div>
-   <figure><div class="pair">
-    <picture><source srcset="guide/dark/member.png" media="(prefers-color-scheme: dark)"><img src="guide/light/member.png" width="1000" height="900" loading="lazy" alt="One member's track near Hong Kong, at one moment"></picture>
-    <picture><source srcset="guide/dark/player.png 2x" media="(prefers-color-scheme: dark)"><img src="guide/light/player.png" srcset="guide/light/player.png 2x" width="1000" height="64" loading="lazy" alt="The player: play button, time slider and speed menu"></picture>
-   </div></figure>
+   <figure><div class="live"><iframe data-src="index.html?run=2025092112&amp;f=ifsens&amp;demo=member" title="The real forecast map: one member of the Ragasa run on its own, its player running"></iframe></div></figure>
   </li>
 
   <li class="step" data-k="stations_map" data-w="map"><span class="num">7</span>
@@ -216,7 +216,7 @@ html:not(.full) .step .f{display:none}
    <p><span class="ui">zoom to Hong Kong</span> shows HKO's eight reference stations. Each dot is coloured by the station's expected wind, with its Beaufort force next to the name.</p>
    <p class="ex">In this run Cheung Chau reaches F12.</p>
    </div>
-   <figure><picture><source srcset="guide/dark/stations_map.png" media="(prefers-color-scheme: dark)"><img src="guide/light/stations_map.png" width="1000" height="804" loading="lazy" alt="Close-up map of Hong Kong with the eight stations coloured by expected wind and labelled with Beaufort forces"></picture></figure>
+   <figure><div class="live"><iframe data-src="index.html?run=2025092112&amp;f=ifsens&amp;demo=stations" title="The real forecast map zoomed on Hong Kong: the eight stations coloured by expected wind, with their Beaufort forces"></iframe></div></figure>
   </li>
 
   <li class="step" data-k="stations_table" data-w="charts"><span class="num">8</span>
@@ -281,19 +281,24 @@ D.querySelectorAll(".frames").forEach(buildFrames);
 const where=[...D.querySelectorAll(".where button")];
 where.forEach(b=>b.addEventListener("click",()=>{const s=steps.find(x=>x.dataset.w===b.dataset.w); if(s)s.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"})}));
 
+function liveCue(box,on){const f=box&&box.querySelector(".live iframe"); if(!f)return; if(f._on===on)return; f._on=on;
+ if(on&&!f.getAttribute("src")&&f.dataset.src)f.setAttribute("src",f.dataset.src);
+ const send=()=>{try{f.contentWindow.postMessage({hkDemo:on?"play":"stop"},"*")}catch(e){}};
+ if(on&&!f._ready)f.addEventListener("load",()=>setTimeout(send,900),{once:true}); else send()}
+addEventListener("message",e=>{if(!e.data||!e.data.hkDemoH)return;
+ D.querySelectorAll(".live iframe").forEach(f=>{if(f.contentWindow===e.source){f._ready=true; f.style.height=Math.min(1400,e.data.hkDemoH+4)+"px"}})});
 let cur=null;
 function activate(s){
  if(cur===s)return;cur=s;
  steps.forEach(x=>x.classList.toggle("on",x===s));
  Object.values(S).forEach(sl=>sl.classList.toggle("on",sl.dataset.k===s.dataset.k));
  where.forEach(b=>b.classList.toggle("on",b.dataset.w===s.dataset.w));
- S.play.querySelector(".frames")._run(s.dataset.k==="play"&&wide.matches);
+ Object.keys(S).forEach(k=>liveCue(S[k],k===s.dataset.k&&wide.matches));
 }
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)activate(e.target)}),{rootMargin:"-48% 0px -48% 0px"});
 steps.forEach(s=>io.observe(s));
 activate(steps[0]);
-const fb=steps.find(s=>s.dataset.k==="play").querySelector(".frames");
-new IntersectionObserver(es=>es.forEach(e=>fb._run(e.isIntersecting&&!wide.matches)),{threshold:.3}).observe(fb);
+steps.filter(st=>st.querySelector(".live")).forEach(st=>new IntersectionObserver(es=>es.forEach(e=>liveCue(st,e.isIntersecting&&!wide.matches)),{threshold:.3}).observe(st.querySelector(".live")));
 
 const lb=D.getElementById("lb"), lbi=lb.querySelector("img");
 D.addEventListener("click",e=>{const im=e.target.closest("figure img"); if(!im||im.closest(".frames"))return;
@@ -303,5 +308,5 @@ D.addEventListener("click",e=>{const im=e.target.closest("figure img"); if(!im||
 const close=()=>lb.classList.remove("on"); lb.addEventListener("click",close); addEventListener("keydown",e=>{if(e.key==="Escape")close()});
 })();
 </script>
-</body>
+<a id="langsw" class="langsw" href="guide-zh.html" lang="zh-Hant">中文</a><script>(function(){var a=document.getElementById("langsw");if(!a)return;a.href=a.getAttribute("href")+location.search+location.hash;a.addEventListener("click",function(){try{localStorage.setItem("hk_lang","zh")}catch(e){}})})();</script></body>
 </html>
