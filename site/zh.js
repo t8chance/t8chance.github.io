@@ -48,14 +48,14 @@ const EX=new Map(Object.entries({
  "deterministic run":"高解像度預報","Deterministic run":"高解像度預報","control run":"控制預報","Control run":"控制預報","faded: fewer than half the members":"淡色：不足半數成員",
  "Numbers per signal":"各信號數字","members":"集合成員","starts":"開始","ends":"結束","hours":"時數","deterministic":"高解像度預報","not issued":"沒有發出","main period":"主要時段","other periods":"其他時段",
  "Map":"地圖","zoom to Hong Kong":"放大香港範圍","zoom out":"顯示整個區域","▶ all members":"▶ 播放全部成員","❚❚ pause":"❚❚ 暫停","within 150 km only":"只顯示在 150 公里內掠過的成員","▶ play":"▶ 播放",
- "← Back to all members":"← 返回全部成員","Signal along each track":"路徑顏色：該成員預測的信號","another storm of the same member":"同一成員的其他熱帶氣旋",
+ "← Back to all members":"← 返回全部成員","Signal along each track":"路徑顏色：該成員預測的信號","another storm of the same member":"同一預報中的其他熱帶氣旋","other tropical cyclones in the same forecast":"同一預報中的其他熱帶氣旋",
  "a signal counts at chance ≥ 0.30 (No. 10: ≥ 0.40)":"機會率達 0.30 才計算（十號為 0.40）","Tap or click a line to follow one member.":"按任何一條路徑，可單獨顯示該成員。",
  "Expected signal":"預測信號","Wind index":"風力指數","Station guide":"測站指引","ensemble-mean wind index":"集合平均風力指數","Sequence:":"順序（UTC）：",
  "dashed = observed":"虛線為實況","gale stations":"烈風測站","Gale":"烈風","Storm":"暴風","Hurricane":"颶風","Expected wind, km/h":"預計風速（公里每小時）","HKO, km/h":"天文台實測（公里每小時）",
  "Difference, km/h":"相差（公里每小時）","Gale, storm and hurricane are each station's chances.":"烈風、暴風及颶風三欄為各測站的機會率。",
- "Station numbers are not ready for this run yet.":"這次預報的測站數字尚未準備好。","Days are UTC · numbers only, no model files":"標示 UTC 的時間為協調世界時，即香港時間減八小時 · 只提供數字，不含模式檔案",
- "Lines:":"路徑：","Deterministic run:":"高解像度預報：","Control run:":"控制預報：","Members.":"集合成員","Deterministic run.":"高解像度預報","Control run.":"控制預報","The times.":"時間",
- "Gale stations.":"烈風測站","Storm and hurricane force":"暴風及颶風","Stations":"各測站預計風速","HKO issued":"天文台發出","Hong Kong":"香港","no member":"沒有成員",
+ "Station numbers are not ready for this run yet.":"這次預報的測站數字尚未準備好。","Days are UTC · numbers only, no model files":"UTC 為協調世界時，即香港時間減八小時 · 只提供數字，不含模式檔案",
+ "Lines:":"路徑：","Deterministic run:":"高解像度預報：","Control run:":"控制預報：","Members.":"集合成員：","Deterministic run.":"高解像度預報：","Control run.":"控制預報：","The times.":"時間：",
+ "Gale stations.":"烈風測站：","Storm and hurricane force":"暴風及颶風","Stations":"各測站預計風速","HKO issued":"天文台發出","Hong Kong":"香港","no member":"沒有成員",
  "probability for this member":"該成員的機會率","wind index (km/h)":"風力指數（公里每小時）","— Hong Kong wind index (right axis, km/h)":"— 香港風力指數（右軸，公里每小時）",
  "- - what HKO actually issued":"- - 天文台實際發出","- - observed wind index (HKO station winds)":"- - 實測風力指數（天文台測站風速）","light":"輕微","fresh":"清勁","strong":"強","very strong":"甚強","extreme":"極強",
  "below 53 km/h":"每小時 53 公里以下","signal":"信號","pages":"頁面","storm":"熱帶氣旋","run":"起報時間","HKO's highest signal":"天文台最高信號",
@@ -100,7 +100,7 @@ const EX=new Map(Object.entries({
  "medium":"中等","high":"高","medium-low":"中低","very high":"極高","low":"低","medium-high":"中高","Yes":"有","No":"沒有","–":"–","All":"全部",
  "this site does not forecast No. 9":"本網站不預測九號信號","this storm's forecasts are being added":"預報資料整理中",
  "How many of HKO's 8 reference stations had gale winds, against what HKO recorded.":"八個參考測風站中錄得烈風的數目，與天文台紀錄比較。",
- "ECMWF AI":"ECMWF 人工智能","Pangu-Weather":"盤古氣象","Old ECMWF":"舊 ECMWF","runs":"次預報","exactly right":"完全吻合","stations off on average":"平均相差測站數目",
+ "ECMWF AI":"ECMWF 人工智能","Pangu-Weather":"盤古氣象","Old ECMWF":"舊 ECMWF","runs":"次預報","exactly right":"完全吻合","stations off on average":"個測站（平均相差）",
  "Each circle = runs with the same pair of numbers; bigger = more runs. On the dashed line = same as HKO. Hover or tap a dot for details.":"每個圓圈代表數字相同的預報，圓圈愈大，預報愈多；落在虛線上即與天文台相同。把滑鼠移到圓點上或按圓點可看詳情。",
  "Storm peaks":"各熱帶氣旋的最高風力指數","Period":"時期","Since Aug 2021":"2021年8月起","2004 to Jul 2021":"2004年至2021年7月","storms":"個熱帶氣旋","too low on average":"平均偏低","too high on average":"平均偏高","typical miss":"一般誤差",
  "Each dot = one storm's highest wind index. On the dashed line = same as observed; above = too high, below = too low. Hover or tap a dot for details.":"每點代表一個熱帶氣旋的最高風力指數；落在虛線上即與實測相同，虛線以上偏高，以下偏低。把滑鼠移到圓點上或按圓點可看詳情。",
@@ -192,13 +192,14 @@ const RX=[
  [/^(.+?) \((.+?)\): expected wind (.+?) km\/h · chance of gale (\d+)%, storm (\d+)%, hurricane (\d+)%$/,(m,st,w,v,g,sm,h)=>`${G(st)}（${who(w)}）：預計風速 ${v} 公里/小時 · 烈風機會率 ${g}%、暴風 ${sm}%、颶風 ${h}%`],
  [/^((?:the )?(?:[Mm]ember \d+|deterministic run|control run|most threatening member)(?: \(most threatening\))?) at$/,(m,a)=>`${who(a)}，`],
  [/^: (\d+) km from Hong Kong( · expected signal:)?$/,(m,a,e)=>`：距離香港 ${a} 公里`+(e?" · 預測信號：":"")],
+ [/^(\d{1,2} \d{2}:\d{2}Z): (none|No\. \d+)(?: · wind index (\d+) \((very strong|light|fresh|strong|extreme)\))?$/,(m,a,b,w,band)=>`${zt(a)}：${b==="none"?"沒有信號":G(b)}`+(w?` · 風力指數 ${w}（${wib(band)}）`:"")],
  [/^HKO (\S.*)$/,(m,a)=>`天文台（${G(a)}）`]
 ];
 function who(a){a=a.trim(); return /^(the )?[Dd]eterministic run$/.test(a)?"高解像度預報":/^(the )?[Cc]ontrol run$/.test(a)?"控制預報":
  /^(the )?[Mm]ost threatening member$/.test(a)?"威脅最大的成員":a.replace(/^(?:the )?[Mm]ember (\d+)/,"成員 $1").replace(" (most threatening)","（威脅最大）")}
 const BX=[
  [/^ECMWF runs every forecast <b>(\d+) times<\/b>, each from a slightly different start, to show how sure it is\. Each run is a <i>member<\/i>(.*)$/,(m,n,rest)=>{
-   let o=`集合預報是把同一模式由略為不同的初始條件計算多次，得出一系列可能情況。這次 ECMWF 預報有 <b>${n} 個<i>集合成員</i></b>`;
+   let o=`集合預報是將同一模式以略為不同的初始條件計算多次，得出一系列可能情況。這次 ECMWF 預報有 <b>${n} 個<i>集合成員</i></b>`;
    let r=rest, q;
    if(q=r.match(/^: <b>(\d+) of (\d+)<\/b> \((\d+)%\) of them bring No\. (\d+)\.(.*)$/)){o+=`，其中 <b>${q[1]} 個</b>（${q[3]}%）預測天文台會發出${NO[q[4]]}信號。`; r=q[5]}
    else if(q=r.match(/^\. Only <b>(\d+) of (\d+)<\/b> bring No\. 3 or higher, fewer than half, so no signal has a majority\.(.*)$/)){o+=`，只有 <b>${q[1]} 個</b>預測三號或更高信號，不足半數。`; r=q[3]}
@@ -212,16 +213,16 @@ const BX=[
  [/^<b>(\d+)<\/b> of (\d+) members pass within (\d+) km · <b>(\d+)<\/b> within (\d+) km(?: · deterministic run (\d+) km)?$/,(m,a,M,ka,b,kb,d)=>`${M} 個集合成員中，<b>${a}</b> 個在香港 ${ka} 公里範圍內掠過，<b>${b}</b> 個在 ${kb} 公里範圍內`+(d?`；高解像度預報最接近時相距 ${d} 公里`:"")+"。"],
  [/^<b>(\d+)<\/b> of (\d+) members · (?:<b>(\d+)<\/b> of them )?(.+?) → (.+?) HKT · <b>(\d+) h<\/b>$/,(m,n,M,k,a,b,h)=>`${M} 個集合成員中有 <b>${n}</b> 個`+(k?`，當中 <b>${k}</b> 個`:"")+` · ${G(a)} 至 ${G(b)}（香港時間）· <b>${h} 小時</b>`],
  [/^<b>Members\.<\/b> ECMWF runs each forecast (\d+) times, each from slightly different starting conditions\. Each run is a member\. A count like "(\d+) of (\d+) members" means (\d+) of those runs give that signal at some point, so it works like a chance\.$/,
-  (m,n,a,b)=>`<b>集合成員</b>　ECMWF 每次預報由 ${n} 個略為不同的初始條件計算，每個結果稱為一個集合成員。「${b} 個成員中有 ${a} 個」即 ${a} 個成員在預報期內某時預測該信號，可視作約 ${Math.round(100*a/b)}% 機會。`],
+  (m,n,a,b)=>`<b>集合成員</b>：ECMWF 每次預報由 ${n} 個略為不同的初始條件計算，每個結果稱為一個集合成員。「${b} 個成員中有 ${a} 個」即 ${a} 個成員在預報期內某時預測該信號，可視作約 ${Math.round(100*a/b)}% 機會。`],
  [/^<b>Deterministic run\.<\/b> Besides the (\d+) members, ECMWF makes one main forecast in finer detail\. It is the black dashed line on the map, and its own numbers say "deterministic"\. It is still one forecast, so it can be right or wrong like any member\.$/,
-  (m,n)=>`<b>高解像度預報</b>　除 ${n} 個集合成員外，ECMWF 亦以較高解像度計算一個單一預報，即地圖上的黑色虛線。它只是眾多可能情況之一，未必比其他成員準確。`],
- [/^<b>Control run\.<\/b> The AI forecast's member started without any change\. It is the black dashed line on the map\.$/,()=>`<b>控制預報</b>　人工智能模式中初始條件沒有加入擾動的成員，即地圖上的黑色虛線。`],
+  (m,n)=>`<b>高解像度預報</b>：除 ${n} 個集合成員外，ECMWF 亦以較高解像度計算一個單一預報，即地圖上的黑色虛線。它只是眾多可能情況之一，未必比其他成員準確。`],
+ [/^<b>Control run\.<\/b> The AI forecast's member started without any change\. It is the black dashed line on the map\.$/,()=>`<b>控制預報</b>：人工智能模式中初始條件沒有加入擾動的成員，即地圖上的黑色虛線。`],
  [/^<b>The times\.<\/b> The members that give the signal do not agree to the minute\. The start and end shown are the middle ones: half of those members start earlier, half later, and the same for the end\. The hours are the middle length\. The timeline below shows how far they spread \(earliest (\d+)% to latest (\d+)%\)\.$/,
-  (m,a,b)=>`<b>時間</b>　預測同一信號的成員，開始及結束時間各有不同。這裏顯示的是中位數，即一半成員較早、一半較遲；時數亦取中位數。下面的時間線顯示最早 ${a}% 至最遲 ${b}% 成員的範圍。`],
+  (m,a,b)=>`<b>時間</b>：預測同一信號的成員，開始及結束時間各有不同。這裏顯示的是中位數，即一半成員較早、一半較遲；時數亦取中位數。下面的時間線顯示最早 ${a}% 至最遲 ${b}% 成員的範圍。`],
  [/^<b>Gale stations\.<\/b> HKO decides No\. 3 and No\. 8 by the winds at (\d+) reference stations near sea level: .+?\. It raises No\. 8 when half or more of them \((\d+) of (\d+)\) get, or are expected to get, gale winds of (\d+) to (\d+) km\/h\. A count like "(\d+) of (\d+) \((\d+)–(\d+)\)" means the middle member expects (\d+) of the (\d+) stations to get gale winds, and most members expect (\d+) to (\d+)\.$/,
-  (m,n,a,b,lo,hi,c,d,e,f,g,h,i,j)=>`<b>烈風測站</b>　天文台參考熱帶氣旋警告系統網絡內 ${n} 個近海平面的參考測風站的風力，決定是否發出三號及八號信號：長洲、赤鱲角、啟德、流浮山、西貢、沙田、打鼓嶺及青衣。當網絡中半數或以上（${b} 個中有 ${a} 個）錄得或預料會錄得每小時 ${lo} 至 ${hi} 公里的烈風，天文台會發出八號信號。「${d} 個中有 ${c} 個（${e}–${f}）」表示中位成員預測 ${h} 個測站中有 ${g} 個錄得烈風，大部分成員預測 ${i} 至 ${j} 個。`],
+  (m,n,a,b,lo,hi,c,d,e,f,g,h,i,j)=>`<b>烈風測站</b>：天文台參考熱帶氣旋警告系統網絡內 ${n} 個近海平面的參考測風站的風力，決定是否發出三號及八號信號：長洲、赤鱲角、啟德、流浮山、西貢、沙田、打鼓嶺及青衣。當網絡中半數或以上（${b} 個中有 ${a} 個）錄得或預料會錄得每小時 ${lo} 至 ${hi} 公里的烈風，天文台會發出八號信號。「${d} 個中有 ${c} 個（${e}–${f}）」表示中位成員預測 ${h} 個測站中有 ${g} 個錄得烈風，大部分成員預測 ${i} 至 ${j} 個。`],
  [/^<b>Storm and hurricane force<\/b> count the same (\d+) stations, at (\d+) and (\d+) km\/h \((\d+)-minute average wind\)\. Each station's own chance and expected wind are in <b>Stations<\/b> just above, for the (deterministic|control) run, and in the Station guide tab under the map, which shows the same run until you click another track\.$/,
-  (m,n,a,b,c,w)=>`<b>暴風及颶風</b>　以同樣 ${n} 個測站計算，持續風力分別達每小時 ${a} 及 ${b} 公里（${c} 分鐘平均）。各測站的機會率及預計風速見上面的<b>各測站預計風速</b>（${w==="control"?"控制預報":"高解像度預報"}）及地圖下方的「測站指引」；未按其他路徑前，兩者顯示同一預報。`],
+  (m,n,a,b,c,w)=>`<b>暴風及颶風</b>：以同樣 ${n} 個測站計算，持續風力分別達每小時 ${a} 及 ${b} 公里（${c} 分鐘平均）。各測站的機會率及預計風速見上面的<b>各測站預計風速</b>（${w==="control"?"控制預報":"高解像度預報"}）及地圖下方的「測站指引」；未按其他路徑前，兩者顯示同一預報。`],
  [/^<b>Lines:<\/b> (.+)$/,null],
  [/^A rough guide read from each station's chances, not a wind forecast\.(.*)$/,(m,r)=>{let o="根據各測站的烈風、暴風及颶風機會率估算，只供參考，並非風速預報。"; r=r.trim();
    const P=[["The same forecast as the Station guide tab under the map and the station dots on the map;","與地圖下方「測站指引」分頁及地圖上的測站圓點屬同一預報；"],["This forecast, the same as Stations in the answer card;","與上面「各測站預計風速」屬同一預報；"],
@@ -252,7 +253,10 @@ const BX=[
   (m,a)=>`本網站的機會率，是 ECMWF 物理模式約 50 個集合成員中預測該信號的比例。過往熱帶氣旋每日重新計算一次，約在起報後 13 小時完成，所以本網站的預報往往比 MET WARN 的帖文早一天。MET WARN 部分預測只以圖片公布，已註明。資料來源：MET WARN 公開頻道（${a}，2026年10月閱覽）及天文台的熱帶氣旋警告信號紀錄。`]
 ];
 const NBSP=/\u00a0/g, norm=s=>s.replace(NBSP," ").replace(/&nbsp;/g," ").replace(/\s+/g," ").trim();
-function tt(s){const k=norm(s); if(!k||!/[A-Za-z]/.test(k))return null;
+function tt(s){const k=norm(s);
+ const mw=k.match(/^([\u4e00-\u9fff]+) = ([\u4e00-\u9fff]+)$/); if(mw)return `${mw[2]}（原文：${mw[1]}）`;
+ if(k==="members"&&/^\s/.test(s))return " 個集合成員"+(/\s$/.test(s)?" ":"");
+ if(!k||!/[A-Za-z]/.test(k))return null;
  let r=EX.get(k);
  if(r===undefined)for(const [re,f] of RX){const m=k.match(re); if(m){r=f(...m); break}}
  if(r===undefined||r===null){const g=G(k); if(g!==k)r=g; else return null}
