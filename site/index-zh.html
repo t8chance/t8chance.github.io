@@ -8,13 +8,13 @@
    controls, and the charts. Neutrals are the map's cool sea-greys; HKO's signal colours are the only strong colour. */
 :root{
  --bg:#edf1f4;--card:#fff;--soft:#e3e9ee;--ink:#13202b;--mut:#55636f;--line:#d3dbe2;--link:#1a5ea8;
- --no1:#c3cad1;--no3:#d98c1a;--no8:#b2182b;--no9:#d6457f;--no10:#5b2a86;
+ --no1:#c3cad1;--no3:#d98c1a;--no8:#d7301f;--no9:#7f0000;--no10:#54278f;
  --good:#1a7f37;--bad:#c62828;--halo:#fff;--raise:#fff;--warn:#9a5b00;--shadow:0 1px 2px rgba(19,32,43,.06),0 10px 28px rgba(19,32,43,.07);
  --disp:"Barlow Condensed","Roboto Condensed","Arial Narrow",sans-serif;
  --body:"Barlow",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 @media (prefers-color-scheme:dark){:root{
  --bg:#0f1923;--card:#16222e;--soft:#1c2a37;--ink:#e2e9ef;--mut:#93a3b1;--line:#273746;--link:#8cbcff;
- --no1:#6f7a84;--no3:#f0a23a;--no8:#f0625e;--no9:#ef6fa2;--no10:#b08ae8;
+ --no1:#6f7a84;--no3:#f0a23a;--no8:#ef4a3c;--no9:#ffc6b8;--no10:#b08ae8;
  --good:#5cc97a;--bad:#ff7b72;--halo:#16222e;--raise:#33475a;--warn:#f0b35a;--shadow:0 1px 0 rgba(255,255,255,.03);color-scheme:dark}}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
@@ -23,7 +23,7 @@ a{color:var(--link);text-underline-offset:2px}
 b,strong{font-weight:650}
 :focus-visible{outline:2px solid var(--link);outline-offset:2px}
 .wrap{max-width:1120px;margin:0 auto;padding:0 16px 56px}
-html.demo .wrap{padding:6px 2px 4px} html.demo-answer .tlcard,html.demo-timeline .hero{display:none} html.demo .toolbar,html.demo #status{margin:0} html.demo body{background:var(--bg)} html.demo .mapcard{margin:0}
+html.demo .wrap{padding:6px 2px 4px} html.demo-answer .tlcard,html.demo-timeline .hero{display:none} html.demo .toolbar,html.demo #status{margin:0} html.demo body{background:var(--bg)} html.demo .mapcard{margin:0} @media (pointer:coarse){html.demo input[type=range]{pointer-events:none}}
 
 /* masthead */
 .mast{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 28px;padding:24px 0 18px}
@@ -102,7 +102,7 @@ svg{width:100%;height:auto;display:block;background:var(--card);border:1px solid
 #map text{paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}   /* labels readable over the tracks (2026-10-11) */
 .mapkey{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;margin:10px 0 2px;font-size:15px;color:var(--ink)}
 .mapkey span{display:inline-flex;align-items:center;gap:7px;white-space:nowrap} .mapkey .kh{font-weight:600}
-.mapkey i{display:inline-block;width:26px;height:5px;border-radius:3px}
+.mapkey i{display:inline-block;width:26px;height:5px;border-radius:3px;box-shadow:0 0 0 2px #e8eff6}
 .mapkey .kdash{height:0;border-top:3px dashed #000;border-radius:0} .mapkey .kthin{height:0;border-top:2px dashed #999;border-radius:0}
 .mapkey b{font-weight:400} .mapkey .kn{color:var(--mut);font-size:13.5px;white-space:normal}
 #maphint{font-size:14.5px}
@@ -257,7 +257,7 @@ function wiEnsemble(){
 const memLab=(m,cap)=>m===52&&(ens==="ifsens"||ens==="tigge")?(cap?"Deterministic run":"the deterministic run"):m===51&&ens==="aifsens"?(cap?"Control run":"the control run"):`${cap?"Member":"member"} ${m}`;
 const DEFM=()=>{if(!TR)return null;const has=m=>TR.tracks.some(t=>t.m===m);return (ens==="ifsens"||ens==="tigge")&&has(52)?52:ens==="aifsens"&&has(51)?51:TR.top};
 const tierOf=t=>(t.p10||0)>=.4?[10,t.p10]:t.t9===9?[9,t.p10hi||t.p10||0]:(t.p8||0)>=.3?[8,t.p8]:(t.p3||0)>=.3?[3,t.p3]:[0,Math.max(t.p3||0,t.p8||0)];
-const TIERC={0:"#b9b9b9",3:"#e08c1a",8:"#c62828",9:"#d6457f",10:"#5b2a86"};
+const TIERC={0:"#b9b9b9",3:"#d98c1a",8:"#d7301f",9:"#7f0000",10:"#54278f"};
 const truthNow=()=>{if(!window.HKTRUTH) return null; const cs=casesOf(cyc).filter(c=>window.HKTRUTH[c]); if(!cs.length) return null;
  const t=cs.length>1&&TR?TR.tracks.find(x=>x.m===(sel??DEFM())):null; if(!t) return window.HKTRUTH[cs[0]];
  let best=cs[0],bd=Infinity;
@@ -466,7 +466,7 @@ function load(){
  if(LV.some(([sg])=>nOf(sg)>0)||hcases.length){
   const x=topL&&E&&E[topL[0]]&&E[topL[0]].n?E[topL[0]]:null;
   const ans=`<div class="ans"><div class="k">${one?"This run gives":"Highest signal a majority gives"}</div>`
-   +`<div class="badge" style="color:${topL?topL[3]:"var(--mut)"}">${topL?topL[1]:(nOf("No3")?"no majority":"none")}</div>`
+   +`<div class="badge" style="color:${topL?topL[3]:"var(--mut)"}">${topL?topL[1]:"none"}</div>`
    +(topL?`<div class="v">${one?"":`<b>${nOf(topL[0])}</b> of ${d.members} members`}${x?`${one?"":" · "}${x.groups?`<b>${MAING(x).n}</b> of them `:""}${hk(x.start[1])} → ${hk(x.end[1])} HKT · <b>${x.hours[1]}&nbsp;h</b>`:""}</div>`:"")
    +(!one?`<div class="mexp">ECMWF runs every forecast <b>${d.members} times</b>, each from a slightly different start, to show how sure it is. Each run is a <i>member</i>${topL?`: <b>${nOf(topL[0])} of ${d.members}</b> (${Math.round(100*nOf(topL[0])/d.members)}%) of them bring ${topL[1]}.`:nOf("No3")?`. Only <b>${nOf("No3")} of ${d.members}</b> bring No. 3 or higher, fewer than half, so no signal has a majority.`:". None of them brings No. 3 or higher."}${ens==="ifsens"?` ECMWF also makes one main forecast in finer detail, the <b>deterministic run</b> (black dashed on the map).`:ens==="aifsens"?` The <b>control run</b> is the one member started without any change (black dashed on the map).`:""}</div>`:"")
    +(x&&x.groups?`<div class="note">other periods: ${x.groups.filter(g=>g!==MAING(x)).map(g=>`${g.n} member${g.n>1?"s":""} ${hk(g.start[1])} → ${hkS(g.end[1])}`).join(" · ")}</div>`:"")
@@ -671,7 +671,7 @@ function fillGale(){const f=document.getElementById("galeF"); if(!f)return;
  const clamp=()=>{const R=VIEWS.region,w=VB[1]-VB[0],h=VB[3]-VB[2];
   const cx=Math.min(Math.max((VB[0]+VB[1])/2,R[0]),R[1]), cy=Math.min(Math.max((VB[2]+VB[3])/2,R[2]),R[3]);
   VB=[cx-w/2,cx+w/2,cy-h/2,cy+h/2]};
- m.addEventListener("pointerdown",e=>{st={x:e.clientX,y:e.clientY,vb:VB.slice()};moved=false});
+ m.addEventListener("pointerdown",e=>{if(window.HK_DEMO&&e.pointerType==="touch")return; st={x:e.clientX,y:e.clientY,vb:VB.slice()};moved=false});
  m.addEventListener("pointermove",e=>{if(!st)return;const dx=e.clientX-st.x,dy=e.clientY-st.y;
   if(!moved&&Math.hypot(dx,dy)<4)return;
   if(!moved){moved=true;try{m.setPointerCapture(e.pointerId)}catch(_){}}
@@ -691,7 +691,7 @@ function drawMap(){
  const dw=s.getBoundingClientRect().width||(s.parentNode&&s.parentNode.clientWidth)||1200, K=dw>=700?1.2:1.1;
  const W=Math.max(300,Math.round(dw/K)),[lo0,lo1,la0,la1]=VB; MAPW=dw;
  $("#selbar").style.display=sel!==null?"":"none";
- s.style.touchAction=view==="hk"?"none":"auto"; s.style.cursor=moved?"grabbing":"grab";
+ s.style.touchAction=window.HK_DEMO?"pan-x pan-y pinch-zoom":view==="hk"?"none":"auto"; s.style.cursor=moved?"grabbing":"grab";
  const H=Math.round(W*(la1-la0)*110.57/((lo1-lo0)*111.32*Math.cos((la0+la1)/2*Math.PI/180)));
  s.setAttribute("viewBox",`0 0 ${W} ${H}`);
  const X=l=>(l-lo0)/(lo1-lo0)*W, Y=b=>H-(b-la0)/(la1-la0)*H, hx=X(114.174), hy=Y(22.302);
@@ -791,7 +791,8 @@ if(!byI&&W>=820){const lx=W-222, items=[[1,"No. 1"],[3,"No. 3"],[8,"No. 8"],[9,"
 }
 
 const SIGLV=[0,1,3,8,9,10], SIGN={0:"none",1:"No. 1",3:"No. 3",8:"No. 8",9:"No. 9",10:"No. 10"},
-      SIGC={0:"#bbb",1:"#8c8c8c",3:"var(--no3)",8:"var(--no8)",9:"#d6457f",10:"var(--no10)"};
+      SIGC={0:"#bbb",1:"#8c8c8c",3:"#d98c1a",8:"#d7301f",9:"#7f0000",10:"#54278f"},
+      SIGV={0:"#bbb",1:"#8c8c8c",3:"var(--no3)",8:"var(--no8)",9:"var(--no9)",10:"var(--no10)"};
 const SQC=new WeakMap(), sqOf=t=>{if(!SQC.has(t))SQC.set(t,memberSignal(t)); return SQC.get(t)};
 function sigAt(t,h,SQ){SQ=SQ||sqOf(t); if(!SQ.length) return 0; let v=0;
  for(const p of SQ){if(labH(p[0])<=h+1e-6) v=p[1]; else break} return v}
@@ -842,11 +843,11 @@ function chart(){
   const ly=v=>H-B-(H-B-22)*SIGLV.indexOf(v)/(SIGLV.length-1), xs=i=>L+(W-L-R)*i/(series.length||1);
   SIGLV.forEach(v=>{s.appendChild(el("line",{x1:L,x2:W-R,y1:ly(v),y2:ly(v),stroke:"var(--line)"}));
    const tx=el("text",{x:6,y:ly(v)+4,fill:"var(--mut)","font-size":11});tx.textContent=SIGN[v];s.appendChild(tx)});
-  series.forEach((p,i)=>{if(!p[1])return; s.appendChild(el("rect",{x:xs(i),y:ly(p[1]),width:Math.max(1,xs(i+1)-xs(i)),height:ly(0)-ly(p[1]),fill:SIGC[p[1]],opacity:.85}))});
+  series.forEach((p,i)=>{if(!p[1])return; s.appendChild(el("rect",{x:xs(i),y:ly(p[1]),width:Math.max(1,xs(i+1)-xs(i)),height:ly(0)-ly(p[1]),fill:SIGV[p[1]],opacity:.85}))});
   const step=Math.max(1,Math.round(series.length/7));
   series.forEach((p,i)=>{if(i%step)return;const tx=el("text",{x:xs(i),y:H-14,fill:"var(--mut)","font-size":11,"text-anchor":"middle"});tx.textContent=String(p[0]).replace("/"," ")+"Z";s.appendChild(tx)});
   const runs=[];series.forEach((p,i)=>{if(!runs.length||runs[runs.length-1].v!==p[1])runs.push({v:p[1],a:p[0],b:p[0]});else runs[runs.length-1].b=p[0]});
-  const seq=runs.filter(r=>r.v>=1).map(r=>`<b style="color:${SIGC[r.v]}">${SIGN[r.v]}</b> ${String(r.a).replace("/"," ")}Z–${String(r.b).replace("/"," ")}Z`).join(" → ");
+  const seq=runs.filter(r=>r.v>=1).map(r=>`<b style="color:${SIGV[r.v]}">${SIGN[r.v]}</b> ${String(r.a).replace("/"," ")}Z–${String(r.b).replace("/"," ")}Z`).join(" → ");
   $("#cnote").innerHTML=(seq?`Sequence: ${seq}`:"no signal")+(t.other_driver?` · ⚠ also ${t.other_driver.storm} (dashed)`:"")+(t.wix&&t.wix.length?" · teal = wind index (km/h)":"");
   const TRU=truthNow();
   if(TRU&&TRU.signals){let dd="";series.forEach((p,i)=>{const dh=(i+1<hs.length?hs[i+1]-hs[i]:3)||3, g=sigIn(TRU,hs[i],hs[i]+dh);
@@ -952,7 +953,7 @@ if(tab==="wi"){const dd=line((TRU.wi||[]).map(([z,v])=>[isoH(z),v]));
        drv, obs])+`<br>${wind}`;
 }
 const DEMO=(location.search.match(/[?&]demo=(play|member|map|stations|toolbar|answer|timeline|stationtable)\b/)||[])[1]||"";
-if(DEMO){document.documentElement.classList.add("demo","demo-"+DEMO);
+if(DEMO){window.HK_DEMO=DEMO; document.documentElement.classList.add("demo","demo-"+DEMO);
  const KEEP={toolbar:[".toolbar"],answer:["#status"],timeline:["#status"],stationtable:["#chead","#tabs","#stationchart","#cnote"]}[DEMO]||[".mapcard"];
  const W=document.querySelector(".wrap"); [...document.body.children].forEach(c=>{if(c!==W&&c.tagName!=="SCRIPT")c.style.display="none"});
  if(W)[...W.children].forEach(c=>{if(!KEEP.some(k=>c.matches(k)))c.style.display="none"});
