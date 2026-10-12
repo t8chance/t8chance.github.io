@@ -1,6 +1,6 @@
 (function(){
 "use strict";
-const STORM={"Barijat":"百里嘉","Bebinca":"貝碧嘉","Cempaka":"查帕卡","Chaba":"暹芭","Danas":"丹娜絲","Doksuri":"杜蘇芮","Ewiniar":"艾雲尼","Fengshen":"風神","Fung-wong":"鳳凰","Fung-Wong":"鳳凰","Goni":"天鵝","Hagupit":"黑格比","Haima":"海馬","Hato":"天鴿","Higos":"海高斯","Kai-Tak":"啟德","Kajiki":"劍魚","Kalmaegi":"海鷗","Kammuri":"北冕","Khanun":"卡努","Koinu":"小犬","Kompasu":"圓規","Koppu":"巨爵","Linfa":"蓮花","Lionrock":"獅子山","Lupit":"盧碧","Ma-On":"馬鞍","Maliksi":"馬力斯","Mangkhut":"山竹","Matmo":"麥德姆","Maysak":"美莎克","Merbok":"苗柏","Mitag":"米娜","Molave":"莫拉菲","Mulan":"木蘭","Nalgae":"尼格","Nangka":"浪卡","Nesat":"納沙","Nida":"妮妲","Nongfa":"藍湖","Noul":"紅霞","Nuri":"鸚鵡","Pakhar":"帕卡","Podul":"楊柳","Ragasa":"樺加沙","Roke":"洛克","Saola":"蘇拉","Saudel":"沙德爾","Sinlaku":"森拉克","Son-Tinh":"山神","Talim":"泰利","Tapah":"塔巴","Toraji":"桃芝","Usagi":"天兔","Utor":"尤特","Vicente":"韋森特","Wipha":"韋帕","Wutip":"蝴蝶","Yagi":"摩羯","Yutu":"玉兔"};
+const STORM={"Chanthu":"燦都","Dianmu":"電母","Fanapi":"凡亞比","Jebi":"飛燕","Mawar":"瑪娃","Megi":"鮎魚","Mujigae":"彩虹","Neoguri":"浣熊","Nock-Ten":"洛坦","Pabuk":"帕布","Rammasun":"威馬遜","Rumbia":"溫比亞","Sarika":"莎莉嘉","Soudelor":"蘇迪羅","Trami":"潭美","Yinxing":"銀杏","Barijat":"百里嘉","Bebinca":"貝碧嘉","Cempaka":"查帕卡","Chaba":"暹芭","Danas":"丹娜絲","Doksuri":"杜蘇芮","Ewiniar":"艾雲尼","Fengshen":"風神","Fung-wong":"鳳凰","Fung-Wong":"鳳凰","Goni":"天鵝","Hagupit":"黑格比","Haima":"海馬","Hato":"天鴿","Higos":"海高斯","Kai-Tak":"啟德","Kajiki":"劍魚","Kalmaegi":"海鷗","Kammuri":"北冕","Khanun":"卡努","Koinu":"小犬","Kompasu":"圓規","Koppu":"巨爵","Linfa":"蓮花","Lionrock":"獅子山","Lupit":"盧碧","Ma-On":"馬鞍","Maliksi":"馬力斯","Mangkhut":"山竹","Matmo":"麥德姆","Maysak":"美莎克","Merbok":"苗柏","Mitag":"米娜","Molave":"莫拉菲","Mulan":"木蘭","Nalgae":"尼格","Nangka":"浪卡","Nesat":"納沙","Nida":"妮妲","Nongfa":"藍湖","Noul":"紅霞","Nuri":"鸚鵡","Pakhar":"帕卡","Podul":"楊柳","Ragasa":"樺加沙","Roke":"洛克","Saola":"蘇拉","Saudel":"沙德爾","Sinlaku":"森拉克","Son-Tinh":"山神","Talim":"泰利","Tapah":"塔巴","Toraji":"桃芝","Usagi":"天兔","Utor":"尤特","Vicente":"韋森特","Wipha":"韋帕","Wutip":"蝴蝶","Yagi":"摩羯","Yutu":"玉兔"};
 const NO={"1":"一號","3":"三號","8":"八號","9":"九號","10":"十號"};
 const MON={Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12};
 const MONF={January:1,February:2,March:3,April:4,May:5,June:6,July:7,August:8,September:9,October:10,November:11,December:12};
@@ -117,6 +117,10 @@ const RX=[
  [/^of (\d+) members pass within (\d+) km ·$/,(m,a,b)=>` / ${a} 個集合成員在香港 ${b} 公里範圍內掠過 · `],
  [/^within (\d+) km(?: · deterministic run (\d+) km)?$/,(m,a,b)=>` 個在 ${a} 公里範圍內`+(b?` · 高解像度預報最接近時相距 ${b} 公里`:"")],
  [/^of (\d+)$/,(m,a)=>` / ${a} `],
+ [/^Similar storms — stronger: (.+)$/,(m,a)=>{const L=a.split(" · weaker: "), f=x=>x==="none"?"沒有":x.split(", ").map(y=>G(y).replace(/）\s+/,"）")).join("、"); return `相近個案——較強：${f(L[0])}；較弱：${f(L[1]||"none")}`}],
+ [/^Below (\d+) km\/h: outside the top (\d+) of the (\d+) storms since 2007; the forecast cannot rank weaker storms finely\.$/,
+  (m,v,n,N)=>`低於每小時 ${v} 公里：不在 2007 年以來 ${N} 個熱帶氣旋的首 ${n} 位之內；本預報未能細分較弱的熱帶氣旋。`],
+ [/^HKO recorded (\d+\.\d) km\/h, (\d+)(?:st|nd|rd|th) of the (\d+)\.$/,(m,v,n,N)=>`天文台實測：每小時 ${v} 公里，在 ${N} 個熱帶氣旋中排第 ${n}。`],
  [/^\(10th–90th percentile: (\d+)–(\d+)\)$/,(m,a,b)=>`（第 10–90 百分位數：${a}–${b} 個）`],
  [/^Against MET WARN's (\d+) forecasts for the storms of 2025 and 2026: this site closer (\d+) times, MET WARN (\d+), same call (\d+)\.$/,
   (m,n,a,b,c)=>`與 MET WARN 就 2025 年及 2026 年熱帶氣旋公布的 ${n} 次預測比較：本網站較接近實際結果 ${a} 次，MET WARN 較接近實際結果 ${b} 次，落在相同機會率區間 ${c} 次。`],
@@ -210,6 +214,12 @@ const RX=[
 function who(a){a=a.trim(); return /^(the )?[Dd]eterministic run$/.test(a)?"高解像度預報":/^(the )?[Cc]ontrol run$/.test(a)?"控制預報":
  /^(the )?[Mm]ost threatening member$/.test(a)?"對香港影響最大的成員":a.replace(/^(?:the )?[Mm]ember (\d+)/,"成員 $1").replace(" (most threatening)","（對香港影響最大）")}
 const BX=[
+ [/^8-station average of the highest 10-minute mean: <b>(\d+\.\d) km\/h<\/b> · <b>(\d+)(?:st|nd|rd|th)<\/b> of the (\d+) storms since 2007 that brought No\. 3 or higher$/,
+  (m,v,n,N)=>`八個參考測風站最高十分鐘平均風速的平均值：<b>每小時 ${v} 公里</b>｜在 2007 年以來 ${N} 個天文台發出三號或以上信號的熱帶氣旋中排<b>第 ${n}</b>`],
+ [/^8-station average in this forecast \(reference only\): <b>(\d+) km\/h<\/b>(?: · would rank about <b>(\d+)(?:st|nd|rd|th)<\/b> of the (\d+) storms since 2007)?$/,
+  (m,v,n,N)=>`此預報的八站平均風速（只供參考）：<b>每小時 ${v} 公里</b>`+(n?`｜在 2007 年以來 ${N} 個熱帶氣旋中約排<b>第 ${n}</b>`:"")],
+ [/^<b>8-station average\.<\/b> The average over the 8 reference stations of each station's highest 10-minute mean wind in the storm\. Past storms are ranked by it: (\d+) storms since 2007 that brought No\. 3 or higher, from the same station records the station numbers are built on\. For a forecast it is shown for each member, as a reference only, under the table in the Station guide tab, from that member's wind guide at the 8 stations; below (\d+) km\/h the guide cannot tell storms apart, so no rank is given\.$/,
+  (m,N,v)=>`<b>八站平均風速</b>：八個參考測風站各自在熱帶氣旋期間錄得的最高十分鐘平均風速的平均值。過往個案按此排列：2007 年以來天文台發出三號或以上信號的 ${N} 個熱帶氣旋，數據與本網站測風站數字所用的紀錄相同。預報方面，「測風站預報」分頁表格下方列出每個集合成員的數值，只供參考，由該成員在八個測風站的風速參考值計算；低於每小時 ${v} 公里時，風速參考值未能區分不同熱帶氣旋，因此不作排名。`],
  [/^<span class="gl"( title="[^"]*")?>(Gale stations|Storm force|Hurricane force|Reference stations reaching (?:gale|storm|hurricane) force|Reference stations that recorded (?:gale|storm|hurricane) force)<\/span> (<span class="gd"[^>]*>(?:<i[^>]*><\/i>)*<\/span>) <b class="gn">(\d+)<\/b> of (\d+)( <span class="rng">\(10th–90th percentile: (\d+)–(\d+)\)<\/span>)?( <span class="rng">· deterministic run: (\d+)<\/span>)?$/,galeRow],
  [/^ECMWF runs every forecast <b>(\d+) times<\/b>, each from a slightly different start, to show how sure it is\. Each run is a <i>member<\/i>(.*)$/,(m,n,rest)=>{
    const FULL={"1":"一號戒備信號","3":"三號強風信號","8":"八號烈風或暴風信號","9":"九號烈風或暴風風力增強信號","10":"十號颶風信號"};
