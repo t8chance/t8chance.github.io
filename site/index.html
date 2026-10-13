@@ -438,7 +438,7 @@ function load(){
  const d=(HK[cyc]||{})[ens];
  $("#foot").innerHTML=`Days are UTC · numbers only, no model files`;
  if(d&&d.generated){const g=new Date(d.generated.replace(" ","T")+":00Z"), hrs=(Date.now()-g)/3.6e6;
-  $("#stamp").innerHTML=`<b>${FCN[ens]||ens}</b>`
+  $("#stamp").innerHTML=`<b>${FCN[ens]||ens}</b>`+(d.experimental?` · <b>experimental</b>`:"")
    +(ens==="pangu"?" · re-forecast from ERA5, one run, own tracker":"")
    +` · produced ${d.generated} UTC (${hrs<1?"<1 h":Math.round(hrs)+" h"} ago)`
    +(cyc===cycles[0]&&hrs>18?` — <b style="color:var(--no8)">this copy is behind</b>`:"")
