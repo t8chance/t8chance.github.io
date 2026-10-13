@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>How to read the forecasts</title>
-<meta name="description" content="How to read the Hong Kong typhoon signal forecasts, on the newest forecast with a storm near Hong Kong.">
+<meta name="description" content="How to read the Hong Kong typhoon signal forecasts, on the newest forecast that gives a signal.">
 
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap">
@@ -136,7 +136,7 @@ html:not(.full) .step .f{display:none}
   <p class="fine" id="tourrun"></p>
   <div class="acts"><a class="btn" href="start.html">Open the forecasts</a><a href="#s1">Start the tour</a></div>
  </div>
- <figure><div class="live"><iframe src="index.html?run=storm&amp;f=ifsens&amp;demo=answer" title="The answer cards of the newest forecast with a storm near Hong Kong" loading="lazy"></iframe></div></figure>
+ <figure><div class="live"><iframe src="index.html?run=storm&amp;f=ifsens&amp;demo=answer" title="The answer cards of the newest forecast that gives a signal" loading="lazy"></iframe></div></figure>
 </section>
 </div>
 
@@ -294,7 +294,7 @@ function liveCue(box,on){const f=box&&box.querySelector(".live iframe"); if(!f)r
 const MONS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 addEventListener("message",e=>{const r=e.data&&e.data.hkTourRun; if(!r||window.HK_TOURRUN)return; window.HK_TOURRUN=r; const c=r.cyc;
  const lab=document.getElementById("tourrun"), ea=document.getElementById("ex-answer"), es=document.getElementById("ex-stations");
- if(lab)lab.textContent=`The pictures show the newest ECMWF forecast with a storm near Hong Kong: the run of ${+c.slice(6,8)} ${MONS[+c.slice(4,6)-1]} ${c.slice(0,4)}, ${c.slice(8,10)} UTC${r.past?` (${r.past})`:""}.`;
+ if(lab)lab.textContent=`The pictures show the newest ECMWF forecast in which most members give a signal: the run of ${+c.slice(6,8)} ${MONS[+c.slice(4,6)-1]} ${c.slice(0,4)}, ${c.slice(8,10)} UTC${r.past?` (${r.past})`:""}.`;
  if(ea)ea.innerHTML=r.top?`Here ${r.n} of ${r.M} members give <span class="c${r.top}">No.&nbsp;${r.top}</span>`+(r.h!=null?`, for about ${r.h}&nbsp;hours.`:"."):r.n?`Here only ${r.n} of ${r.M} members give No.&nbsp;3 or higher, fewer than half.`:`Here no member gives No.&nbsp;3.`;
  if(es)es.textContent=!r.st?"":r.st[1]==="≤F7"?"In this run no station goes above F7.":`In this run ${r.st[0]} reaches ${r.st[1]}.`});
 addEventListener("message",e=>{if(!e.data||!e.data.hkDemoH)return;

@@ -1019,7 +1019,9 @@ if(DEMO){window.HK_DEMO=DEMO; document.documentElement.classList.add("demo","dem
  const KEEP={toolbar:[".toolbar"],answer:["#status"],timeline:["#status"],stationtable:["#chead","#tabs","#stationchart","#cnote"]}[DEMO]||[".mapcard"];
  const W=document.querySelector(".wrap"); [...document.body.children].forEach(c=>{if(c!==W&&c.tagName!=="SCRIPT")c.style.display="none"});
  if(W)[...W.children].forEach(c=>{if(!KEEP.some(k=>c.matches(k)))c.style.display="none"});
- const post=()=>{try{parent.postMessage({hkDemoH:document.documentElement.scrollHeight},"*")}catch(x){}};
+ const post=()=>{try{const b=[...document.querySelectorAll(".wrap>*")].filter(c=>c.style.display!=="none"&&c.getClientRects().length)
+   .reduce((m,c)=>Math.max(m,c.getBoundingClientRect().bottom+scrollY),0);
+  parent.postMessage({hkDemoH:b>0?Math.ceil(b+18):document.documentElement.scrollHeight},"*")}catch(x){}};
  try{new ResizeObserver(post).observe(document.body)}catch(x){} setTimeout(post,300);
  const setup=(n=0)=>{if(!TR){if(n<30)setTimeout(()=>setup(n+1),400);return}
   if(DEMO==="member"){sel=TR.top; selH=null; drawMap(); chart()}
@@ -1042,7 +1044,9 @@ if(DEMO){window.HK_DEMO=DEMO; document.documentElement.classList.add("demo","dem
    h:x&&x.hours?x.hours[1]:null,st:st&&[st.nm,st.f]}},"*")}catch(e){}};
  if(parent!==window)setTimeout(tour,600)}
 try{const q=new URLSearchParams(location.search), f=q.get("f"); let r=q.get("run");
- if(r==="storm") r=cycles.find(c=>HK[c].ifsens&&!HK[c].ifsens.quiet)||cycles[0];
+ if(r==="storm"){
+  const tt=d=>{const E=d.event||{}, MJ=Math.floor((d.members||51)/2)+1, n=sg=>E[sg]?E[sg].n:(d[sg]&&d[sg].any?d[sg].any[0]:0); return n("No3")>=MJ||n("No8")>=MJ||n("No10")>=MJ};
+  r=cycles.find(c=>HK[c].ifsens&&tt(HK[c].ifsens))||cycles.find(c=>HK[c].ifsens&&!HK[c].ifsens.quiet)||cycles[0]}
  if(r&&HK[r]){cyc=r; if(f&&HK[r][f]){ens=f; mode=modeOf(f)||mode}}}catch(e){}
 head();load();
 </script><a id="langsw" class="langsw" href="index.html" lang="en">English</a><script>(function(){var a=document.getElementById("langsw");if(!a)return;if(window.top!==window.self){a.style.display="none";return}a.href=a.getAttribute("href")+location.search+location.hash;a.addEventListener("click",function(){try{localStorage.setItem("hk_lang","en")}catch(e){}})})();</script></body></html>

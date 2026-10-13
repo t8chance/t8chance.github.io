@@ -262,7 +262,7 @@ const BX=[
  [/^Here no member gives No\. 3\.$/,()=>`圖中沒有集合成員預測三號信號。`],
  [/^In this run no station goes above F7\.$/,()=>`今次預報顯示，各測風站風力均不超過 7 級。`],
  [/^In this run (.+?) reaches (≤F7|F(\d+)(?:–(\d+))?)\.$/,(m,s,f,a,b)=>`今次預報顯示，${ST[s]||s}風力可達 ${f==="≤F7"?"7 級或以下":b?`${a} 至 ${b} 級`:`${a} 級`}。`],
- [/^The pictures show the newest ECMWF forecast with a storm near Hong Kong: the run of (\d+) (\w{3}) (\d{4}), (\d\d) UTC(?: \((.+)\))?\.$/,(m,d,mo,y,h,p)=>`以下畫面採用最新一次有熱帶氣旋靠近香港的 ECMWF 預報：${y}年${"JanFebMarAprMayJunJulAugSepOctNovDec".indexOf(mo)/3+1}月${d}日 ${h} 時（協調世界時）起報`+(p?`，${G(p)}`:"")+"。"],
+ [/^The pictures show the newest ECMWF forecast in which most members give a signal: the run of (\d+) (\w{3}) (\d{4}), (\d\d) UTC(?: \((.+)\))?\.$/,(m,d,mo,y,h,p)=>`以下畫面採用最新一次獲過半數集合成員預測發出信號的 ECMWF 預報：${y}年${"JanFebMarAprMayJunJulAugSepOctNovDec".indexOf(mo)/3+1}月${d}日 ${h} 時（協調世界時）起報`+(p?`，${G(p)}`:"")+"。"],
  [/^ECMWF runs each forecast 50 times from slightly different starts; each run is a member\. Each line is one member's storm track, coloured by the signal it expects Hong Kong to have at that point: grey for No\. 1, then <span class="c3">No\. 3<\/span>, <span class="c8">No\. 8<\/span>, <span class="c9">No\. 9<\/span> and <span class="c10">No\. 10<\/span>, and back down as the storm leaves\.$/,
   ()=>`ECMWF 以略有不同的初始條件進行 50 次模擬，每次模擬的結果稱為一個集合成員。每條線是一個成員的熱帶氣旋路徑，顏色代表該成員在該位置預測香港的信號：灰色代表一號信號，其餘顏色分別代表<span class="c3">三號</span>、<span class="c8">八號</span>、<span class="c9">九號</span>及<span class="c10">十號</span>信號。隨着預報時間推進，路徑顏色亦會按預測信號改變。`],
  [/^<span class="ui">▶ all members<\/span> plays every storm forward, 12 hours a second\. Try it: this is the real map\.$/,()=>`按<span class="ui">▶ 播放全部成員</span>，查看各條預測路徑隨時間的變化。地圖可直接操作。`],
