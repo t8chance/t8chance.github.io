@@ -502,7 +502,7 @@ function load(){
    +`<p><b>Gale stations.</b> HKO decides No. 3 and No. 8 by the winds at 8 reference stations near sea level: Cheung Chau, Chek Lap Kok, Kai Tak, Lau Fau Shan, Sai Kung, Sha Tin, Ta Kwu Ling and Tsing Yi. It raises No. 8 when half or more of them (4 of 8) record, or are expected to record, sustained winds of 63 to 117 km/h and the winds are likely to persist; HKO adds that meeting the wind criterion is not the only consideration, as public safety comes first. This site's numbers are not HKO's decision. A count like "6 of 8 (4–6)" means the middle member expects 6 of the 8 stations to get gale winds at any time from this run onward, and most members expect 4 to 6.</p>`
    +`<p><b>Storm and hurricane force</b> count the same 8 stations, at 88 and 118 km/h (10-minute average wind). Each station's own chance and expected wind are in <b>Stations</b> just above, for the deterministic run, and in the Station guide tab under the map, which shows the same run until you click another track.</p>`
    +`<p><b>8-station average.</b> The average over the 8 reference stations of each station's highest 10-minute mean wind in the storm. Past storms are ranked by it: ${R8N} storms since 2007 that brought No. 3 or higher, from the same station records the station numbers are built on. For a forecast it is shown for each member, as a reference only, under the table in the Station guide tab, from that member's wind guide at the 8 stations; below ${R8MIN} km/h the guide cannot tell storms apart, so no rank is given.</p></details></div>`;
-  const hko=hcases.length?`<div class="ans"><div class="k">HKO actually issued</div><div class="badge" style="color:${colL[clsL(hkoTop)]}">No. ${hkoTop}</div>`
+  const hko=hcases.length&&!window.HK_DEMO?`<div class="ans"><div class="k">HKO actually issued</div><div class="badge" style="color:${colL[clsL(hkoTop)]}">No. ${hkoTop}</div>`
    +hcases.map(c=>{const t=HKOEV[c].top, y=HKOEV[c]["L"+clsL(t)];return `<div class="v">${c}: No. ${t}${y?` · ${hkS(y[0])} → ${hkS(y[1])} HKT · <b>${Math.round(y[2])}&nbsp;h</b>`:""}</div>${HKOGALE[c]!=null?`<div class="v gs"><span class="gl">Reference stations that recorded gale force</span> ${gdots(HKOGALE[c],HKOGALE[c])} <b class="gn">${HKOGALE[c]}</b> of 8</div>`:""}${HKOSH[c]?[["Reference stations that recorded storm force",0],["Reference stations that recorded hurricane force",1]].map(([l,i])=>`<div class="v gs"><span class="gl" title="from HKO's reported maximum hourly mean winds (80 / 107 km/h)">${l}</span> ${gdots(HKOSH[c][i],HKOSH[c][i])} <b class="gn">${HKOSH[c][i]}</b> of 8</div>`).join("")+`<div class="note">Storm and hurricane counts use HKO's maximum hourly mean winds; the station table uses the highest 10-minute mean.</div>`:""}${rank8Obs(c)}`}).join("")+`</div>`:"";
   const card=([sg,lab,L,col])=>{const x_=E&&E[sg], a=d[sg]&&d[sg].any, n=nOf(sg);
    const rows=[[one?"reached":"members",one?`<b>${n?"yes":"no"}</b>`:`<b>${n}</b> of ${d.members}${(L!==10&&a&&a[1]!==a[2])?` <span class="rng">(${a[1]}–${a[2]})</span>`:""}`]];
@@ -611,7 +611,7 @@ const windLabel=v=>typeof v==="number"?`${Math.round(v)} (F${beaufort(v)})`:v;
 const SGNOTE="A rough guide read from each station's chances, not a wind forecast. Median over members (10–90% in brackets); 10-minute mean. HKO: the highest 10-minute mean recorded.";
 function stationGuide(){if(!TR)return "";
  const k=DEFM(), ts=TR.tracks.filter(x=>x.m===k), t=ts.filter(x=>x.gst).sort((a,b)=>(b.gale||0)-(a.gale||0))[0]||(TR.tracks.some(x=>x.gst)?ts[0]:null); if(!t)return "";
- const act=casesOf(cyc).map(c=>HKOWIND[c]).find(x=>x);
+ const act=window.HK_DEMO?null:casesOf(cyc).map(c=>HKOWIND[c]).find(x=>x);
  const rows=SGN.map(([key,nm],i)=>{const {g,guide,range}=stationWind(t,i);
   return `<tr><td>${nm}</td><td>${Math.round(100*g)}%</td><td>${guide}</td>${act?`<td>${act[i]!=null?windLabel(act[i]):"–"}</td>`:""}</tr>`}).join("");
  const who=memLab(t.m,0).replace(/^the /,"")+(t.m===TR.top&&k!==52&&k!==51?" (most threatening)":"");
@@ -665,15 +665,15 @@ function stationDist(i,t0,Wp){const M=(GA&&GA.members)||50, best={}, hko=casesOf
 function memberStationGuide(t){
  if(!t.gst&&t.gale!=null&&Math.round(t.gale)>=1){$("#chead").textContent=`${memLab(t.m,1)} — station guide`;
   $("#stationchart").innerHTML=`<p class="note">Station numbers are not ready for this run yet.</p>`; $("#cnote").textContent=""; return}
- const hko=casesOf(cyc).map(c=>HKOWIND[c]).find(Boolean), rows=[];
+ const hko=window.HK_DEMO?null:casesOf(cyc).map(c=>HKOWIND[c]).find(Boolean), rows=[];
  const pct=v=>v==null?"–":`${Math.round(100*v)}%`;
  const count=(label,v,lo,hi)=>{if(v==null)return ""; const rg=lo!=null&&hi!=null&&lo!==hi?` <span class="rng">(10th–90th percentile: ${lo}–${hi})</span>`:""; return `<span class="kv"><b>${label}</b> <b>${Math.round(v)}</b> of 8${rg}</span>`};
  for(let i=0;i<SGN.length;i++){
   const {g,s,h,fv,fb,guide,range}=stationWind(t,i);
-  rows.push(`<tr class="sgrow" data-i="${i}" title="click: ${SGN[i][1]} in every member"><td>${SGN[i][1]}</td><td>${pct(g)}</td><td>${pct(s)}</td><td>${pct(h)}</td><td>${guide}</td><td>${hko&&hko[i]!=null?windLabel(hko[i]):""}</td>${hko?`<td>${diffCell(fv,fb,hko[i])}</td>`:""}</tr>`);
+  rows.push(`<tr class="sgrow" data-i="${i}" title="click: ${SGN[i][1]} in every member"><td>${SGN[i][1]}</td><td>${pct(g)}</td><td>${pct(s)}</td><td>${pct(h)}</td><td>${guide}</td>${window.HK_DEMO?"":`<td>${hko&&hko[i]!=null?windLabel(hko[i]):""}</td>`}${hko?`<td>${diffCell(fv,fb,hko[i])}</td>`:""}</tr>`);
  }
  $("#chead").textContent=`${memLab(t.m,1)}${t.m===TR.top?" (most threatening)":""} — station guide`;
- $("#stationchart").innerHTML=`<div class="gh">Forecast, at any time from this run onward</div><div class="sgcounts">${count("Reference stations reaching gale force",t.gale,t.gale_lo,t.gale_hi)}${count("Reference stations reaching storm force",t.storm_n,t.storm_lo,t.storm_hi)}${count("Reference stations reaching hurricane force",t.hur_n,t.hur_lo,t.hur_hi)}</div><table class="sgm"><thead><tr><th>Station</th><th>Gale</th><th>Storm</th><th>Hurricane</th><th>Wind guide, km/h</th><th>HKO, km/h</th>${hko?"<th>Difference, km/h</th>":""}</tr></thead><tbody>${rows.join("")}</tbody></table>${rank8Member(t)}<div class="sgdistbox"></div><p class="note sghint">Click a station to see its wind in each of the ${(GA&&GA.members)||50} members.</p><p class="note">${SGNOTE.replace("Median over members (10–90% in brackets); 10-minute mean.","This forecast, the same as Stations in the answer card; 10-minute mean.")}</p>`;
+ $("#stationchart").innerHTML=`<div class="gh">Forecast, at any time from this run onward</div><div class="sgcounts">${count("Reference stations reaching gale force",t.gale,t.gale_lo,t.gale_hi)}${count("Reference stations reaching storm force",t.storm_n,t.storm_lo,t.storm_hi)}${count("Reference stations reaching hurricane force",t.hur_n,t.hur_lo,t.hur_hi)}</div><table class="sgm"><thead><tr><th>Station</th><th>Gale</th><th>Storm</th><th>Hurricane</th><th>Wind guide, km/h</th>${window.HK_DEMO?"":"<th>HKO, km/h</th>"}${hko?"<th>Difference, km/h</th>":""}</tr></thead><tbody>${rows.join("")}</tbody></table>${rank8Member(t)}<div class="sgdistbox"></div><p class="note sghint">Click a station to see its wind in each of the ${(GA&&GA.members)||50} members.</p><p class="note">${SGNOTE.replace("Median over members (10–90% in brackets); 10-minute mean.","This forecast, the same as Stations in the answer card; 10-minute mean.")}</p>`;
  $("#cnote").textContent="Gale, storm and hurricane are each station's chances.";
 }
 function fillGale(){const f=document.getElementById("galeF"); if(!f)return;
@@ -1031,7 +1031,18 @@ if(DEMO){window.HK_DEMO=DEMO; document.documentElement.classList.add("demo","dem
   else if(DEMO==="member"){if(sel===null){sel=TR.top; drawMap(); chart()} if(!playing){selH=null; $("#play").click()}}};
  const halt=()=>{if(allPlaying)allStop(); if(DEMO==="member"&&playing)$("#play").click()};
  addEventListener("message",e=>{if(!e.data||!e.data.hkDemo)return; if(e.data.hkDemo==="play")go(); else halt()});
- if(parent===window&&(DEMO==="play"||DEMO==="member"))setTimeout(go,1200)}
-try{const q=new URLSearchParams(location.search), r=q.get("run"), f=q.get("f"); if(r&&HK[r]){cyc=r; if(f&&HK[r][f]){ens=f; mode=modeOf(f)||mode}}}catch(e){}
+ if(parent===window&&(DEMO==="play"||DEMO==="member"))setTimeout(go,1200)
+ const tour=(n=0)=>{const d=(HK[cyc]||{})[ens]; if(!d||!TR){if(n<40)setTimeout(()=>tour(n+1),500);return}
+  const E=d.event||{}, M=d.members||51, MJ=Math.floor(M/2)+1, nOf=sg=>E[sg]?E[sg].n:(d[sg]&&d[sg].any?d[sg].any[0]:0);
+  const top=[["No10",10],["No8",8],["No3",3]].find(([sg])=>nOf(sg)>=MJ), x=top&&E[top[0]];
+  let st=null; const t=stationTrack();
+  if(t)SGN.forEach(([k,nm],i)=>{const w=stationWind(t,i), v=w.fv!=null?w.fv:(w.fb?((isFinite(w.fb[0])?w.fb[0]:40)+(isFinite(w.fb[1])?w.fb[1]:130))/2:46);
+   const f=w.fv!=null?`F${beaufort(w.fv)}`:{"<53":"≤F7","73–78":"F8–9","98–108":"F10–11","118+":"F12"}[w.text]||""; if(f&&(!st||v>st.v))st={nm,f,v}});
+  try{parent.postMessage({hkTourRun:{cyc,ens,past:(pastOf(cyc)||"").split(" — ")[0],M,top:top?top[1]:0,n:top?nOf(top[0]):nOf("No3"),
+   h:x&&x.hours?x.hours[1]:null,st:st&&[st.nm,st.f]}},"*")}catch(e){}};
+ if(parent!==window)setTimeout(tour,600)}
+try{const q=new URLSearchParams(location.search), f=q.get("f"); let r=q.get("run");
+ if(r==="storm") r=cycles.find(c=>HK[c].ifsens&&!HK[c].ifsens.quiet)||cycles[0];
+ if(r&&HK[r]){cyc=r; if(f&&HK[r][f]){ens=f; mode=modeOf(f)||mode}}}catch(e){}
 head();load();
 </script><a id="langsw" class="langsw" href="index-zh.html" lang="zh-Hant">中文</a><script>(function(){var a=document.getElementById("langsw");if(!a)return;if(window.top!==window.self){a.style.display="none";return}a.href=a.getAttribute("href")+location.search+location.hash;a.addEventListener("click",function(){try{localStorage.setItem("hk_lang","zh")}catch(e){}})})();</script></body></html>

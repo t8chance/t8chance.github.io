@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>How to read the forecasts</title>
-<meta name="description" content="How to read the Hong Kong typhoon signal forecasts, using one real forecast for Typhoon Ragasa.">
+<meta name="description" content="How to read the Hong Kong typhoon signal forecasts, on the newest forecast with a storm near Hong Kong.">
 
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap">
@@ -133,9 +133,10 @@ html:not(.full) .step .f{display:none}
   <h1>Chances of signals No.&nbsp;3, 8 and 10 for Hong Kong</h1>
   <p>From every ECMWF forecast, updated every 6&nbsp;hours.</p>
   <p class="fine">Research output. The Hong Kong Observatory is the only authority for actual signals.</p>
+  <p class="fine" id="tourrun"></p>
   <div class="acts"><a class="btn" href="start-zh.html">Open the forecasts</a><a href="#s1">Start the tour</a></div>
  </div>
- <figure><div class="live"><iframe src="index-zh.html?run=2025092112&amp;f=ifsens&amp;demo=answer" title="The answer cards for Typhoon Ragasa: No. 10 from 37 of 50 members, beside HKO's actual No. 10" loading="lazy"></iframe></div></figure>
+ <figure><div class="live"><iframe src="index-zh.html?run=storm&amp;f=ifsens&amp;demo=answer" title="The answer cards of the newest forecast with a storm near Hong Kong" loading="lazy"></iframe></div></figure>
 </section>
 </div>
 
@@ -155,7 +156,7 @@ html:not(.full) .step .f{display:none}
    <p><span class="ui">Today</span> shows the newest forecasts. <span class="ui">Past storms</span> are grouped by the highest signal HKO issued, No.&nbsp;10 first. Pick a storm, then a run, named after the time its forecast started, in UTC.</p>
    <p>The buttons below switch between ECMWF's physics model (IFS) and its AI model (AIFS). Older years use ECMWF's archived forecasts (2008–2023) or Pangu-Weather (2018–2022).</p>
    </div>
-   <figure><div class="live"><iframe data-src="index-zh.html?run=2025092112&amp;f=ifsens&amp;demo=toolbar" title="The run picker: year, storm and run menus, and the forecast buttons"></iframe></div></figure>
+   <figure><div class="live"><iframe data-src="index-zh.html?run=storm&amp;f=ifsens&amp;demo=toolbar" title="The run picker: year, storm and run menus, and the forecast buttons"></iframe></div></figure>
   </li>
 
   <li class="step" data-k="answer" data-w="answer"><span class="num">2</span>
@@ -164,9 +165,9 @@ html:not(.full) .step .f{display:none}
    <div class="f">
    <p>ECMWF runs each forecast about 50 times. The page calls each version a member. The big number is the highest signal that most members reach, with when it starts and ends in Hong Kong time.</p>
    <p>Below it you see how many of HKO's eight reference stations get gale, storm or hurricane winds. For a past storm, HKO's own record sits next to it.</p>
-   <p class="ex">Here 37 of 50 members give <span class="c10">No.&nbsp;10</span>, for about 8&nbsp;hours. HKO kept No.&nbsp;10 up for 11&nbsp;hours.</p>
+   <p class="ex" id="ex-answer"></p>
    </div>
-   <figure><div class="live"><iframe data-src="index-zh.html?run=2025092112&amp;f=ifsens&amp;demo=answer" title="The answer cards"></iframe></div></figure>
+   <figure><div class="live"><iframe data-src="index-zh.html?run=storm&amp;f=ifsens&amp;demo=answer" title="The answer cards"></iframe></div></figure>
   </li>
 
   <li class="step" data-k="timeline" data-w="timeline"><span class="num">3</span>
@@ -174,9 +175,9 @@ html:not(.full) .step .f{display:none}
    <p class="s">Bars show when each signal starts and ends, in Hong Kong time.</p>
    <div class="f">
    <p>Each bar covers one signal, in Hong Kong time. The solid part runs from the members' middle start to their middle end. The pale part spans the earliest 10% to the latest 90%.</p>
-   <p>The thin line is the deterministic run, ECMWF's single main forecast. HKO's real signals run along the top.</p>
+   <p>The thin line is the deterministic run, ECMWF's single main forecast. For past storms, HKO's real signals run along the top.</p>
    </div>
-   <figure><div class="live"><iframe data-src="index-zh.html?run=2025092112&amp;f=ifsens&amp;demo=timeline" title="Timeline with bars for No. 3, No. 8 and No. 10 under HKO's own signals"></iframe></div></figure>
+   <figure><div class="live"><iframe data-src="index-zh.html?run=storm&amp;f=ifsens&amp;demo=timeline" title="Timeline with bars for No. 3, No. 8 and No. 10 under HKO's own signals"></iframe></div></figure>
   </li>
 
   <li class="step" data-k="map_signal" data-w="map"><span class="num">4</span>
@@ -187,7 +188,7 @@ html:not(.full) .step .f{display:none}
    <p>The thick black dashed line is the deterministic run. For past storms, the black dashed line with dots is where the storm really went. The circles mark distances from Hong Kong.</p>
    <p>The buttons under the map zoom in and out (+ −), move it (← ↑ ↓ →) and bring back the starting view (↺).</p>
    </div>
-   <figure><div class="live"><iframe data-src="index-zh.html?run=2025092112&amp;f=ifsens&amp;demo=map" title="The real forecast map: Ragasa 2025, ECMWF run of 21 Sep 12Z; every member's track coloured by the signal it expects"></iframe></div></figure>
+   <figure><div class="live"><iframe data-src="index-zh.html?run=storm&amp;f=ifsens&amp;demo=map" title="The real forecast map: every member's track coloured by the signal it expects"></iframe></div></figure>
   </li>
 
 
@@ -199,7 +200,7 @@ html:not(.full) .step .f{display:none}
    <p><span class="ui">▶ all members</span> moves every member's storm forward together, 12 forecast hours a second. The large black dot is the deterministic run.</p>
    <p>You can watch the spread grow, and see whether it closes on Hong Kong.</p>
    </div>
-   <figure><div class="live"><iframe data-src="index-zh.html?run=2025092112&amp;f=ifsens&amp;demo=play" title="The real forecast map: Ragasa 2025, ECMWF run of 21 Sep 12Z, every member playing"></iframe></div></figure>
+   <figure><div class="live"><iframe data-src="index-zh.html?run=storm&amp;f=ifsens&amp;demo=play" title="The real forecast map, every member playing"></iframe></div></figure>
   </li>
 
   <li class="step" data-k="member" data-w="map"><span class="num">6</span>
@@ -210,7 +211,7 @@ html:not(.full) .step .f{display:none}
    <p>Its track changes colour where that member expects each signal: grey for No.&nbsp;1, then <span class="c3">No.&nbsp;3</span>, <span class="c8">No.&nbsp;8</span>, <span class="c9">No.&nbsp;9</span> and <span class="c10">No.&nbsp;10</span>, and back down as the storm leaves.</p>
    <p>The player under the map steps through the hours. The large <span class="ui">← Back to all members</span> button, at the top left of the map, brings everyone back.</p>
    </div>
-   <figure><div class="live"><iframe data-src="index-zh.html?run=2025092112&amp;f=ifsens&amp;demo=member" title="The real forecast map: one member of the Ragasa run on its own, its player running"></iframe></div></figure>
+   <figure><div class="live"><iframe data-src="index-zh.html?run=storm&amp;f=ifsens&amp;demo=member" title="The real forecast map: one member on its own, its player running"></iframe></div></figure>
   </li>
 
   <li class="step" data-k="stations_map" data-w="map"><span class="num">7</span>
@@ -218,19 +219,19 @@ html:not(.full) .step .f{display:none}
    <p class="s"><span class="ui">zoom to Hong Kong</span> colours HKO's eight stations by expected wind.</p>
    <div class="f">
    <p><span class="ui">zoom to Hong Kong</span> shows HKO's eight reference stations. Each dot is coloured by the station's expected wind, with its Beaufort force next to the name.</p>
-   <p class="ex">In this run Cheung Chau reaches F12.</p>
+   <p class="ex" id="ex-stations"></p>
    </div>
-   <figure><div class="live"><iframe data-src="index-zh.html?run=2025092112&amp;f=ifsens&amp;demo=stations" title="The real forecast map zoomed on Hong Kong: the eight stations coloured by expected wind, with their Beaufort forces"></iframe></div></figure>
+   <figure><div class="live"><iframe data-src="index-zh.html?run=storm&amp;f=ifsens&amp;demo=stations" title="The real forecast map zoomed on Hong Kong: the eight stations coloured by expected wind, with their Beaufort forces"></iframe></div></figure>
   </li>
 
   <li class="step" data-k="stations_table" data-w="charts"><span class="num">8</span>
-   <h2>Compare each station with HKO</h2>
-   <p class="s">The <span class="ui">Station guide</span> tab sets each station beside what HKO recorded.</p>
+   <h2>Read each station</h2>
+   <p class="s">The <span class="ui">Station guide</span> tab gives each station's chances and expected wind.</p>
    <div class="f">
    <p>The <span class="ui">Station guide</span> tab under the map lists each station's chance of gale (63&nbsp;km/h), storm force (88&nbsp;km/h) and hurricane force (118&nbsp;km/h), with a rough expected wind.</p>
    <p>For past storms it adds what HKO recorded and the difference. <span class="down">Red</span> means the forecast was too low, <span class="up">green</span> too high.</p>
    </div>
-   <figure><div class="live"><iframe data-src="index-zh.html?run=2025092112&amp;f=ifsens&amp;demo=stationtable" title="Station table with chances, expected wind, HKO's recorded wind and the difference"></iframe></div></figure>
+   <figure><div class="live"><iframe data-src="index-zh.html?run=storm&amp;f=ifsens&amp;demo=stationtable" title="Station table with each station's chances and expected wind"></iframe></div></figure>
   </li>
 
   <li class="step" data-k="check" data-w="run"><span class="num">9</span>
@@ -281,7 +282,7 @@ function buildFrames(box){
 }
 
 const slides=D.getElementById("slides"), S={};
-steps.forEach(s=>{const f=s.querySelector("figure"), sl=D.createElement("div");sl.className="slide";sl.dataset.k=s.dataset.k;sl.appendChild(f.cloneNode(true));slides.appendChild(sl);S[s.dataset.k]=sl});
+steps.forEach(s=>{const f=s.querySelector("figure"); if(!f)return; const sl=D.createElement("div");sl.className="slide";sl.dataset.k=s.dataset.k;sl.appendChild(f.cloneNode(true));slides.appendChild(sl);S[s.dataset.k]=sl});
 D.querySelectorAll(".frames").forEach(buildFrames);
 const where=[...D.querySelectorAll(".where button")];
 where.forEach(b=>b.addEventListener("click",()=>{const s=steps.find(x=>x.dataset.w===b.dataset.w); if(s)s.scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"})}));
@@ -290,6 +291,12 @@ function liveCue(box,on){const f=box&&box.querySelector(".live iframe"); if(!f)r
  if(on&&!f.getAttribute("src")&&f.dataset.src)f.setAttribute("src",f.dataset.src);
  const send=()=>{try{f.contentWindow.postMessage({hkDemo:on?"play":"stop"},"*")}catch(e){}};
  if(on&&!f._ready)f.addEventListener("load",()=>setTimeout(send,900),{once:true}); else send()}
+const MONS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+addEventListener("message",e=>{const r=e.data&&e.data.hkTourRun; if(!r||window.HK_TOURRUN)return; window.HK_TOURRUN=r; const c=r.cyc;
+ const lab=document.getElementById("tourrun"), ea=document.getElementById("ex-answer"), es=document.getElementById("ex-stations");
+ if(lab)lab.textContent=`The pictures show the newest ECMWF forecast with a storm near Hong Kong: the run of ${+c.slice(6,8)} ${MONS[+c.slice(4,6)-1]} ${c.slice(0,4)}, ${c.slice(8,10)} UTC${r.past?` (${r.past})`:""}.`;
+ if(ea)ea.innerHTML=r.top?`Here ${r.n} of ${r.M} members give <span class="c${r.top}">No.&nbsp;${r.top}</span>`+(r.h!=null?`, for about ${r.h}&nbsp;hours.`:"."):r.n?`Here only ${r.n} of ${r.M} members give No.&nbsp;3 or higher, fewer than half.`:`Here no member gives No.&nbsp;3.`;
+ if(es)es.textContent=!r.st?"":r.st[1]==="≤F7"?"In this run no station goes above F7.":`In this run ${r.st[0]} reaches ${r.st[1]}.`});
 addEventListener("message",e=>{if(!e.data||!e.data.hkDemoH)return;
  D.querySelectorAll(".live iframe").forEach(f=>{if(f.contentWindow===e.source){f._ready=true; f.style.height=Math.min(1400,e.data.hkDemoH+4)+"px"}})});
 let cur=null;
