@@ -720,9 +720,18 @@ function fillGale(){const f=document.getElementById("galeF"); if(!f)return;
   view=(VB[1]-VB[0])<(R[1]-R[0])*0.99?"hk":"region"; $("#zoomBtn").textContent=view==="region"?"zoom to Hong Kong":"zoom out";
   drawMap(); setTimeout(()=>moved=false,350)};
  document.addEventListener("touchend",pzEnd,{passive:true}); document.addEventListener("touchcancel",pzEnd,{passive:true});
- ["gesturestart","gesturechange","gestureend"].forEach(t=>m.addEventListener(t,e=>e.preventDefault(),{passive:false}));
+ let GS=null;
+ m.addEventListener("gesturestart",e=>{e.preventDefault(); if(PZ)return; const r=m.getBoundingClientRect(),
+  cx=Number.isFinite(e.clientX)?e.clientX:r.left+r.width/2, cy=Number.isFinite(e.clientY)?e.clientY:r.top+r.height/2;
+  GS={vb:VB.slice(),fx:(cx-r.left)/r.width,fy:1-(cy-r.top)/r.height}; st=null; moved=true},{passive:false});
+ m.addEventListener("gesturechange",e=>{e.preventDefault(); if(!GS)return; if(PZ){GS=null;return}
+  const R=VIEWS.region, v=GS.vb, w0=v[1]-v[0], h0=v[3]-v[2], nw=Math.min(Math.max(w0/(e.scale||1),MINW),R[1]-R[0]), nh=h0*nw/w0;
+  const lx=v[0]+GS.fx*w0, ly=v[2]+GS.fy*h0; VB=[lx-GS.fx*nw,lx+(1-GS.fx)*nw,ly-GS.fy*nh,ly+(1-GS.fy)*nh]; clamp();
+  view=nw<(R[1]-R[0])*0.99?"hk":"region"; $("#zoomBtn").textContent=view==="region"?"zoom to Hong Kong":"zoom out"; redraw()},{passive:false});
+ m.addEventListener("gestureend",e=>{e.preventDefault(); if(GS){GS=null; setTimeout(()=>moved=false,350)}},{passive:false});
  m.addEventListener("wheel",e=>{e.preventDefault();const r=m.getBoundingClientRect();
-  const fx=(e.clientX-r.left)/r.width, fy=1-(e.clientY-r.top)/r.height, k=e.deltaY>0?1.2:1/1.2;
+  const fx=(e.clientX-r.left)/r.width, fy=1-(e.clientY-r.top)/r.height, u=e.deltaMode===1?16:e.deltaMode===2?400:1, k=Math.min(Math.max(Math.exp(u*e.deltaY*(e.ctrlKey?0.01:0.0018)),1/1.5),1.5);
+ 
   const w=VB[1]-VB[0], h=VB[3]-VB[2], R=VIEWS.region, nw=Math.min(Math.max(w*k,MINW),R[1]-R[0]), nh=h*nw/w;
   const lx=VB[0]+fx*w, ly=VB[2]+fy*h; VB=[lx-fx*nw,lx+(1-fx)*nw,ly-fy*nh,ly+(1-fy)*nh];clamp();
   view=nw<(R[1]-R[0])*0.99?"hk":"region";$("#zoomBtn").textContent=view==="region"?"zoom to Hong Kong":"zoom out";redraw()},{passive:false});
