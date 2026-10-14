@@ -4,15 +4,15 @@ const ST=document.createElement("style"); ST.textContent=`
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--vdot:#6fa8e8;--vgrid:#262626;--vcat:#3a3a3a;--vsoft:#2a2a2a;--vraise:#3a3a3a}}
 :root[data-theme="dark"]{--vdot:#6fa8e8;--vgrid:#262626;--vcat:#3a3a3a;--vsoft:#2a2a2a;--vraise:#3a3a3a}
 .vc .pick{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:12px 0 0} .vc .pick .lbl{color:var(--mut);font-size:13px}
-.vc .seg{display:inline-flex;flex-wrap:wrap;gap:2px;padding:3px;background:var(--vsoft);border-radius:12px}
+.vc .seg{display:inline-flex;flex-wrap:wrap;gap:2px;padding:3px;background:var(--soft,var(--vsoft));border-radius:12px}
 .vc .seg button{font:inherit;font-size:14px;border:0;background:transparent;border-radius:9px;padding:7px 13px;color:var(--mut);cursor:pointer}
-.vc .seg button:hover{color:var(--ink)} .vc .seg button.on{background:var(--vraise);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.16)}
+.vc .seg button:hover{color:var(--ink)} .vc .seg button.on{background:var(--raise,var(--vraise));color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.16)}
 .vc .vsub{color:var(--mut);font-size:13.5px;margin:8px 0 6px} .vc .vread{color:var(--mut);font-size:13px;margin:4px 0 6px;max-width:72ch}
-.vc .vbody{display:grid;grid-template-columns:minmax(0,600px) minmax(0,240px);gap:6px 22px;align-items:start}
-.vc .vtiles{display:flex;flex-direction:column;gap:10px;margin:6px 0 0}
+.vc .vbody{display:grid;grid-template-columns:minmax(0,600px) minmax(0,1fr);gap:6px 24px;align-items:start}
+.vc .vtiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:10px 0 4px;max-width:620px}
 .vc .vtiles>div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:13.5px;color:var(--mut);min-width:0}
-.vc .vtiles .n{display:block;font-size:26px;font-weight:700;color:var(--ink);line-height:1.1;font-variant-numeric:tabular-nums}
-@media (max-width:860px){.vc .vbody{grid-template-columns:minmax(0,1fr)} .vc .vside{order:-1} .vc .vtiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px}
+.vc .vtiles .n{display:block;font:700 30px/1.05 var(--disp,inherit);color:var(--ink);font-variant-numeric:tabular-nums}
+@media (max-width:860px){.vc .vbody{grid-template-columns:minmax(0,1fr)} .vc .vtiles{gap:8px} .vc .vtiles .n{font-size:24px}
  .vc .vtiles>div{padding:8px 10px;font-size:12.5px} .vc .seg button{padding:7px 10px}}
 .vc svg{width:100%;max-width:600px;height:auto;display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;margin:6px 0;touch-action:pan-y}
 .vc svg text{fill:var(--mut);font-size:11px;font-variant-numeric:tabular-nums} .vc svg .axl{font-size:12px} .vc svg .catl{font-size:10px}
@@ -84,7 +84,7 @@ function draw(box,k){
 }
 document.querySelectorAll(".vc").forEach(box=>{const K=KINDS[box.dataset.kind]; if(!K)return;
  box.innerHTML=`<div class="pick"><span class="lbl">${box.dataset.kind==="wipeak"?"Period":box.dataset.kind.startsWith("cmp_")?"Method":"Forecast"}</span><span class="seg">${K.opts.map(([v,l])=>`<button type="button" data-v="${v}">${l}</button>`).join("")}</span></div>`
-  +`<p class="vsub"></p><div class="vbody"><svg viewBox="0 0 600 560" role="img" aria-label="this site against HKO's record"></svg><div class="vside"><div class="vtiles"></div><p class="vread"></p></div></div>`;
+  +`<p class="vsub"></p><div class="vtiles"></div><div class="vbody"><svg viewBox="0 0 600 560" role="img" aria-label="this site against HKO's record"></svg><div class="vside"><p class="vread"></p></div></div>`;
  box.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>draw(box,b.dataset.v)); draw(box,K.def)});
 let rt; addEventListener("resize",()=>{clearTimeout(rt); rt=setTimeout(()=>document.querySelectorAll(".vc").forEach(b=>b.dataset.v&&draw(b,b.dataset.v)),150)});
 })();

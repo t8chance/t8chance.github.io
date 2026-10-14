@@ -272,6 +272,7 @@ const BX=[
  [/^The player under the map steps through the hours\. The large <span class="ui">← Back to all members<\/span> button, at the top left of the map, brings everyone back\.$/,()=>`地圖下方的播放控制列可逐小時查看預測變化。按地圖左上角的<span class="ui">← 返回全部成員</span>，可重新顯示全部成員。`],
  [/^<span class="ui">zoom to Hong Kong<\/span> colours HKO's eight stations by expected wind\.$/,()=>`按<span class="ui">放大香港範圍</span>，查看八個參考測風站的預測風力。`],
  [/^<span class="ui">zoom to Hong Kong<\/span> shows HKO's eight reference stations\. Each dot is coloured by the station's expected wind, with its Beaufort force next to the name\.$/,()=>`<span class="ui">放大香港範圍</span>顯示八個參考測風站，圓點顏色代表風速參考值，站名旁標示蒲福氏風級。`],
+ [/^Not compared: MET WARN's No\. (\d+) forecast for (.+? \d{4}) \((\d+) (\w{3}), (\d\d:\d\d) HK time\), because this site does not forecast No\. 9\.$/,(m,l,s,d,mo,t)=>`未作比較：MET WARN 對${G(s)}的${NO[l]}信號預測（${"JanFebMarAprMayJunJulAugSepOctNovDec".indexOf(mo)/3+1}月${d}日 ${t}，香港時間），因本網站不預測九號信號。`],
  [/^The <span class="ui">Station guide<\/span> tab gives each station's chances and expected wind\.$/,()=>`<span class="ui">測風站預報</span>分頁列出各測風站的機會率及預計風速。`],
  [/^The <span class="ui">Station guide<\/span> tab under the map lists each station's chance of gale \(63 km\/h\), storm force \(88 km\/h\) and hurricane force \(118 km\/h\), with a rough expected wind\.$/,
   ()=>`地圖下方的<span class="ui">測風站預報</span>分頁列出各測風站出現烈風（每小時 63 公里）、暴風（88 公里）及颶風（118 公里）的機會率，以及風速參考值。`],
