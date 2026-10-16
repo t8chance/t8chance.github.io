@@ -1,1 +1,1 @@
-window.HK_LATEST = {"cycle": "2026101600", "ens": ["aifsens", "ifsens"], "by": {"aifsens": "2026101600", "ifsens": "2026101600"}};
+window.HK_LATEST = {"cycle": "2026101606", "ens": ["aifsens"], "by": {"aifsens": "2026101606", "ifsens": "2026101600"}};
