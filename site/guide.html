@@ -121,6 +121,12 @@ html:not(.full) .step .f{display:none}
 #lb img{display:block;margin:60px auto 40px;max-width:none;border-radius:12px;box-shadow:var(--shadow)}
 #lb .x{position:fixed;top:12px;right:14px;border:0;border-radius:10px;padding:9px 14px;font:600 15px/1 var(--body);background:var(--ink);color:var(--bg);cursor:pointer}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* the tour's choice: Basic or Advanced (2026-10-17) */
+.tpick{margin:16px 0 0}.tpick .q{font-size:14px;color:var(--mut);margin:0 0 8px}.tpick .ch{display:flex;gap:10px;flex-wrap:wrap}
+.tpick button{font:inherit;cursor:pointer;padding:10px 16px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-align:left;max-width:270px}
+.tpick button b{display:block;font-size:16px}.tpick button small{display:block;opacity:.8;font-size:13px;margin-top:3px}.tpick button.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+html.tb #story{display:none} html:not(.tb) #bstory{display:none}
+#bstory{max-width:780px;margin:0 auto;padding:8px 16px 28px}#bstory ol{list-style:none;margin:0;padding:0;display:grid;gap:38px}#bstory h2{margin:0 0 8px;text-wrap:balance}#bstory p{max-width:65ch}#bstory figure{margin:12px 0 0}
 </style>
 <style>.langsw{position:fixed;top:10px;right:12px;z-index:60;font:600 14px/1 system-ui,-apple-system,sans-serif;padding:8px 13px;border-radius:999px;background:#fff;color:#13202b;border:1px solid #c9d2db;text-decoration:none;box-shadow:0 1px 4px rgba(0,0,0,.12)}@media (prefers-color-scheme:dark){.langsw{background:#1d2731;color:#e8eef3;border-color:#3a4652}} html.demo .langsw{display:none}</style></head>
 <body>
@@ -134,11 +140,25 @@ html:not(.full) .step .f{display:none}
   <p>From every ECMWF forecast, updated every 6&nbsp;hours.</p>
   <p class="fine">Research output. The Hong Kong Observatory is the only authority for actual signals.</p>
   <p class="fine" id="tourrun"></p>
-  <div class="acts"><a class="btn" href="start.html">Open the forecasts</a><a href="#s1">Start the tour</a></div>
+  <div class="acts"><a class="btn openF" href="index.html">Open the forecasts</a></div>
+  <div class="tpick" id="tpick"><div class="q">Start the tour: which page?</div><div class="ch"><button type="button" data-t="basic"><b>Basic</b><small>Signal chances and the possible paths</small></button><button type="button" data-t="advanced"><b>Advanced</b><small>Everything, incl. stations and each forecast model</small></button></div></div>
  </div>
- <figure><div class="live"><iframe src="index.html?run=storm&amp;f=ifsens&amp;demo=answer" title="The answer cards of the newest forecast with a storm near Hong Kong" loading="lazy"></iframe></div></figure>
+ <figure><div class="live"><iframe id="heroF" src="index.html?run=storm&amp;f=ifsens&amp;demo=answer" title="The answer cards of the newest forecast with a storm near Hong Kong" loading="lazy"></iframe></div></figure>
 </section>
 </div>
+
+<main class="wrap" id="bstory"><ol>
+ <li id="b1"><h2>1. The answer</h2><p>The headline says whether a signal is likely. The bars give the chance of No. 3, No. 8 and No. 10: the share of about 50 computer forecasts that bring each signal to Hong Kong. Below them: when the signal is most likely, and how close the storm is expected to come.</p>
+  <figure><div class="live"><iframe data-bsrc="index.html?run=storm&amp;f=ifsens&amp;demo=answer&amp;mode=basic" title="The answer: the chance of each signal"></iframe></div></figure></li>
+ <li id="b2"><h2>2. Is it getting more likely?</h2><p>A new forecast comes out twice a day. Each dot is one forecast's chance of each signal; a line rising to the right means that signal is getting more likely.</p>
+  <figure><div class="live"><iframe data-bsrc="index.html?run=storm&amp;f=ifsens&amp;demo=timeline&amp;mode=basic" title="How the chance changed with each new forecast"></iframe></div></figure></li>
+ <li id="b3"><h2>3. Where the storm may go</h2><p>Each line is one possible path of the storm, coloured by the signal Hong Kong would expect as it passes: grey for No. 1, then No. 3, No. 8 and No. 10. Lines close together mean the forecasts agree; spread out, they do not.</p>
+  <figure><div class="live"><iframe data-bsrc="index.html?run=storm&amp;f=ifsens&amp;demo=map&amp;mode=basic" title="The possible paths of the storm"></iframe></div></figure></li>
+ <li id="b4"><h2>4. Watch it move</h2><p>Press ▶ play to see every possible path move through time.</p>
+  <figure><div class="live"><iframe data-bsrc="index.html?run=storm&amp;f=ifsens&amp;demo=play&amp;mode=basic" title="Every possible path moving through time"></iframe></div></figure></li>
+ <li id="b5"><h2>5. Want more detail?</h2><p>Switch to Advanced at the top of the forecast page: the eight reference stations, each forecast model and the full numbers.</p>
+  <a class="btn openF" href="index.html?mode=basic">Open the forecasts</a></li>
+</ol></main>
 
 <main class="wrap story" id="story">
  <aside class="stage" id="stage" aria-hidden="true">
@@ -251,7 +271,7 @@ html:not(.full) .step .f{display:none}
 <div class="wrap">
 <section class="end">
  <h2>Read today's forecast</h2>
- <a class="btn" href="start.html">Open the forecasts</a>
+ <a class="btn openF" href="index.html">Open the forecasts</a>
  <nav aria-label="more pages"><a href="verify.html">How good is it?</a></nav>
  <p class="fine">Research output. The Hong Kong Observatory is the only authority for actual signals.</p>
 </section>
@@ -319,6 +339,16 @@ D.addEventListener("click",e=>{const im=e.target.closest("figure img"); if(!im||
  lb.classList.add("on"); lb.querySelector(".x").focus()});
 const close=()=>lb.classList.remove("on"); lb.addEventListener("click",close); addEventListener("keydown",e=>{if(e.key==="Escape")close()});
 })();
+</script>
+<script>
+(()=>{const R=document.documentElement, B=[...document.querySelectorAll("#tpick button")], hf=document.getElementById("heroF");
+ const set=(m,go)=>{R.classList.toggle("tb",m==="basic"); B.forEach(b=>b.classList.toggle("on",b.dataset.t===m)); try{localStorage.setItem("hk_mode",m)}catch(e){}
+  document.querySelectorAll(".openF").forEach(a=>a.href="index.html?mode="+m);
+  if(m==="basic") document.querySelectorAll("#bstory iframe[data-bsrc]").forEach(f=>{if(!f.getAttribute("src"))f.src=f.dataset.bsrc});
+  if(hf){const u0=hf.getAttribute("src"), u=u0.replace(/&mode=basic/,"")+(m==="basic"?"&mode=basic":""); if(u!==u0)hf.setAttribute("src",u)}
+  if(go){const t=document.getElementById(m==="basic"?"b1":"s1"); if(t)t.scrollIntoView({behavior:"smooth",block:"start"})}};
+ let m0="basic"; try{m0=localStorage.getItem("hk_mode")||"basic"}catch(e){} set(m0,false);
+ B.forEach(b=>b.onclick=()=>set(b.dataset.t,true))})();
 </script>
 <a id="langsw" class="langsw" href="guide-zh.html" lang="zh-Hant">中文</a><script>(function(){var a=document.getElementById("langsw");if(!a)return;if(window.top!==window.self){a.style.display="none";return}a.href=a.getAttribute("href")+location.search+location.hash;a.addEventListener("click",function(){try{localStorage.setItem("hk_lang","zh")}catch(e){}})})();</script></body>
 </html>

@@ -23,7 +23,7 @@ a{color:var(--link);text-underline-offset:2px}
 b,strong{font-weight:650}
 :focus-visible{outline:2px solid var(--link);outline-offset:2px}
 .wrap{max-width:1120px;margin:0 auto;padding:0 16px 56px}
-html.demo .wrap{padding:6px 2px 4px} html.demo-answer .tlcard,html.demo-timeline .hero{display:none} html.demo .toolbar,html.demo #status{margin:0} html.demo body{background:var(--bg)} html.demo .mapcard{margin:0}
+html.demo .wrap{padding:6px 2px 4px} html.demo-answer .tlcard,html.demo-timeline .hero,html.demo-timeline .bcard{display:none} html.demo .toolbar,html.demo #status{margin:0} html.demo body{background:var(--bg)} html.demo .mapcard{margin:0}
 
 /* masthead */
 .mast{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 28px;padding:24px 0 18px}
@@ -60,7 +60,7 @@ input[type=checkbox],input[type=range]{accent-color:var(--ink)}
 .hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px;margin:0 0 14px}
 .hero>.ans:only-child{grid-column:1/-1}
 .ans{min-width:0;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px 16px;box-shadow:var(--shadow)}
-.hero>.ans+.ans{background:var(--soft);border-color:transparent;box-shadow:none}
+/* 2026-10-17: the HKO card in the same style as the forecast card */
 .ans .k,.tlcard .k{font:600 16px/1.2 var(--disp);color:var(--mut)}
 .badge{font:700 clamp(48px,7.4vw,80px)/.92 var(--disp);letter-spacing:-.005em;margin:8px 0 10px}
 .hero>.ans+.ans .badge{font-size:clamp(38px,4.8vw,54px);margin:8px 0 8px}
@@ -79,7 +79,18 @@ input[type=checkbox],input[type=range]{accent-color:var(--ink)}
 .mexp{margin:6px 0 2px;font-size:14px;line-height:1.45;color:var(--mut);max-width:62ch} .mexp b{color:var(--ink)}
 .what{margin:12px 0 0;font-size:14px;color:var(--mut)} .what summary{cursor:pointer;color:var(--link);font-weight:600} .what p{margin:8px 0 0;max-width:64ch}
 .tlcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px 12px;margin:0 0 12px}
+/* BASIC mode (2026-10-17) */
+body.basic .adv{display:none!important}
+.modesw{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;vertical-align:middle;margin-left:4px}.modesw a{padding:3px 11px;font-size:13px;text-decoration:none;color:var(--mut)}.modesw a.on{background:var(--ink);color:var(--card)}
+.bcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px 14px;margin:0 0 12px}
+.bcard .bh{font:700 clamp(24px,5vw,32px)/1.15 var(--disp);margin:0 0 12px;text-wrap:balance}
+.bbar{display:grid;grid-template-columns:64px 1fr 52px;gap:10px;align-items:center;margin:7px 0}.bbar b{font-weight:700}
+.bbar .tr{height:14px;border-radius:7px;background:var(--soft);overflow:hidden}.bbar .fl{height:100%;border-radius:7px;min-width:2px}
+.bbar .pc{font:700 18px var(--disp);text-align:right;font-variant-numeric:tabular-nums}
+.bcard .bv{margin:10px 0 0;font-size:15.5px}
 .tlcard .k{margin-bottom:8px}
+.sech{font:700 13px/1 var(--disp);letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:24px 0 10px}#status>.sech:first-child{margin-top:6px}
+html.demo .sech{display:none} #mapexp{display:none} .mapbar .mapnav{margin:0 0 0 auto}
 .r2rlg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--mut);margin:-2px 0 6px}.r2rlg b{font-weight:700}
 .r2rp{margin:0 0 4px}.r2rp .t{font:600 13px/1.3 var(--disp);color:var(--ink);margin:6px 0 0}#r2r svg{display:block;width:100%;height:auto;border:0;border-radius:0;background:none}#r2r circle{cursor:pointer}
 #tl svg{border:0;border-radius:0;background:transparent;box-shadow:none}
@@ -162,8 +173,9 @@ footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin
  </div>
  <div class="status" id="status"></div>
 
+ <h2 class="sech">Map</h2>
  <div class="mapcard">
- <div class="mapbar"><span class="lbl">Map</span><button id="zoomBtn">zoom to Hong Kong</button>
+ <div class="mapbar"><button id="zoomBtn">zoom to Hong Kong</button>
 
    <button id="detBtn" style="display:none" title="ECMWF's main forecast, made once in finer detail than the members, shown on its own: track, time bar, charts">deterministic run</button>
    <button id="allPlay" title="every member's storm together through time, 12 forecast hours per second">▶ all members</button>
@@ -182,6 +194,7 @@ footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin
  <p class="note" id="maphint">Tap or click a line to follow one member.</p>
  </div>
 
+ <h2 class="sech adv">Member charts</h2>
  <h2 id="chead">Most threatening member</h2>
  <div class="bar" id="tabs"></div>
  <div class="scrollx"><svg id="chart" viewBox="0 0 1000 320"></svg></div>
@@ -204,8 +217,8 @@ const PAST=[["2025091612","2025091812","Mitag 2025 — HKO No. 3 on 19 Sep"],["2
  ["2024110912","2024111312","Toraji 2024 — HKO No. 8 on 13–14 Nov"],
  ["2025060912","2025061300","Wutip 2025 — HKO No. 3 on 14–15 Jun"],["2025071512","2025071912","Wipha 2025 — HKO No. 10 on 20 Jul"],
  ["2025090212","2025090612","Tapah 2025 — HKO No. 8 on 7–8 Sep"],
- ["2018060312","2018060712","Ewiniar 2018 — HKO No. 3 on 7–8 Jun"],["2018071312","2018071712","Son-Tinh 2018 — HKO No. 3 on 17–18 Jul"],["2018080912","2018081312","Bebinca 2018 — HKO No. 3 on 13–14 Aug"],["2018090812","2018091112","Barijat 2018 — HKO No. 3 on 12 Sep"],["2018091112","2018091612","Mangkhut 2018 — HKO No. 10 on 16 Sep"],["2018102812","2018103112","Yutu 2018 — HKO No. 3 on 1 Nov"],["2019072612","2019073112","Wipha 2019 — HKO No. 8 on 31 Jul"],["2019082812","2019090112","Kajiki 2019 — HKO No. 3 on 1–2 Sep"],["2020060912","2020061312","Nuri 2020 — HKO No. 3 on 13–14 Jun"],["2020072712","2020073112","Sinlaku 2020 — HKO No. 3 on 31 Jul–1 Aug"],["2020081412","2020081812","Higos 2020 — HKO No. 9 on 18 Aug"],["2020100812","2020101212","Nangka 2020 — HKO No. 8 on 12–13 Oct"],["2020101812","2020102312","Saudel 2020 — HKO No. 3 on 22–24 Oct"],["2021071512","2021071912","Cempaka 2021 — HKO No. 3 on 19–20 Jul"],["2021073012","2021080212","Lupit 2021 — HKO No. 3 on 3 Aug"],["2021100312","2021100912","Lionrock 2021 — HKO No. 8 on 8–9 Oct"],["2021100712","2021101212","Kompasu 2021 — HKO No. 8 on 12–13 Oct"],["2022062612","2022070212","Chaba 2022 — HKO No. 8 on 1–2 Jul"],["2022080512","2022080912","Mulan 2022 — HKO No. 3 on 9–10 Aug"],["2022082012","2022082412","Ma-On 2022 — HKO No. 8 on 24–25 Aug"],["2022101312","2022101712","Nesat 2022 — HKO No. 3 on 17–18 Oct"],["2022102712","2022110112","Nalgae 2022 — HKO No. 8 on 2 Nov"],
- ["2008080112","2008080512","Kammuri 2008 — HKO No. 8 on 5–6 Aug"],["2008081712","2008082212","Nuri 2008 — HKO No. 9 on 22 Aug"],["2008091912","2008092312","Hagupit 2008 — HKO No. 8 on 23 Sep"],["2009071412","2009071812","Molave 2009 — HKO No. 9 on 18 Jul"],["2009073112","2009080312","Goni 2009 — HKO No. 8 on 4 Aug"],["2009091012","2009091412","Koppu 2009 — HKO No. 8 on 14–15 Sep"],["2011092412","2011092812","Nesat 2011 — HKO No. 8 on 28–29 Sep"],["2012062512","2012062812","Doksuri 2012 — HKO No. 8 on 29 Jun"],["2012071812","2012072312","Vicente 2012 — HKO No. 10 on 23 Jul"],["2012081212","2012081612","Kai-Tak 2012 — HKO No. 8 on 16 Aug"],["2013080812","2013081312","Utor 2013 — HKO No. 8 on 13–14 Aug"],["2013091712","2013092212","Usagi 2013 — HKO No. 8 on 22–23 Sep"],["2014091112","2014091512","Kalmaegi 2014 — HKO No. 8 on 15–16 Sep"],["2015070512","2015070812","Linfa 2015 — HKO No. 8 on 9 Jul"],["2016072812","2016080112","Nida 2016 — HKO No. 8 on 1–2 Aug"],["2016101612","2016102012","Haima 2016 — HKO No. 8 on 20–21 Oct"],["2017060812","2017061212","Merbok 2017 — HKO No. 8 on 12 Jun"],["2017071812","2017072212","Roke 2017 — HKO No. 8 on 23 Jul"],["2017081812","2017082212","Hato 2017 — HKO No. 10 on 23 Aug"],["2017082212","2017082612","Pakhar 2017 — HKO No. 8 on 26–27 Aug"],["2017101012","2017101412","Khanun 2017 — HKO No. 8 on 15 Oct"],["2023071112","2023071612","Talim 2023 — HKO No. 8 on 16–17 Jul"],["2023082712","2023090112","Saola 2023 — HKO No. 10 on 1 Sep"],["2023100212","2023100812","Koinu 2023 — HKO No. 9 on 8 Oct"],
+ ["2018060312","2018060712","Ewiniar 2018 — HKO No. 3 on 7–8 Jun"],["2018071312","2018071712","Son-Tinh 2018 — HKO No. 3 on 17–18 Jul"],["2018080912","2018081312","Bebinca 2018 — HKO No. 3 on 13–14 Aug"],["2018090812","2018091200","Barijat 2018 — HKO No. 3 on 12 Sep"],["2018091112","2018091700","Mangkhut 2018 — HKO No. 10 on 16 Sep"],["2018102812","2018103112","Yutu 2018 — HKO No. 3 on 1 Nov"],["2019072612","2019080200","Wipha 2019 — HKO No. 8 on 31 Jul"],["2019082812","2019090112","Kajiki 2019 — HKO No. 3 on 1–2 Sep"],["2020060912","2020061312","Nuri 2020 — HKO No. 3 on 13–14 Jun"],["2020072712","2020073112","Sinlaku 2020 — HKO No. 3 on 31 Jul–1 Aug"],["2020081412","2020081900","Higos 2020 — HKO No. 9 on 18 Aug"],["2020100812","2020101312","Nangka 2020 — HKO No. 8 on 12–13 Oct"],["2020101812","2020102312","Saudel 2020 — HKO No. 3 on 22–24 Oct"],["2021071512","2021071912","Cempaka 2021 — HKO No. 3 on 19–20 Jul"],["2021073012","2021080212","Lupit 2021 — HKO No. 3 on 3 Aug"],["2021100312","2021101000","Lionrock 2021 — HKO No. 8 on 8–9 Oct"],["2021100712","2021101312","Kompasu 2021 — HKO No. 8 on 12–13 Oct"],["2022062612","2022070300","Chaba 2022 — HKO No. 8 on 1–2 Jul"],["2022080512","2022080912","Mulan 2022 — HKO No. 3 on 9–10 Aug"],["2022082012","2022082500","Ma-On 2022 — HKO No. 8 on 24–25 Aug"],["2022101312","2022101712","Nesat 2022 — HKO No. 3 on 17–18 Oct"],["2022102712","2022110212","Nalgae 2022 — HKO No. 8 on 2 Nov"],
+ ["2008080112","2008080612","Kammuri 2008 — HKO No. 8 on 5–6 Aug"],["2008081712","2008082300","Nuri 2008 — HKO No. 9 on 22 Aug"],["2008091912","2008092400","Hagupit 2008 — HKO No. 8 on 23 Sep"],["2009071412","2009071900","Molave 2009 — HKO No. 9 on 18 Jul"],["2009073112","2009080500","Goni 2009 — HKO No. 8 on 4 Aug"],["2009091012","2009091500","Koppu 2009 — HKO No. 8 on 14–15 Sep"],["2011092412","2011092912","Nesat 2011 — HKO No. 8 on 28–29 Sep"],["2012062512","2012063000","Doksuri 2012 — HKO No. 8 on 29 Jun"],["2012071812","2012072412","Vicente 2012 — HKO No. 10 on 23 Jul"],["2012081212","2012081700","Kai-Tak 2012 — HKO No. 8 on 16 Aug"],["2013080812","2013081500","Utor 2013 — HKO No. 8 on 13–14 Aug"],["2013091712","2013092300","Usagi 2013 — HKO No. 8 on 22–23 Sep"],["2014091112","2014091612","Kalmaegi 2014 — HKO No. 8 on 15–16 Sep"],["2015070512","2015070912","Linfa 2015 — HKO No. 8 on 9 Jul"],["2016072812","2016080200","Nida 2016 — HKO No. 8 on 1–2 Aug"],["2016101612","2016102112","Haima 2016 — HKO No. 8 on 20–21 Oct"],["2017060812","2017061300","Merbok 2017 — HKO No. 8 on 12 Jun"],["2017071812","2017072300","Roke 2017 — HKO No. 8 on 23 Jul"],["2017081812","2017082300","Hato 2017 — HKO No. 10 on 23 Aug"],["2017082212","2017082712","Pakhar 2017 — HKO No. 8 on 26–27 Aug"],["2017101012","2017101512","Khanun 2017 — HKO No. 8 on 15 Oct"],["2023071112","2023071612","Talim 2023 — HKO No. 8 on 16–17 Jul"],["2023082712","2023090212","Saola 2023 — HKO No. 10 on 1 Sep"],["2023100212","2023100900","Koinu 2023 — HKO No. 9 on 8 Oct"],
  ["2025062212","2025062418","Unnamed storm (Jun) 2025 — HKO No. 1 on 25–26 Jun"],["2025081012","2025081312","Podul 2025 — HKO No. 1 on 13–14 Aug"],["2025081512","2025081518","Unnamed depression (Aug) 2025 — HKO No. 1 on 16–17 Aug"],["2025081912","2025082200","Kajiki 2025 — HKO No. 1 on 22–24 Aug"],["2025082512","2025082712","Nongfa 2025 — HKO No. 1 on 28–29 Aug"],
  ["2025110712","2025110912","Fung-wong 2025 — HKO No. 1 on 10–11 Nov"],["2026062812","2026070112","Maysak 2026 — HKO No. 1 on 1–3 Jul"],
  ["2025070112","2025070400","Danas 2025 — HKO No. 1 on 4–6 Jul"],
@@ -264,6 +277,21 @@ const pickRun=keep=>{if(!inMode(cyc)&&!keep){cyc=cycles.filter(inMode).find(RECE
   else {NOSAME=cs.length?cs.join(" / "):fmtc(prev)+" "+prev.slice(0,4); return}}
  const av=HK[cyc]||{}; if(!MODES[mode].includes(ens)||!av[ens]) ens=MODES[mode].find(e=>av[e])||MODES[mode][0]};
 pickRun();
+{const nb=$("#mapnav"), mb=$(".mapbar"); if(nb&&mb) mb.appendChild(nb)}
+const BASIC=(()=>{const qs=new URLSearchParams(location.search); if(qs.get("demo")) return qs.get("mode")==="basic";
+ try{const q=qs.get("mode");
+ if(q==="basic"||q==="advanced"){localStorage.setItem("hk_mode",q); return q==="basic"} const m=localStorage.getItem("hk_mode"); return m?m==="basic":PUB}catch(e){return PUB}})();
+if(BASIC){document.body.classList.add("basic"); mode="ec"; if(!MODES.ec.includes(ens)) ens="ifsens";
+ [$("#ensbtns")&&$("#ensbtns").closest(".grp"),$("#checks"),$("#detBtn"),$("#only150")&&$("#only150").closest("label"),$("#mapexp"),$("#chead"),$("#tabs"),
+  $("#chart")&&$("#chart").closest(".scrollx"),$("#stationchart"),$("#cnote")].forEach(e=>e&&e.classList.add("adv"));
+ const ds=$(".mast .disc"); if(ds) ds.textContent="Chances of tropical cyclone warning signals for Hong Kong, from computer forecasts. Research output — the Hong Kong Observatory is the only authority for actual signals.";
+ $("#maphint").textContent="Each line is one possible path; its colour shows the signal expected along it."; const kh=$("#mapkey .kh"); if(kh) kh.textContent="Signal expected along each path"; const kn=$("#mapkey .kn"); if(kn) kn.classList.add("adv"); const ap=$("#allPlay"); if(ap) ap.textContent="▶ play"}
+if(!/[?&]demo=/.test(location.search)){const nv=$(".mast nav"); if(nv){const sw=document.createElement("span"); sw.className="modesw";
+ sw.innerHTML=`<a href="#" data-m="basic" class="${BASIC?"on":""}">Basic</a><a href="#" data-m="advanced" class="${BASIC?"":"on"}">Advanced</a>`; nv.appendChild(sw);
+ sw.querySelectorAll("a").forEach(a=>a.onclick=e=>{e.preventDefault(); try{localStorage.setItem("hk_mode",a.dataset.m)}catch(x){}
+  const q=new URLSearchParams(location.search); q.set("run",cyc); q.set("f",ens); q.set("mode",a.dataset.m); location.search=q.toString()})}}
+function fillBasic(){const b=document.getElementById("bclose"); if(!b||!TR)return; const v=TR.tracks.filter(t=>t.m!==52&&t.ca).map(t=>t.ca[0]).sort((x,y)=>x-y);
+ b.innerHTML=v.length?`Expected closest distance to Hong Kong: <b>about ${Math.max(10,Math.round(v[Math.floor(v.length/2)]/10)*10)} km</b>`:""}
 const dist=(lo,la)=>Math.hypot((lo-114.174)*Math.cos(22.302*Math.PI/180)*111.32,(la-22.302)*110.57);
 const T0=()=>Date.UTC(+cyc.slice(0,4),+cyc.slice(4,6)-1,+cyc.slice(6,8),+cyc.slice(8,10));
 const labH=lab=>{const [d,h]=String(lab).replace("/"," ").split(" ").map(Number),a=new Date(T0());
@@ -367,7 +395,7 @@ function drawAll(){if(!AG||!AXY)return; while(AG.firstChild)AG.removeChild(AG.fi
  const txt=`all members · ${fmtH(allH)} (+${Math.round(allH)} h)`, bw=8.2*txt.length+16;
  AG.appendChild(el("rect",{x:W/2-bw/2,y:H-32,width:bw,height:24,rx:6,fill:"#fff",opacity:.92,stroke:"#999","stroke-width":.7}));
  const tx=el("text",{x:W/2,y:H-15,fill:"#111","font-size":13,"font-weight":700,"text-anchor":"middle"}); tx.textContent=txt; AG.appendChild(tx)}
-function allStop(){allPlaying=false; const b=$("#allPlay"); if(b)b.textContent="▶ all members"}
+function allStop(){allPlaying=false; const b=$("#allPlay"); if(b)b.textContent=BASIC?"▶ play":"▶ all members"}
 function allStep(){if(!allPlaying)return; const ts=performance.now();
  if(allTs) allH=Math.min(allEnd,allH+ALLSPD*(ts-allTs)/1000); allTs=ts; drawAll();
  if(allH>=allEnd-1e-6){allStop();return} setTimeout(allStep,40)}
@@ -384,7 +412,7 @@ function drawTabs(){
  $("#tabs").innerHTML=[["signal","Expected signal"],["p3","Chance of No. 3"],["p8","Chance of No. 8"],["p10","Chance of No. 10"],["wi","Wind index"],["sg","Station guide"]].filter(([k])=>k!=="wi"||(TR&&TR.tracks.some(x=>x.wix&&x.wix.length)))
    .map(([k,l])=>`<button data-t="${k}" class="${k===tab?"on":""}">${l}</button>`).join(" ")
 
-  +(TR&&TR.tracks.some(x=>x.wix&&x.wix.length)?` <label class="note" style="margin:0 0 0 6px" title="the wind index averaged over all ensemble members, hour by hour"><input type="checkbox" id="wimean"${showWIMean?" checked":""}> ensemble-mean wind index</label> <label class="note" style="margin:0 0 0 6px" title="each member's highest wind index, member by member"><input type="checkbox" id="widist"${showWIDist?" checked":""}> peaks of all members</label>`:"");
+  +(tab==="wi"&&TR&&TR.tracks.some(x=>x.wix&&x.wix.length)?` <label class="note" style="margin:0 0 0 6px" title="the wind index averaged over all ensemble members, hour by hour"><input type="checkbox" id="wimean"${showWIMean?" checked":""}> ensemble-mean wind index</label> <label class="note" style="margin:0 0 0 6px" title="each member's highest wind index, member by member"><input type="checkbox" id="widist"${showWIDist?" checked":""}> peaks of all members</label>`:"");
  $("#tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{tab=b.dataset.t; if(BIN){BIN=null;drawMap()} drawTabs();chart()});
 
  const wm=$("#wimean"); if(wm) wm.onchange=e=>{if(BIN){BIN=null;drawMap()} showWIMean=e.target.checked; if(showWIMean){showWIDist=false; if(tab!=="wi")tab="wi"; drawTabs()} chart()};
@@ -441,27 +469,30 @@ function drawR2R(){const box=$("#r2r"); if(!box)return;
  const runs=(Wn.length?cycles.filter(c=>Wn.some(p=>c>=p[0]&&c<=p[1])):cycles.filter(c=>Math.abs(tUc(c)-tUc(cyc))<=5*864e5)).slice().sort();
  const nRun=(c,e)=>{const d=(HK[c]||{})[e]; if(!d||(d.members||0)<=1)return null; const E=d.event||{};
   const n=sg=>d.quiet?0:(E[sg]?E[sg].n:(d[sg]&&d[sg].any?d[sg].any[0]:0)); return {c,M:d.members,No3:n("No3"),No8:n("No8"),No10:n("No10")}};
- const ens_=ORDER.filter(e=>runs.filter(c=>nRun(c,e)).length>=2);
+ const ens_=ORDER.filter(e=>(BASIC?MODES.ec.includes(e):e===ens)&&runs.filter(c=>nRun(c,e)).length>=2);
  if(!ens_.length){box.closest(".tlcard").style.display="none";return}
  const PW=Math.round(box.clientWidth||600), W=Math.max(300,PW), H=150, L=30, R=10, T=10, B=24;
  const ts=runs.map(tUc), t0=Math.min(...ts)-3*36e5, t1=Math.max(...ts)+3*36e5, X=t=>L+(W-L-R)*(t-t0)/Math.max(t1-t0,1);
  const hko=cs.map(c=>HKOEV[c]&&HKOEV[c].L3).filter(Boolean).map(y=>[Date.parse(String(y[0]).replace(" ","T")+(String(y[0]).length<=16?":00Z":"Z")),Date.parse(String(y[1]).replace(" ","T")+(String(y[1]).length<=16?":00Z":"Z"))]);
  const z=n=>String(n).padStart(2,"0"), SGc=[["No3","var(--no3)"],["No8","var(--no8)"],["No10","var(--no10)"]];
- box.innerHTML=ens_.map(e=>{const P=runs.map(c=>nRun(c,e)).filter(Boolean), M=Math.max(...P.map(p=>p.M)), Y=v=>T+(H-T-B)*(1-v/M), half=Math.floor(M/2)+1;
+ box.innerHTML=ens_.map(e=>{const P=runs.map(c=>nRun(c,e)).filter(Boolean), pc=(p,sg)=>100*p[sg]/p.M, Y=v=>T+(H-T-B)*(1-v/100);
   let g=hko.map(([a,b])=>{const x0=Math.max(X(a),L),x1=Math.min(X(b),W-R);return x1>x0?`<rect x="${x0}" y="${T}" width="${x1-x0}" height="${H-T-B}" style="fill:var(--ink)" opacity=".08"></rect>`:""}).join("");
-  [0,M].forEach(v=>{g+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" style="stroke:var(--line)"></line><text x="${L-5}" y="${Y(v)+4}" text-anchor="end" font-size="11" style="fill:var(--mut)">${v}</text>`});
-  g+=`<line x1="${L}" x2="${W-R}" y1="${Y(half)}" y2="${Y(half)}" style="stroke:var(--mut)" stroke-dasharray="4 3"></line><text x="${L-5}" y="${Y(half)+4}" text-anchor="end" font-size="11" style="fill:var(--mut)">${half}</text>`;
+  [0,100].forEach(v=>{g+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" style="stroke:var(--line)"></line><text x="${L-5}" y="${Y(v)+4}" text-anchor="end" font-size="11" style="fill:var(--mut)">${v}%</text>`});
+  g+=`<line x1="${L}" x2="${W-R}" y1="${Y(50)}" y2="${Y(50)}" style="stroke:var(--mut)" stroke-dasharray="4 3"></line><text x="${L-5}" y="${Y(50)+4}" text-anchor="end" font-size="11" style="fill:var(--mut)">50%</text>`;
   const d0=new Date(t0), days=[]; for(let u=Date.UTC(d0.getUTCFullYear(),d0.getUTCMonth(),d0.getUTCDate()+1);u<=t1;u+=864e5)days.push(u);
   const stp=Math.max(1,Math.ceil(days.length/(W<480?4:8)));
   days.forEach((u,k)=>{if(k%stp)return; const dd=new Date(u); g+=`<line x1="${X(u)}" x2="${X(u)}" y1="${T}" y2="${H-B}" style="stroke:var(--line)" opacity=".6"></line><text x="${X(u)}" y="${H-B+15}" text-anchor="middle" font-size="11" style="fill:var(--mut)">${dd.getUTCDate()}/${dd.getUTCMonth()+1}</text>`});
   if((HK[cyc]||{})[e]) g+=`<line x1="${X(tUc(cyc))}" x2="${X(tUc(cyc))}" y1="${T-4}" y2="${H-B}" style="stroke:var(--ink)" stroke-width="1.6" stroke-dasharray="2 2"></line>`;
-  SGc.forEach(([sg,col])=>{g+=`<path d="${P.map((p,i)=>(i?"L":"M")+X(tUc(p.c)).toFixed(1)+" "+Y(p[sg]).toFixed(1)).join(" ")}" fill="none" style="stroke:${col}" stroke-width="2"></path>`;
-   g+=P.map(p=>`<circle cx="${X(tUc(p.c)).toFixed(1)}" cy="${Y(p[sg]).toFixed(1)}" r="${p.c===cyc&&e===ens?4.5:3.2}" style="fill:${col};stroke:var(--card)" stroke-width="1.2" data-c="${p.c}" data-e="${e}"><title>${fmtc(p.c)}: ${p[sg]} of ${p.M} members give ${sg.replace("No","No. ")}</title></circle>`).join("")});
-  return `<div class="r2rp"><div class="t">${FCN[e]||e}</div><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="members giving No. 3, 8 and 10 in each run">${g}</svg></div>`}).join("");
+  SGc.forEach(([sg,col])=>{g+=`<path d="${P.map((p,i)=>(i?"L":"M")+X(tUc(p.c)).toFixed(1)+" "+Y(pc(p,sg)).toFixed(1)).join(" ")}" fill="none" style="stroke:${col}" stroke-width="2"></path>`;
+   g+=P.map(p=>`<circle cx="${X(tUc(p.c)).toFixed(1)}" cy="${Y(pc(p,sg)).toFixed(1)}" r="${p.c===cyc&&e===ens?4.5:3.2}" style="fill:${col};stroke:var(--card)" stroke-width="1.2" data-c="${p.c}" data-e="${e}"><title>${fmtc(p.c)}: ${sg.replace("No","No. ")} ${Math.round(pc(p,sg))}% (${p[sg]} of ${p.M} members)</title></circle>`).join("")});
+  return `<div class="r2rp"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="chance of No. 3, 8 and 10 in each run">${g}</svg></div>`}).join("");
  box.querySelectorAll("circle[data-c]").forEach(o=>o.onclick=()=>{cyc=o.dataset.c; ens=o.dataset.e; mode=modeOf(ens)||mode; NOSAME=null; sel=null; selH=null; head(); load()});
 }
 function load(){
  BIN=null;
+ if(BASIC){const ph=c=>MODES.ec.some(e=>(HK[c]||{})[e]);
+  if(!ph(cyc)){const c2=cycles.find(c=>c<=cyc&&ph(c))||cycles.find(ph); if(c2&&c2!==cyc){cyc=c2; head()}}
+  const av=HK[cyc]||{}; mode="ec"; if(!MODES.ec.includes(ens)||!av[ens]) ens=MODES.ec.find(e=>av[e])||"ifsens"}
  allH=null; if(allPlaying)allStop();
  if(NOSAME){unavailable();return}
  $("#map").style.display=""; $("#chart").style.display="";
@@ -477,6 +508,8 @@ function load(){
    +(pastOf(cyc)?` · past case: ${pastOf(cyc)}${cyc<"2025"?" (this storm was used to set up the site)":" (a fair test: not used to set up the site)"}`:"")
 ;}
  else $("#stamp").textContent="";
+ if(BASIC&&d&&d.generated){const t=new Date(Date.parse(d.generated.replace(" ","T")+":00Z")+8*36e5), z=n=>String(n).padStart(2,"0");
+  $("#stamp").innerHTML=`Updated ${t.getUTCDate()} ${MON[t.getUTCMonth()]} ${z(t.getUTCHours())}:${z(t.getUTCMinutes())} (Hong Kong time)`+(pastOf(cyc)?`<br>Past storm: ${pastOf(cyc)}`:"")}
  if(!d){
   const hh=cyc.slice(8,10), off=(hh==="06"||hh==="18"), other=(HK[cyc]||{});
   const last=cycles.find(c=>(HK[c]||{})[ens]);
@@ -488,7 +521,7 @@ function load(){
   const a=$("#toAifs"); if(a)a.onclick=e=>{e.preventDefault();NOSAME=null;mode="ai";ens="aifsens";sel=null;selH=null;head();load()};
   const b=$("#toLast"); if(b)b.onclick=e=>{e.preventDefault();cyc=last;sel=null;selH=null;head();load()};
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";$("#maphint").textContent="";return}
- if(d.quiet){$("#status").innerHTML=`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">No threat</div><div class="v">No member's storm comes within 800 km of Hong Kong; the closest is ${Math.round(d.min_dist_km)} km.</div></div>`;
+ if(d.quiet){$("#status").innerHTML=BASIC?`<div class="bcard"><div class="bh">No storm near Hong Kong</div><div class="bv">No tropical cyclone is forecast to come within 800 km of Hong Kong.</div></div>`:`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">No threat</div><div class="v">No member's storm comes within 800 km of Hong Kong; the closest is ${Math.round(d.min_dist_km)} km.</div></div>`;
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";return}
  const src=(d.sources||[]).includes("s1")?"s1":"s1", MJ=Math.floor((d.members||51)/2)+1;
  const SG=[["No3","No. 3","var(--no3)"],["No8","No. 8","var(--no8)"],["No10","No. 10","var(--no10)"]];
@@ -522,10 +555,10 @@ function load(){
   const ans=`<div class="ans"><div class="k">${one?"This run gives":"Expected signal"}</div>`
    +`<div class="badge" style="color:${topL?topL[3]:"var(--mut)"}">${topL?topL[1]:"none"}</div>`+(!topL&&!one&&nOf("No3")?`<div class="v"><b>${nOf("No3")}</b> of ${d.members} give No. 3</div>`:"")
    +(topL?`<div class="v">${one?"":`from <b>${nOf(topL[0])}</b> of ${d.members} members`}${x?`${one?"":" · "}${x.groups?`<b>${MAING(x).n}</b> of them `:""}${hk(x.start[1])} → ${hk(x.end[1])} HKT · <b>${x.hours[1]}&nbsp;h</b>`:""}</div>`:"")
-   +(!one?`<div class="mexp">ECMWF runs every forecast <b>${d.members} times</b>, each from a slightly different start, to show how sure it is. Each run is a <i>member</i>${topL?`: <b>${nOf(topL[0])} of ${d.members}</b> (${Math.round(100*nOf(topL[0])/d.members)}%) of them bring ${topL[1]}.`:nOf("No3")?`. Only <b>${nOf("No3")} of ${d.members}</b> bring No. 3 or higher, fewer than half, so no signal has a majority.`:". None of them brings No. 3 or higher."}${ens==="ifsens"?` ECMWF also makes one main forecast in finer detail, the <b>deterministic run</b> (black dashed on the map).`:ens==="aifsens"?` The <b>control run</b> is the one member started without any change (black dashed on the map).`:""}</div>`:"")
    +(x&&x.groups?`<div class="note">other periods: ${x.groups.filter(g=>g!==MAING(x)).map(g=>`${g.n} member${g.n>1?"s":""} ${hk(g.start[1])} → ${hkS(g.end[1])}`).join(" · ")}</div>`:"")
    +`<div class="v gs" id="galeF"></div><div class="note">${pass}</div>`
    +`<details class="what"><summary>What do these numbers mean?</summary>`
+   +(!one?`<div class="mexp">ECMWF runs every forecast <b>${d.members} times</b>, each from a slightly different start, to show how sure it is. Each run is a <i>member</i>${topL?`: <b>${nOf(topL[0])} of ${d.members}</b> (${Math.round(100*nOf(topL[0])/d.members)}%) of them bring ${topL[1]}.`:nOf("No3")?`. Only <b>${nOf("No3")} of ${d.members}</b> bring No. 3 or higher, fewer than half, so no signal has a majority.`:". None of them brings No. 3 or higher."}${ens==="ifsens"?` ECMWF also makes one main forecast in finer detail, the <b>deterministic run</b> (black dashed on the map).`:ens==="aifsens"?` The <b>control run</b> is the one member started without any change (black dashed on the map).`:""}</div>`:"")
    +(one?`<p><b>One run.</b> This forecast is a single run, so it gives one answer instead of a share of members.</p>`
         :`<p><b>Members.</b> ECMWF runs each forecast ${d.members||50} times, each from slightly different starting conditions. Each run is a member. A count like "20 of ${d.members||50} members" means 20 of those runs give that signal at some point, so it gives a rough idea of the chance. It is the share of members, not a calibrated probability that HKO will issue the signal.</p>`
          +(ens==="ifsens"?`<p><b>Deterministic run.</b> Besides the ${d.members||50} members, ECMWF makes one main forecast in finer detail. It is the black dashed line on the map, and its own numbers say "deterministic". It is still one forecast, so it can be right or wrong like any member.</p>`:ens==="aifsens"?`<p><b>Control run.</b> The AI forecast's member started without any change. It is the black dashed line on the map.</p>`:"")
@@ -534,7 +567,7 @@ function load(){
    +`<p><b>Storm and hurricane force</b> count the same 8 stations, at 88 and 118 km/h (10-minute average wind). Each station's own chance and expected wind are in <b>Stations</b> just above, for the deterministic run, and in the Station guide tab under the map, which shows the same run until you click another track.</p>`
    +`<p><b>8-station average.</b> The average over the 8 reference stations of each station's highest 10-minute mean wind in the storm. Past storms are ranked by it: ${R8N} storms since 2007 that brought No. 3 or higher, from the same station records the station numbers are built on. For a forecast it is shown for each member, as a reference only, under the table in the Station guide tab, from that member's wind guide at the 8 stations; below ${R8MIN} km/h the guide cannot tell storms apart, so no rank is given.</p></details></div>`;
   const hko=hcases.length&&!window.HK_DEMO?`<div class="ans"><div class="k">HKO actually issued</div><div class="badge" style="color:${colL[clsL(hkoTop)]}">No. ${hkoTop}</div>`
-   +hcases.map(c=>{const t=HKOEV[c].top, y=HKOEV[c]["L"+clsL(t)];return `<div class="v">${c}: No. ${t}${y?` · ${hkS(y[0])} → ${hkS(y[1])} HKT · <b>${Math.round(y[2])}&nbsp;h</b>`:""}</div>${HKOGALE[c]!=null?`<div class="v gs"><span class="gl">Reference stations that recorded gale force</span> ${gdots(HKOGALE[c],HKOGALE[c])} <b class="gn">${HKOGALE[c]}</b> of 8</div>`:""}${HKOSH[c]?[["Reference stations that recorded storm force",0],["Reference stations that recorded hurricane force",1]].map(([l,i])=>`<div class="v gs"><span class="gl" title="from HKO's reported maximum hourly mean winds (80 / 107 km/h)">${l}</span> ${gdots(HKOSH[c][i],HKOSH[c][i])} <b class="gn">${HKOSH[c][i]}</b> of 8</div>`).join("")+`<div class="note">Storm and hurricane counts use HKO's maximum hourly mean winds; the station table uses the highest 10-minute mean.</div>`:""}${rank8Obs(c)}`}).join("")+`</div>`:"";
+   +hcases.map(c=>{const t=HKOEV[c].top, y=HKOEV[c]["L"+clsL(t)];return `<div class="v">${c}: No. ${t}${y?` · ${hkS(y[0])} → ${hkS(y[1])} HKT · <b>${Math.round(y[2])}&nbsp;h</b>`:""}</div>${HKOGALE[c]!=null?`<div class="gh" style="margin-top:12px">Reference stations, recorded by HKO</div><div class="v gs"><span class="gl">Gale force</span> ${gdots(HKOGALE[c],HKOGALE[c])} <b class="gn">${HKOGALE[c]}</b> of 8</div>`:""}${HKOSH[c]?[["Storm force",0],["Hurricane force",1]].map(([l,i])=>`<div class="v gs"><span class="gl" title="from HKO's reported maximum hourly mean winds (80 / 107 km/h); the station table uses the highest 10-minute mean">${l}</span> ${gdots(HKOSH[c][i],HKOSH[c][i])} <b class="gn">${HKOSH[c][i]}</b> of 8</div>`).join(""):""}${rank8Obs(c)}`}).join("")+`</div>`:"";
   const card=([sg,lab,L,col])=>{const x_=E&&E[sg], a=d[sg]&&d[sg].any, n=nOf(sg);
    const rows=[[one?"reached":"members",one?`<b>${n?"yes":"no"}</b>`:`<b>${n}</b> of ${d.members}${(L!==10&&a&&a[1]!==a[2])?` <span class="rng">(${a[1]}–${a[2]})</span>`:""}`]];
    if(x_&&x_.groups) rows.push(["main period",`<b>${MAING(x_).n}</b> members`]);
@@ -545,20 +578,26 @@ function load(){
    if(x_&&x_.det) rows.push(["deterministic",`${hkS(x_.det[0])} → ${hkS(x_.det[1])} · ${x_.det[2]}&nbsp;h`]);
    hcases.forEach(c=>{const y=HKOEV[c]["L"+L];rows.push([`HKO ${c.split(" ")[0]}`,y?`<b>${hkS(y[0])} → ${hkS(y[1])}</b> · ${Math.round(y[2])}&nbsp;h`:"not issued"])});
    return `<div class="lv" style="--c:${col}"><h3>${lab}</h3><dl>${rows.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl></div>`};
-  tb=`<div class="hero">${ans}${hko}</div><div class="tlcard"><div class="k">Timeline · Hong Kong time</div><div id="tl"></div></div>`
-   +(window.HK_DEMO?"":`<div class="tlcard"><div class="k">Run to run · members giving each signal</div><div class="r2rlg"><span><b style="color:var(--no3)">—</b> No. 3</span><span><b style="color:var(--no8)">—</b> No. 8</span><span><b style="color:var(--no10)">—</b> No. 10</span><span>- - half of the members</span>${casesOf(cyc).some(c=>HKOEV[c]&&HKOEV[c].L3)?`<span><b style="opacity:.35">█</b> HKO No. 3 or higher up</span>`:""}</div><div id="r2r"></div><p class="note" style="margin:2px 0 0">Each dot is one run; click a dot to open that run.</p></div>`)
+  tb=`<h2 class="sech">The forecast</h2><div class="hero">${ans}${hko}</div><h2 class="sech">When</h2><div class="tlcard"><div class="k">Timeline · Hong Kong time</div><div id="tl"></div></div>`
+   +(window.HK_DEMO?"":`<h2 class="sech">Trend</h2><div class="tlcard"><div class="k">Run to run · chance of each signal</div><div class="r2rlg"><span><b style="color:var(--no3)">—</b> No. 3</span><span><b style="color:var(--no8)">—</b> No. 8</span><span><b style="color:var(--no10)">—</b> No. 10</span><span>- - 50%</span>${casesOf(cyc).some(c=>HKOEV[c]&&HKOEV[c].L3)?`<span><b style="opacity:.35">█</b> HKO No. 3 or higher up</span>`:""}</div><div id="r2r"></div><p class="note" style="margin:2px 0 0">Each dot is one run; click a dot to open that run.</p></div>`)
    +`<details class="nums"><summary>Numbers per signal</summary><div class="lvgrid">${LV.map(card).join("")}</div>`
    +(E?"":`<p class="note">start, end and hours: not in this run's data</p>`)
    +`<p class="note">${one?"a signal counts when the run's chance reaches":"members with a chance of"} ≥ 0.30 (No. 10: ≥ 0.40) at any hour · times HKT${one?"":", median over those members (10–90% below)"}`+`</p></details>`;
  }
  GA={members:d.members||0,one};
- $("#status").innerHTML=tb||`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">none</div><div class="note">${pass}</div></div>`;
+ const basicCard=()=>{const M=d.members||50, pc=sg=>one?(nOf(sg)?100:0):Math.round(100*nOf(sg)/M), x=topL&&E&&E[topL[0]]&&E[topL[0]].n?E[topL[0]]:null;
+  const none=100-Math.max(...LV.map(([sg])=>pc(sg)));
+  return `<div class="bcard"><div class="bh" style="color:${topL?topL[3]:"var(--ink)"}">${topL?`Signal ${topL[1]} likely (${pc(topL[0])}%)`:`Most likely no signal (${none}%)`}</div>`
+   +LV.map(([sg,lab,L,col])=>`<div class="bbar"><b>${lab}</b><div class="tr"><div class="fl" style="width:${pc(sg)}%;background:${col}"></div></div><span class="pc">${pc(sg)}%</span></div>`).join("")
+   +(x?`<div class="bv">Most likely from <b>${hk(x.start[1])}</b> to <b>${hk(x.end[1])}</b> (Hong Kong time)</div>`:"")+`<div class="bv" id="bclose"></div></div>`
+   +`<div class="tlcard"><div class="k">How the chance changed with each new forecast</div><div class="r2rlg"><span><b style="color:var(--no3)">—</b> No. 3</span><span><b style="color:var(--no8)">—</b> No. 8</span><span><b style="color:var(--no10)">—</b> No. 10</span><span>- - 50%</span>${casesOf(cyc).some(c=>HKOEV[c]&&HKOEV[c].L3)?`<span><b style="opacity:.35">█</b> HKO No. 3 or higher up</span>`:""}</div><div id="r2r"></div><p class="note" style="margin:2px 0 0">Each dot is one forecast; click a dot to open it.</p></div>`};
+ $("#status").innerHTML=BASIC?basicCard():tb||`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">none</div><div class="note">${pass}</div></div>`;
  drawTL({E,one,members:d.members||0,MJ,hcases,init:Date.UTC(+cyc.slice(0,4),+cyc.slice(4,6)-1,+cyc.slice(6,8),+cyc.slice(8,10))});
  drawR2R();
  const key=cyc+"_"+ens;
- if(window.HKT&&window.HKT[key]){TR=window.HKT[key];drawTabs();drawMap();chart();fillGale();return}
+ if(window.HKT&&window.HKT[key]){TR=window.HKT[key];drawTabs();drawMap();chart();fillGale();fillBasic();return}
  const sc=document.createElement("script");sc.src=`../data/tracks_${key}.js`;
- sc.onload=()=>{TR=(window.HKT||{})[key];drawTabs();drawMap();chart();fillGale()};
+ sc.onload=()=>{TR=(window.HKT||{})[key];drawTabs();drawMap();chart();fillGale();fillBasic()};
  sc.onerror=()=>{TR=null;MC=null;syncPlayer();$("#map").innerHTML="";$("#chart").innerHTML="";$("#cnote").textContent="track file missing for this run"};
  document.head.appendChild(sc);
 }
@@ -718,7 +757,7 @@ function fillGale(){const f=document.getElementById("galeF"); if(!f)return;
   const q=p=>v[Math.min(v.length-1,Math.round(p*(v.length-1)))], md=q(.5), lo=q(.1), hi=q(.9);
   const dt=TR.tracks.find(t=>t.m===52&&M>1), dg=dt?(dt[k]==null?0:Math.round(dt[k])):null;
   return `<div><span class="gl">${lab}</span> ${gdots(md,GA.one?md:hi)} <b class="gn">${md}</b> of 8${GA.one||lo===hi?"":` <span class="rng">(10th–90th percentile: ${lo}–${hi})</span>`}${dg!=null?` <span class="rng">· deterministic run: ${dg}</span>`:""}</div>`};
- f.innerHTML=`<div class="gh">Forecast, at any time from this run onward</div>`+row("gale","Reference stations reaching gale force")+(TR.tracks.some(t=>t.storm_n!=null)?row("storm_n","Reference stations reaching storm force")+row("hur_n","Reference stations reaching hurricane force"):"")+stationGuide()}
+ f.innerHTML=`<div class="gh">Reference stations, forecast (any time from this run)</div>`+row("gale","Gale force")+(TR.tracks.some(t=>t.storm_n!=null)?row("storm_n","Storm force")+row("hur_n","Hurricane force"):"")+stationGuide()}
 {const sc=document.getElementById("stationchart"); if(sc)sc.addEventListener("click",e=>{const tr=e.target.closest("tr.sgrow"); if(!tr||!TR)return;
  const box=sc.querySelector(".sgdistbox"), was=tr.classList.contains("sgon"); sc.querySelectorAll("tr.sgon").forEach(r=>r.classList.remove("sgon"));
  if(!box)return; if(was){box.innerHTML="";return}
@@ -809,12 +848,12 @@ function drawMap(){
  $("#maphint").innerHTML=window._defHint;
  {const r=refM(); $("#detBtn").style.display=r!==null?"":"none"; $("#detBtn").classList.toggle("on",r!==null&&sel===r);
   $("#detBtn").textContent=r===51?"control run":"deterministic run";
-  {const kd=$("#kdet"); if(kd){kd.textContent=r===51?"control run":"deterministic run"; kd.parentNode.style.display=r!==null?"":"none"}}
+  {const kd=$("#kdet"); if(kd){kd.textContent=r===51?"control run":"deterministic run"; kd.parentNode.style.display=r!==null&&!BASIC?"":"none"}}
   $("#mapexp").innerHTML=`<b>Lines:</b> ${TR.tracks.filter(x=>x.m!==52).length>1?`${(HK[cyc]||{})[ens]&&(HK[cyc]||{})[ens].members||50} possible paths`:"the possible paths"}, each started from slightly different conditions.`
    +(r===52?` <b>Deterministic run:</b> ECMWF's main forecast, made once in finer detail.`:r===51?` <b>Control run:</b> the one path started without any change.`:"");
   $("#detBtn").title=r===51?"the AI ensemble's unperturbed member (51) on its own -- the site has no separate deterministic AI run":"ECMWF's main forecast, made once in finer detail than the members, shown on its own: track, time bar, charts"}
  if(sel!==null&&allH!==null){allH=null; if(allPlaying)allStop()}
- TR.tracks.filter(t=>(!only||t.ca[0]<150)&&(sel===null||t.m===sel)&&(!isDet(t)||sel===null||sel===t.m)&&(sel!==null||!BIN||BIN.ms.has(t.m))).sort((a,b)=>{if(byI)return (isDet(a)-isDet(b))||pk(a)-pk(b);const A=tierOf(a),B=tierOf(b);return (isDet(a)-isDet(b))||A[0]-B[0]||A[1]-B[1]}).forEach(t=>{
+ TR.tracks.filter(t=>(!only||t.ca[0]<150)&&(sel===null||t.m===sel)&&(!isDet(t)||sel===null||sel===t.m)&&(sel!==null||!BIN||BIN.ms.has(t.m))&&!(BASIC&&isDet(t))).sort((a,b)=>{if(byI)return (isDet(a)-isDet(b))||pk(a)-pk(b);const A=tierOf(a),B=tierOf(b);return (isDet(a)-isDet(b))||A[0]-B[0]||A[1]-B[1]}).forEach(t=>{
   const top=sel===null&&t.m===DEFM(), on=sel===t.m, d=t.pts.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join(" ");
   if(top||on)s.appendChild(el("path",{fill:"none",stroke:"#fff","stroke-width":(on?7:5.5),d:d,"stroke-linejoin":"round"}));
   const det=isDet(t), SQ=!byI&&(!det||on)?sqOf(t):null, sq=SQ&&SQ.length;
@@ -841,7 +880,7 @@ function drawMap(){
     selH=t.wf[best[1]][0]+best[2]*(t.wf[best[1]+1][0]-t.wf[best[1]][0])}
    else{sel=(sel===t.m?null:t.m);selH=null}
    drawMap();chart()};
-  path.style.cursor="pointer"; path.onclick=clickLine;
+  if(!BASIC){path.style.cursor="pointer"; path.onclick=clickLine}
   (t.others||[]).forEach(o=>{s.appendChild(el("path",{fill:"none",stroke:on?"#555":"#999","stroke-width":on?1.6:0.8,"stroke-dasharray":"5 4",
     opacity:on?0.9:0.35,d:o.pts.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join(" ")}))});
   path.onmouseenter=()=>$("#maphint").innerHTML=on&&t.wf
@@ -866,9 +905,9 @@ function drawMap(){
    ex.onmouseenter=()=>$("#maphint").innerHTML=`${memLab(t.m)}: the model stops tracking this storm at <b>${L[3].replace("/"," ")}Z</b>, ${Math.round(dist(L[0],L[1]))} km from Hong Kong${"."}`;
    s.appendChild(ex);}
  });
-if(!byI&&W>=820){const lx=W-222, items=[[1,"No. 1"],[3,"No. 3"],[8,"No. 8"],[9,"No. 9"],[10,"No. 10"],[0,"none"]];
+if(false&&!byI&&W>=820){const lx=W-222, items=[[1,"No. 1"],[3,"No. 3"],[8,"No. 8"],[9,"No. 9"],[10,"No. 10"],[0,"none"]];
   s.appendChild(el("rect",{x:lx-8,y:8,width:222,height:18*items.length+26,rx:5,fill:"#fff",opacity:.9,stroke:"#999","stroke-width":.6,"pointer-events":"none"}));
-  const hd=el("text",{x:lx,y:24,fill:"#111","font-size":11,"font-weight":600,"pointer-events":"none"});hd.textContent="signal along each track (≥ 0.30; No. 10 ≥ 0.40)";s.appendChild(hd);
+  const hd=el("text",{x:lx,y:24,fill:"#111","font-size":11,"font-weight":600,"pointer-events":"none"});hd.textContent=BASIC?"signal expected along each path":"signal along each track (≥ 0.30; No. 10 ≥ 0.40)";s.appendChild(hd);
   items.forEach(([k,lab],i)=>{const yy=42+18*i; s.appendChild(el("line",{x1:lx,x2:lx+26,y1:yy-4,y2:yy-4,stroke:SIGC[k],"stroke-width":3.4,"pointer-events":"none"}));
    const tx=el("text",{x:lx+34,y:yy,fill:"#111","font-size":11,"pointer-events":"none"});tx.textContent=lab;s.appendChild(tx)})}
  const TRU=truthNow();
