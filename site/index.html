@@ -139,7 +139,8 @@ footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin
 @media (max-width:760px){
  .mast{padding-top:16px} .hero{grid-template-columns:1fr} .lvgrid{grid-template-columns:1fr}
  .lbl{width:100%} .toolbar .sub{padding-left:0} .mapbar .lbl{width:100%}
- #chart{min-width:640px}   /* a phone scrolls the chart sideways; the MAP fits the screen and keeps its labels at size (2026-10-11) */
+ #chart{width:100%;height:auto}
+ @media (max-width:731px){#chart text{paint-order:stroke;stroke:var(--card);stroke-width:3px;stroke-linejoin:round}}   /* 2026-10-17: a phone draws the chart at its own width (chart()), its labels haloed where they cross the bars; the MAP fits the screen and keeps its labels at size (2026-10-11) */
  .toolbar select{width:100%} .swipe{display:block}
  #tabs{gap:2px 14px} #tabs button{font-size:14px;padding:8px 1px}
 }
@@ -220,9 +221,11 @@ const r8near=(v,skip)=>{const o=RANK8.filter(r=>r8key(r)!==skip), up=o.filter(r=
  const f=r=>`${r[0]} ${r[1]} ${r[2].toFixed(1)}`; return `<div class="r8s">Similar storms — stronger: ${up.length?up.map(f).join(", "):"none"} · weaker: ${dn.length?dn.map(f).join(", "):"none"}</div>`};
 function rank8Obs(c){const w=HKOWIND[c]; if(!w)return ""; const v=w.reduce((a,b)=>a+b,0)/w.length, k=c.toLowerCase();
  return `<div class="r8"><div>8-station average of the highest 10-minute mean: <b>${v.toFixed(1)} km/h</b> · <b>${ordE(r8rank(v,k))}</b> of the ${R8N} storms since 2007 that brought No. 3 or higher</div>${r8near(v,k)}</div>`}
+const LT53=[46.5,40,39,38,43,27,28,30.5];
 function rank8Member(t){if(!t||!t.gst)return "";
  const val=i=>{const w=stationWind(t,i); if(w.fv!=null)return w.fv; const b=w.fb; if(!b)return 46; return ((isFinite(b[0])?b[0]:40)+(isFinite(b[1])?b[1]:130))/2};
- const v=SGN.reduce((a,_,i)=>a+val(i),0)/SGN.length, skip=(casesOf(cyc)[0]||"").toLowerCase(), hk=casesOf(cyc).map(c=>[c,HKOWIND[c]]).find(x=>x[1]);
+ const lt=i=>{const w=stationWind(t,i); return w.fv==null&&(!w.fb||w.fb[1]===52)};
+ const v46=SGN.reduce((a,_,i)=>a+val(i),0)/SGN.length, v=v46>=R8MIN?v46:SGN.reduce((a,_,i)=>a+(lt(i)?LT53[i]:val(i)),0)/SGN.length, skip=(casesOf(cyc)[0]||"").toLowerCase(), hk=casesOf(cyc).map(c=>[c,HKOWIND[c]]).find(x=>x[1]);
  const obs=hk?(o=>`<div class="r8s">HKO recorded ${o.toFixed(1)} km/h, ${ordE(r8rank(o,hk[0].toLowerCase()))} of the ${R8N}.</div>`)(hk[1].reduce((a,b)=>a+b,0)/hk[1].length):"";
  const head=`8-station average in this forecast (reference only): <b>${Math.round(v)} km/h</b>`;
  if(v<R8MIN)return `<div class="r8"><div>${head}</div><div class="r8s">Below ${R8MIN} km/h: outside the top ${RANK8.filter(r=>r[2]>=R8MIN).length} of the ${R8N} storms since 2007; the forecast cannot rank weaker storms finely.</div>${obs}</div>`;
@@ -267,7 +270,7 @@ const caH=c=>{const [md,hm]=String(c).split(" "),[mo,d]=md.split("-").map(Number
  let u=Date.UTC(a.getUTCFullYear(),mo-1,d,h,mi); if(u<T0()-30*864e5) u=Date.UTC(a.getUTCFullYear()+1,mo-1,d,h,mi); return (u-T0())/36e5};
 const fmtH=h=>{const d=new Date(T0()+Math.round(h*60)*6e4),z=n=>String(n).padStart(2,"0");return `${z(d.getUTCDate())} ${z(d.getUTCHours())}:${z(d.getUTCMinutes())}Z`};
 
-let showWHK=false, showWIMean=false;
+let showWHK=false, showWIMean=false, showWIDist=false;
 const WI_FAR=14;
 function wiEnsemble(){
  const M=TR.tracks.filter(x=>!(x.m===52&&(ens==="ifsens"||ens==="tigge"))), W=M.map(x=>new Map((x.wix||[]).map(([h,v])=>[Math.round(h),v])));
@@ -379,10 +382,11 @@ function drawTabs(){
  $("#tabs").innerHTML=[["signal","Expected signal"],["p3","Chance of No. 3"],["p8","Chance of No. 8"],["p10","Chance of No. 10"],["wi","Wind index"],["sg","Station guide"]].filter(([k])=>k!=="wi"||(TR&&TR.tracks.some(x=>x.wix&&x.wix.length)))
    .map(([k,l])=>`<button data-t="${k}" class="${k===tab?"on":""}">${l}</button>`).join(" ")
 
-  +(TR&&TR.tracks.some(x=>x.wix&&x.wix.length)?` <label class="note" style="margin:0 0 0 6px" title="the wind index averaged over all ensemble members, hour by hour"><input type="checkbox" id="wimean"${showWIMean?" checked":""}> ensemble-mean wind index</label>`:"");
+  +(TR&&TR.tracks.some(x=>x.wix&&x.wix.length)?` <label class="note" style="margin:0 0 0 6px" title="the wind index averaged over all ensemble members, hour by hour"><input type="checkbox" id="wimean"${showWIMean?" checked":""}> ensemble-mean wind index</label> <label class="note" style="margin:0 0 0 6px" title="each member's highest wind index, member by member"><input type="checkbox" id="widist"${showWIDist?" checked":""}> peaks of all members</label>`:"");
  $("#tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;drawTabs();chart()});
 
- const wm=$("#wimean"); if(wm) wm.onchange=e=>{showWIMean=e.target.checked; if(showWIMean&&tab!=="wi"){tab="wi";drawTabs()} chart()};
+ const wm=$("#wimean"); if(wm) wm.onchange=e=>{showWIMean=e.target.checked; if(showWIMean){showWIDist=false; if(tab!=="wi")tab="wi"; drawTabs()} chart()};
+ const wd=$("#widist"); if(wd) wd.onchange=e=>{showWIDist=e.target.checked; if(showWIDist){showWIMean=false; if(tab!=="wi")tab="wi"; drawTabs()} chart()};
 }
 function head(){
  const mine=cycles.filter(c=>ORDER.some(e=>(HK[c]||{})[e])), rec=mine.filter(RECENT), past=mine.filter(c=>!RECENT(c));
@@ -488,9 +492,9 @@ function load(){
  let tb="";
  if(LV.some(([sg])=>nOf(sg)>0)||hcases.length){
   const x=topL&&E&&E[topL[0]]&&E[topL[0]].n?E[topL[0]]:null;
-  const ans=`<div class="ans"><div class="k">${one?"This run gives":"Highest signal a majority gives"}</div>`
-   +`<div class="badge" style="color:${topL?topL[3]:"var(--mut)"}">${topL?topL[1]:(nOf("No3")?"no majority":"none")}</div>`
-   +(topL?`<div class="v">${one?"":`<b>${nOf(topL[0])}</b> of ${d.members} members`}${x?`${one?"":" · "}${x.groups?`<b>${MAING(x).n}</b> of them `:""}${hk(x.start[1])} → ${hk(x.end[1])} HKT · <b>${x.hours[1]}&nbsp;h</b>`:""}</div>`:"")
+  const ans=`<div class="ans"><div class="k">${one?"This run gives":"Expected signal"}</div>`
+   +`<div class="badge" style="color:${topL?topL[3]:"var(--mut)"}">${topL?topL[1]:"none"}</div>`+(!topL&&!one&&nOf("No3")?`<div class="v"><b>${nOf("No3")}</b> of ${d.members} give No. 3</div>`:"")
+   +(topL?`<div class="v">${one?"":`from <b>${nOf(topL[0])}</b> of ${d.members} members`}${x?`${one?"":" · "}${x.groups?`<b>${MAING(x).n}</b> of them `:""}${hk(x.start[1])} → ${hk(x.end[1])} HKT · <b>${x.hours[1]}&nbsp;h</b>`:""}</div>`:"")
    +(!one?`<div class="mexp">ECMWF runs every forecast <b>${d.members} times</b>, each from a slightly different start, to show how sure it is. Each run is a <i>member</i>${topL?`: <b>${nOf(topL[0])} of ${d.members}</b> (${Math.round(100*nOf(topL[0])/d.members)}%) of them bring ${topL[1]}.`:nOf("No3")?`. Only <b>${nOf("No3")} of ${d.members}</b> bring No. 3 or higher, fewer than half, so no signal has a majority.`:". None of them brings No. 3 or higher."}${ens==="ifsens"?` ECMWF also makes one main forecast in finer detail, the <b>deterministic run</b> (black dashed on the map).`:ens==="aifsens"?` The <b>control run</b> is the one member started without any change (black dashed on the map).`:""}</div>`:"")
    +(x&&x.groups?`<div class="note">other periods: ${x.groups.filter(g=>g!==MAING(x)).map(g=>`${g.n} member${g.n>1?"s":""} ${hk(g.start[1])} → ${hkS(g.end[1])}`).join(" · ")}</div>`:"")
    +`<div class="v gs" id="galeF"></div><div class="note">${pass}</div>`
@@ -616,7 +620,7 @@ function stationGuide(){if(!TR)return "";
   return `<tr><td>${nm}</td><td>${Math.round(100*g)}%</td><td>${guide}</td>${act?`<td>${act[i]!=null?windLabel(act[i]):"–"}</td>`:""}</tr>`}).join("");
  const who=memLab(t.m,0).replace(/^the /,"")+(t.m===TR.top&&k!==52&&k!==51?" (most threatening)":"");
  return `<details class="nums"><summary>Stations — ${who}</summary><table class="sg"><tr><th>Station</th><th>Gale chance</th><th>Wind guide, km/h</th>${act?"<th>HKO</th>":""}</tr>${rows}</table>${rank8Member(t)}`
-  +`<p class="note">${SGNOTE.replace("Median over members (10–90% in brackets); 10-minute mean.","The same forecast as the Station guide tab under the map and the station dots on the map; 10-minute mean.").replace(" HKO: the highest 10-minute mean recorded.",act?" HKO: the highest 10-minute mean recorded.":"")}</p></details>`}
+  +`</details>`}
 const SGC=[[22.2011,114.0267],[22.3094,113.9219],[22.3097,114.2133],[22.4689,113.9836],[22.3756,114.2744],[22.4025,114.21],[22.5286,114.1567],[22.3467,114.0864]];
 const WCAT=[["#9e9e9e","below 53 km/h"],["#2ca25f","strong 53–62"],["#2171b5","gale 63–87"],["#f28e2b","storm 88–117"],["#d73027","hurricane 118+"]];
 const windCat=(fv,fb)=>{if(fv!=null)return fv>=118?4:fv>=88?3:fv>=63?2:fv>=53?1:0; if(!fb)return 0; const lo=fb[0]; return lo>=118?4:lo>=88?3:lo>=63?2:0};
@@ -673,8 +677,8 @@ function memberStationGuide(t){
   rows.push(`<tr class="sgrow" data-i="${i}" title="click: ${SGN[i][1]} in every member"><td>${SGN[i][1]}</td><td>${pct(g)}</td><td>${pct(s)}</td><td>${pct(h)}</td><td>${guide}</td>${window.HK_DEMO?"":`<td>${hko&&hko[i]!=null?windLabel(hko[i]):""}</td>`}${hko?`<td>${diffCell(fv,fb,hko[i])}</td>`:""}</tr>`);
  }
  $("#chead").textContent=`${memLab(t.m,1)}${t.m===TR.top?" (most threatening)":""} — station guide`;
- $("#stationchart").innerHTML=`<div class="gh">Forecast, at any time from this run onward</div><div class="sgcounts">${count("Reference stations reaching gale force",t.gale,t.gale_lo,t.gale_hi)}${count("Reference stations reaching storm force",t.storm_n,t.storm_lo,t.storm_hi)}${count("Reference stations reaching hurricane force",t.hur_n,t.hur_lo,t.hur_hi)}</div><table class="sgm"><thead><tr><th>Station</th><th>Gale</th><th>Storm</th><th>Hurricane</th><th>Wind guide, km/h</th>${window.HK_DEMO?"":"<th>HKO, km/h</th>"}${hko?"<th>Difference, km/h</th>":""}</tr></thead><tbody>${rows.join("")}</tbody></table>${rank8Member(t)}<div class="sgdistbox"></div><p class="note sghint">Click a station to see its wind in each of the ${(GA&&GA.members)||50} members.</p><p class="note">${SGNOTE.replace("Median over members (10–90% in brackets); 10-minute mean.","This forecast, the same as Stations in the answer card; 10-minute mean.")}</p>`;
- $("#cnote").textContent="Gale, storm and hurricane are each station's chances.";
+ $("#stationchart").innerHTML=`<div class="gh">Forecast, at any time from this run onward</div><div class="sgcounts">${count("Reference stations reaching gale force",t.gale,t.gale_lo,t.gale_hi)}${count("Reference stations reaching storm force",t.storm_n,t.storm_lo,t.storm_hi)}${count("Reference stations reaching hurricane force",t.hur_n,t.hur_lo,t.hur_hi)}</div><table class="sgm"><thead><tr><th>Station</th><th>Gale</th><th>Storm</th><th>Hurricane</th><th>Wind guide, km/h</th>${window.HK_DEMO?"":"<th>HKO, km/h</th>"}${hko?"<th>Difference, km/h</th>":""}</tr></thead><tbody>${rows.join("")}</tbody></table>${rank8Member(t)}<div class="sgdistbox"></div><p class="note sghint">Click a station to see its wind in each of the ${(GA&&GA.members)||50} members.</p>`;
+ $("#cnote").textContent="";
 }
 function fillGale(){const f=document.getElementById("galeF"); if(!f)return;
  if(!TR||!TR.tracks||!GA){f.innerHTML="";return}
@@ -725,7 +729,7 @@ function fillGale(){const f=document.getElementById("galeF"); if(!f)return;
   cx=Number.isFinite(e.clientX)?e.clientX:r.left+r.width/2, cy=Number.isFinite(e.clientY)?e.clientY:r.top+r.height/2;
   GS={vb:VB.slice(),fx:(cx-r.left)/r.width,fy:1-(cy-r.top)/r.height}; st=null; moved=true},{passive:false});
  m.addEventListener("gesturechange",e=>{e.preventDefault(); if(!GS)return; if(PZ){GS=null;return}
-  const R=VIEWS.region, v=GS.vb, w0=v[1]-v[0], h0=v[3]-v[2], nw=Math.min(Math.max(w0/(e.scale||1),MINW),R[1]-R[0]), nh=h0*nw/w0;
+  const R=VIEWS.region, v=GS.vb, w0=v[1]-v[0], h0=v[3]-v[2], nw=Math.min(Math.max(w0/Math.pow(e.scale||1,2.5),MINW),R[1]-R[0]), nh=h0*nw/w0;
   const lx=v[0]+GS.fx*w0, ly=v[2]+GS.fy*h0; VB=[lx-GS.fx*nw,lx+(1-GS.fx)*nw,ly-GS.fy*nh,ly+(1-GS.fy)*nh]; clamp();
   view=nw<(R[1]-R[0])*0.99?"hk":"region"; $("#zoomBtn").textContent=view==="region"?"zoom to Hong Kong":"zoom out"; redraw()},{passive:false});
  m.addEventListener("gestureend",e=>{e.preventDefault(); if(GS){GS=null; setTimeout(()=>moved=false,350)}},{passive:false});
@@ -880,6 +884,35 @@ function memberSignal(t){
  for(let i=1;i<out.length;i++) if(out[i][1]===10&&out[i-1][1]<10) out[i-1][1]=9;
  return out;
 }
+addEventListener("resize",()=>{clearTimeout(window._chr);window._chr=setTimeout(()=>{if(TR)chart()},200)});
+function wiDist(s){
+ const PW=Math.round((s.parentNode&&s.parentNode.clientWidth)||1000), NARROW=PW<700, W=NARROW?Math.max(320,PW):1000,H=NARROW?260:300,L=NARROW?40:54,B=40,R=NARROW?16:24;
+ s.setAttribute("viewBox",`0 0 ${W} ${H}`);
+ const M=TR.tracks.filter(x=>!(x.m===52&&(ens==="ifsens"||ens==="tigge")));
+ if(!M.some(x=>x.wix)){$("#chead").textContent="Peak Hong Kong wind index";$("#cnote").textContent="no wind index for this run (runs exported before it was added)";return}
+ const J=a=>a.filter(Boolean).map(s=>`<span class="kv">${s}</span>`).join(""), pk=M.map(x=>x.wix&&x.wix.length?Math.max(...x.wix.map(w=>w[1])):WI_FAR);
+ if(!pk.length){$("#cnote").textContent="";return}
+ const dm=TR.tracks.find(x=>x.m===DEFM()), dpk=dm&&dm.wix&&dm.wix.length?Math.max(...dm.wix.map(w=>w[1])):null;
+ const TRU=truthNow(), obs=TRU&&TRU.wi&&TRU.wi.length?Math.max(...TRU.wi.map(w=>w[1])):null;
+ const top=Math.max(80,Math.ceil((Math.max(...pk,dpk||0,obs||0)+5)/10)*10), bw=5, nb=top/bw, cnt=new Array(nb).fill(0);
+ pk.forEach(v=>cnt[Math.min(nb-1,Math.floor(v/bw))]++); const cm=Math.max(...cnt,1);
+ const X=v=>L+(W-L-R)*v/top, Y=c=>H-B-(H-B-26)*c/cm;
+ WIB.forEach((v,i)=>{const x0=X(v),x1=X(i<4?Math.min(WIB[i+1],top):top); if(x1>x0){s.appendChild(el("rect",{x:x0,y:20,width:x1-x0,height:H-B-20,fill:WIC[i],opacity:.08}));
+  const tx=el("text",{x:(x0+x1)/2,y:14,fill:"var(--mut)","font-size":10,"text-anchor":"middle"});tx.textContent=WIN[i];s.appendChild(tx)}});
+ cnt.forEach((c,i)=>{if(!c)return; s.appendChild(el("rect",{x:X(i*bw)+1,y:Y(c),width:Math.max(1,X(bw)-X(0)-2),height:H-B-Y(c),fill:WIC[wiBand(i*bw+bw/2)],stroke:"var(--ink)","stroke-opacity":.25}))});
+ for(let v=0;v<=top;v+=NARROW?20:10){const tx=el("text",{x:X(v),y:H-B+16,fill:"var(--mut)","font-size":11,"text-anchor":"middle"});tx.textContent=v;s.appendChild(tx)}
+ const yl=el("text",{x:(L+W-R)/2,y:H-6,fill:"var(--mut)","font-size":11,"text-anchor":"middle"});yl.textContent="peak wind index (km/h)";s.appendChild(yl);
+ [0,Math.round(cm/2),cm].filter((v,i,a)=>a.indexOf(v)===i).forEach(c=>{const tx=el("text",{x:L-8,y:Y(c)+4,fill:"var(--mut)","font-size":11,"text-anchor":"end"});tx.textContent=c;s.appendChild(tx)});
+ const yl2=el("text",{x:12,y:(H-B+26)/2,fill:"var(--mut)","font-size":11,"text-anchor":"middle",transform:`rotate(-90 12 ${(H-B+26)/2})`});yl2.textContent="members";s.appendChild(yl2);
+ const mark=(v,lab,dash,row)=>{s.appendChild(el("line",{x1:X(v),x2:X(v),y1:22,y2:H-B,stroke:"var(--ink)","stroke-width":dash?2.4:1.6,"stroke-dasharray":dash||""}));
+  const tx=el("text",{x:X(v)+5,y:36+row*15,fill:"var(--ink)","font-size":11,"font-weight":600});tx.textContent=lab;s.appendChild(tx);
+  try{if(X(v)+5+tx.getBBox().width>W-R){tx.setAttribute("x",X(v)-5);tx.setAttribute("text-anchor","end")}}catch(e){}};
+ if(dpk!==null) mark(dpk,memLab(DEFM(),1),"",0); if(obs!==null) mark(obs,"HKO observed","6 3",dpk!==null?1:0);
+ const v=pk.slice().sort((a,b)=>a-b), q=p=>v[Math.round(p*(v.length-1))];
+ $("#chead").textContent=`Peak Hong Kong wind index in each of the ${pk.length} members`;
+ $("#cnote").innerHTML=J([`median <b>${Math.round(q(.5))} km/h</b> (${WIN[wiBand(q(.5))]})`,`10–90%: ${Math.round(q(.1))}–${Math.round(q(.9))} km/h`]
+  .concat(dpk!==null?[`${memLab(DEFM(),0).replace(/^the /,"")}: ${Math.round(dpk)} km/h`]:[]).concat(obs!==null?[`HKO observed: ${Math.round(obs)} km/h`]:[]));
+}
 function chart(){
  const s=$("#chart"), sg=$("#stationchart");s.innerHTML="";sg.innerHTML="";
  if(tab==="sg"){
@@ -889,12 +922,16 @@ function chart(){
   return;
  }
  s.style.display=""; sg.style.display="none"; if(!TR)return;
+ if(tab==="wi"&&showWIDist){wiDist(s);return}
  const t=TR.tracks.find(x=>x.m===(sel??DEFM())); if(!t){$("#cnote").textContent="";return}
- const W=1000,H=320,L=54,B=40,R=64;
+ const PW=Math.round((s.parentNode&&s.parentNode.clientWidth)||1000), NARROW=PW<700;
+ const W=NARROW?Math.max(320,PW):1000,H=NARROW?280:320,L=NARROW?44:54,B=40,R=64; s.setAttribute("viewBox",`0 0 ${W} ${H}`);
  const EW=tab==="wi"&&showWIMean?wiEnsemble():null;
- const series=EW?EW.rows.map(r=>[labOfH(r.h),r.mean]):tab==="signal"?memberSignal(t):tab==="wi"?(t.wix||[]).map(([h,v])=>[labOfH(h),v]):((tab==="p3"?t.s3:tab==="p8"?t.s8:t.s10)||[]);
+ let series=EW?EW.rows.map(r=>[labOfH(r.h),r.mean]):tab==="signal"?memberSignal(t):tab==="wi"?(t.wix||[]).map(([h,v])=>[labOfH(h),v]):((tab==="p3"?t.s3:tab==="p8"?t.s8:t.s10)||[]);
  $("#chead").textContent=EW?`Ensemble mean of ${EW.n} members — Hong Kong wind index through time`:`${memLab(t.m,1)}${t.m===TR.top?" (most threatening)":""} — ${tab==="signal"?"expected signal":tab==="p3"?"chance of No. 3":tab==="p8"?"chance of No. 8":tab==="wi"?"Hong Kong wind index":"chance of No. 10"} through time`;
  if(!series.length){$("#cnote").textContent=tab==="wi"?(t.wix?"this member's storm never comes within 800 km of Hong Kong, the range the wind index covers":"no wind index for this run (runs exported before it was added)"):"no values for this member in this run";return}
+ if(NARROW&&!EW&&tab!=="wi"&&true){const on=memberSignal(t).filter(p=>p[1]>=1).map(p=>labH(p[0]));
+  if(on.length){const a=Math.min(...on)-12, b=Math.max(...on)+15, k=series.filter(p=>{const h=labH(p[0]); return h>=a&&h<=b}); if(k.length>=2) series=k}}
  const hs=series.map((p,i)=>labH(p[0]));
  let mk=-1;
  if(selH!==null&&sel===t.m){for(let i=0;i<hs.length;i++){if(hs[i]<=selH+1e-6)mk=i;else break}
@@ -906,7 +943,7 @@ function chart(){
   SIGLV.forEach(v=>{s.appendChild(el("line",{x1:L,x2:W-R,y1:ly(v),y2:ly(v),stroke:"var(--line)"}));
    const tx=el("text",{x:6,y:ly(v)+4,fill:"var(--mut)","font-size":11});tx.textContent=SIGN[v];s.appendChild(tx)});
   series.forEach((p,i)=>{if(!p[1])return; s.appendChild(el("rect",{x:xs(i),y:ly(p[1]),width:Math.max(1,xs(i+1)-xs(i)),height:ly(0)-ly(p[1]),fill:SIGV[p[1]],opacity:.85}))});
-  const step=Math.max(1,Math.round(series.length/7));
+  const step=Math.max(1,Math.round(series.length/(NARROW?4:7)));
   series.forEach((p,i)=>{if(i%step)return;const tx=el("text",{x:xs(i),y:H-14,fill:"var(--mut)","font-size":11,"text-anchor":"middle"});tx.textContent=String(p[0]).replace("/"," ")+"Z";s.appendChild(tx)});
   const runs=[];series.forEach((p,i)=>{if(!runs.length||runs[runs.length-1].v!==p[1])runs.push({v:p[1],a:p[0],b:p[0]});else runs[runs.length-1].b=p[0]});
   const seq=runs.filter(r=>r.v>=1).map(r=>`<b style="color:${SIGV[r.v]}">${SIGN[r.v]}</b> ${String(r.a).replace("/"," ")}Z–${String(r.b).replace("/"," ")}Z`).join(" → ");
@@ -915,7 +952,7 @@ function chart(){
   if(TRU&&TRU.signals){let dd="";series.forEach((p,i)=>{const dh=(i+1<hs.length?hs[i+1]-hs[i]:3)||3, g=sigIn(TRU,hs[i],hs[i]+dh);
      dd+=(i?"L":"M")+xs(i).toFixed(1)+" "+ly(g).toFixed(1)+"L"+xs(i+1).toFixed(1)+" "+ly(g).toFixed(1)});
    s.appendChild(el("path",{fill:"none",stroke:"var(--ink)","stroke-width":2.4,"stroke-dasharray":"6 3",d:dd}));
-   const lt=el("text",{x:W-R-8,y:34,fill:"var(--ink)","font-size":11,"font-weight":600,"text-anchor":"end"});lt.textContent="- - what HKO actually issued";s.appendChild(lt)}
+   const lt=el("text",{x:W-R-8,y:NARROW?50:34,fill:"var(--ink)","font-size":11,"font-weight":600,"text-anchor":"end"});lt.textContent="- - what HKO actually issued";s.appendChild(lt)}
   const xOfT=h=>{let i=0;while(i<hs.length-1&&h>=hs[i+1])i++;const dh=(i+1<hs.length?hs[i+1]-hs[i]:3)||3;return xs(i)+(xs(i+1)-xs(i))*Math.max(0,Math.min(1,(h-hs[i])/dh))};
   if(t.wix&&t.wix.length&&hs.length){
    const wmx=Math.max(80,Math.max(...t.wix.map(w=>w[1]))+10), wy=v=>H-B-(H-B-22)*v/wmx;
@@ -926,7 +963,7 @@ function chart(){
      if(prev!==null&&h-prev>1.5) pen=false; prev=h;
      d+=(pen?"L":"M")+xOfT(h).toFixed(1)+" "+wy(v).toFixed(1); pen=true});
    if(d) s.appendChild(el("path",{fill:"none",stroke:"#0b7285","stroke-width":2.2,d:d}));
-   const lg=el("text",{x:L+8,y:34,fill:"#0b7285","font-size":11,"font-weight":600});lg.textContent="— Hong Kong wind index (right axis, km/h)";s.appendChild(lg)}
+   const lg=el("text",{x:L+8,y:34,fill:"#0b7285","font-size":11,"font-weight":600});lg.textContent=NARROW?"— wind index (right axis)":"— Hong Kong wind index (right axis, km/h)";s.appendChild(lg)}
   if(mk>=0){const dh=(mk+1<hs.length?hs[mk+1]-hs[mk]:3)||3, xm=xs(mk)+(xs(mk+1)-xs(mk))*Math.min(1,(selH-hs[mk])/dh);
    s.appendChild(el("line",{x1:xm,x2:xm,y1:22,y2:ly(0),stroke:"var(--ink)","stroke-dasharray":"4 3","stroke-width":1.4}));
    const wv=wiAt(t,selH); markTxt(`${fmtH(selH)}: ${SIGN[series[mk][1]]}`+(wv!==null?` · wind index ${Math.round(wv)} (${WIN[wiBand(wv)]})`:""),xm)}
@@ -960,7 +997,7 @@ if(tab==="wi"){
 
  let whkPk=null;
 
- const step=Math.max(1,Math.round(series.length/7));
+ const step=Math.max(1,Math.round(series.length/(NARROW?4:7)));
  series.forEach((p,i)=>{if(i%step)return;const tx=el("text",{x:x(i),y:H-14,fill:"var(--mut)","font-size":11,"text-anchor":"middle"});
    tx.textContent=String(p[0]).replace("/"," ")+"Z";s.appendChild(tx)});
  const yl=el("text",{x:12,y:H/2,fill:"var(--mut)","font-size":11,"text-anchor":"middle",transform:`rotate(-90 12 ${H/2})`});
@@ -978,7 +1015,7 @@ if(tab==="wi"){const dd=line((TRU.wi||[]).map(([z,v])=>[isoH(z),v]));
   else{const lvl=tab==="p3"?3:tab==="p8"?8:10;
    (TRU.signals||[]).filter(([a,b,g])=>g>=lvl).forEach(([a,b,g])=>{const h0=Math.max(isoH(a),hs[0]),h1=Math.min(isoH(b),hs[hs.length-1]);
     if(h1>h0){s.appendChild(el("rect",{x:xT(h0),y:22,width:Math.max(1,xT(h1)-xT(h0)),height:y(0)-22,fill:"var(--ink)",opacity:.16}));lab=`shaded: HKO actually had No. ${lvl} or higher up`}})}
-  if(lab){const lt=el("text",{x:W-R-8,y:34,fill:"var(--ink)","font-size":11,"font-weight":600,"text-anchor":"end"});lt.textContent=lab;s.appendChild(lt)}}
+  if(lab){const lt=el("text",{x:W-R-8,y:NARROW?50:34,fill:"var(--ink)","font-size":11,"font-weight":600,"text-anchor":"end"});lt.textContent=lab;s.appendChild(lt)}}
  if(mk>=0){const k2=Math.min(mk+1,series.length-1), f=k2>mk?Math.min(1,(selH-hs[mk])/Math.max(hs[k2]-hs[mk],1e-6)):0, xm=x(mk)+(x(k2)-x(mk))*f;
   s.appendChild(el("line",{x1:xm,x2:xm,y1:22,y2:y(0),stroke:"var(--ink)","stroke-dasharray":"4 3","stroke-width":1.2}));
   if(tab==="wi"){const vv=series[mk][1]+(series[k2][1]-series[mk][1])*f;
