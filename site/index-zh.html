@@ -272,7 +272,7 @@ const caH=c=>{const [md,hm]=String(c).split(" "),[mo,d]=md.split("-").map(Number
  let u=Date.UTC(a.getUTCFullYear(),mo-1,d,h,mi); if(u<T0()-30*864e5) u=Date.UTC(a.getUTCFullYear()+1,mo-1,d,h,mi); return (u-T0())/36e5};
 const fmtH=h=>{const d=new Date(T0()+Math.round(h*60)*6e4),z=n=>String(n).padStart(2,"0");return `${z(d.getUTCDate())} ${z(d.getUTCHours())}:${z(d.getUTCMinutes())}Z`};
 
-let showWHK=false, showWIMean=false, showWIDist=false;
+let showWHK=false, showWIMean=false, showWIDist=false, BIN=null;
 const WI_FAR=14;
 function wiEnsemble(){
  const M=TR.tracks.filter(x=>!(x.m===52&&(ens==="ifsens"||ens==="tigge"))), W=M.map(x=>new Map((x.wix||[]).map(([h,v])=>[Math.round(h),v])));
@@ -385,10 +385,10 @@ function drawTabs(){
    .map(([k,l])=>`<button data-t="${k}" class="${k===tab?"on":""}">${l}</button>`).join(" ")
 
   +(TR&&TR.tracks.some(x=>x.wix&&x.wix.length)?` <label class="note" style="margin:0 0 0 6px" title="the wind index averaged over all ensemble members, hour by hour"><input type="checkbox" id="wimean"${showWIMean?" checked":""}> ensemble-mean wind index</label> <label class="note" style="margin:0 0 0 6px" title="each member's highest wind index, member by member"><input type="checkbox" id="widist"${showWIDist?" checked":""}> peaks of all members</label>`:"");
- $("#tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;drawTabs();chart()});
+ $("#tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{tab=b.dataset.t; if(BIN){BIN=null;drawMap()} drawTabs();chart()});
 
- const wm=$("#wimean"); if(wm) wm.onchange=e=>{showWIMean=e.target.checked; if(showWIMean){showWIDist=false; if(tab!=="wi")tab="wi"; drawTabs()} chart()};
- const wd=$("#widist"); if(wd) wd.onchange=e=>{showWIDist=e.target.checked; if(showWIDist){showWIMean=false; if(tab!=="wi")tab="wi"; drawTabs()} chart()};
+ const wm=$("#wimean"); if(wm) wm.onchange=e=>{if(BIN){BIN=null;drawMap()} showWIMean=e.target.checked; if(showWIMean){showWIDist=false; if(tab!=="wi")tab="wi"; drawTabs()} chart()};
+ const wd=$("#widist"); if(wd) wd.onchange=e=>{if(BIN){BIN=null;drawMap()} showWIDist=e.target.checked; if(showWIDist){showWIMean=false; if(tab!=="wi")tab="wi"; drawTabs()} chart()};
 }
 function head(){
  const mine=cycles.filter(c=>ORDER.some(e=>(HK[c]||{})[e])), rec=mine.filter(RECENT), past=mine.filter(c=>!RECENT(c));
@@ -424,7 +424,7 @@ function head(){
 
  $("#ensbtns").querySelectorAll("button").forEach(b=>b.onclick=()=>{ens=b.dataset.e; mode=modeOf(ens)||mode; sel=null;selH=null;head();load()});
  $("#zoomBtn").onclick=e=>{view=view==="region"?"hk":"region";VB=VIEWS[view].slice();HOME=VB.slice();e.target.textContent=view==="region"?"zoom to Hong Kong":"zoom out";drawMap()};
- $("#showAll").onclick=()=>{sel=null;selH=null;drawMap();chart()};
+ $("#showAll").onclick=()=>{sel=null;selH=null;BIN=null;drawMap();chart()};
  $("#only150").onchange=drawMap;
 
  $("#detBtn").onclick=()=>{const r=refM(); if(r===null)return; sel=(sel===r?null:r);selH=null;drawMap();chart()};
@@ -461,6 +461,7 @@ function drawR2R(){const box=$("#r2r"); if(!box)return;
  box.querySelectorAll("circle[data-c]").forEach(o=>o.onclick=()=>{cyc=o.dataset.c; ens=o.dataset.e; mode=modeOf(ens)||mode; NOSAME=null; sel=null; selH=null; head(); load()});
 }
 function load(){
+ BIN=null;
  allH=null; if(allPlaying)allStop();
  if(NOSAME){unavailable();return}
  $("#map").style.display=""; $("#chart").style.display="";
@@ -756,12 +757,13 @@ function fillGale(){const f=document.getElementById("galeF"); if(!f)return;
  let GS=null;
  m.addEventListener("gesturestart",e=>{e.preventDefault(); if(PZ)return; const r=m.getBoundingClientRect(),
   cx=Number.isFinite(e.clientX)?e.clientX:r.left+r.width/2, cy=Number.isFinite(e.clientY)?e.clientY:r.top+r.height/2;
-  GS={vb:VB.slice(),fx:(cx-r.left)/r.width,fy:1-(cy-r.top)/r.height}; st=null; moved=true},{passive:false});
+  const b=m.viewBox.baseVal; GS={vb:VB.slice(),fx:(cx-r.left)/r.width,fy:1-(cy-r.top)/r.height,W:b.width,H:b.height}; st=null; moved=true; window.HK_PZ=1},{passive:false});
  m.addEventListener("gesturechange",e=>{e.preventDefault(); if(!GS)return; if(PZ){GS=null;return}
-  const R=VIEWS.region, v=GS.vb, w0=v[1]-v[0], h0=v[3]-v[2], nw=Math.min(Math.max(w0/Math.pow(e.scale||1,2.5),MINW),R[1]-R[0]), nh=h0*nw/w0;
+  const R=VIEWS.region, v=GS.vb, w0=v[1]-v[0], h0=v[3]-v[2], nw=Math.min(Math.max(w0/Math.pow(e.scale||1,4),MINW),R[1]-R[0]), nh=h0*nw/w0;
   const lx=v[0]+GS.fx*w0, ly=v[2]+GS.fy*h0; VB=[lx-GS.fx*nw,lx+(1-GS.fx)*nw,ly-GS.fy*nh,ly+(1-GS.fy)*nh]; clamp();
-  view=nw<(R[1]-R[0])*0.99?"hk":"region"; $("#zoomBtn").textContent=view==="region"?"zoom to Hong Kong":"zoom out"; redraw()},{passive:false});
- m.addEventListener("gestureend",e=>{e.preventDefault(); if(GS){GS=null; setTimeout(()=>moved=false,350)}},{passive:false});
+  m.setAttribute("viewBox",`${(VB[0]-v[0])/w0*GS.W} ${(v[3]-VB[3])/h0*GS.H} ${(VB[1]-VB[0])/w0*GS.W} ${(VB[3]-VB[2])/h0*GS.H}`);
+  view=nw<(R[1]-R[0])*0.99?"hk":"region"; $("#zoomBtn").textContent=view==="region"?"zoom to Hong Kong":"zoom out"},{passive:false});
+ m.addEventListener("gestureend",e=>{e.preventDefault(); if(GS){GS=null; window.HK_PZ=0; drawMap(); setTimeout(()=>moved=false,350)}},{passive:false});
  m.addEventListener("wheel",e=>{e.preventDefault();const r=m.getBoundingClientRect();
   const fx=(e.clientX-r.left)/r.width, fy=1-(e.clientY-r.top)/r.height, u=e.deltaMode===1?16:e.deltaMode===2?400:1, k=Math.min(Math.max(Math.exp(u*e.deltaY*(e.ctrlKey?0.01:0.0018)),1/1.5),1.5);
  
@@ -785,7 +787,7 @@ function drawMap(){
  const s=$("#map");s.innerHTML="";MC=null;MG=null;if(!TR){syncPlayer();return}
  const dw=s.getBoundingClientRect().width||(s.parentNode&&s.parentNode.clientWidth)||1200, K=dw>=700?1.2:1.1;
  const W=Math.max(300,Math.round(dw/K)),[lo0,lo1,la0,la1]=VB; MAPW=dw;
- $("#selbar").style.display=sel!==null?"":"none"; syncNav();
+ $("#selbar").style.display=sel!==null||BIN?"":"none"; syncNav();
  s.style.touchAction="none"; s.style.cursor=moved?"grabbing":"grab";
  const H=Math.round(W*(la1-la0)*110.57/((lo1-lo0)*111.32*Math.cos((la0+la1)/2*Math.PI/180)));
  s.setAttribute("viewBox",`0 0 ${W} ${H}`);
@@ -812,7 +814,7 @@ function drawMap(){
    +(r===52?` <b>Deterministic run:</b> ECMWF's main forecast, made once in finer detail.`:r===51?` <b>Control run:</b> the one path started without any change.`:"");
   $("#detBtn").title=r===51?"the AI ensemble's unperturbed member (51) on its own -- the site has no separate deterministic AI run":"ECMWF's main forecast, made once in finer detail than the members, shown on its own: track, time bar, charts"}
  if(sel!==null&&allH!==null){allH=null; if(allPlaying)allStop()}
- TR.tracks.filter(t=>(!only||t.ca[0]<150)&&(sel===null||t.m===sel)&&(!isDet(t)||sel===null||sel===t.m)).sort((a,b)=>{if(byI)return (isDet(a)-isDet(b))||pk(a)-pk(b);const A=tierOf(a),B=tierOf(b);return (isDet(a)-isDet(b))||A[0]-B[0]||A[1]-B[1]}).forEach(t=>{
+ TR.tracks.filter(t=>(!only||t.ca[0]<150)&&(sel===null||t.m===sel)&&(!isDet(t)||sel===null||sel===t.m)&&(sel!==null||!BIN||BIN.ms.has(t.m))).sort((a,b)=>{if(byI)return (isDet(a)-isDet(b))||pk(a)-pk(b);const A=tierOf(a),B=tierOf(b);return (isDet(a)-isDet(b))||A[0]-B[0]||A[1]-B[1]}).forEach(t=>{
   const top=sel===null&&t.m===DEFM(), on=sel===t.m, d=t.pts.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join(" ");
   if(top||on)s.appendChild(el("path",{fill:"none",stroke:"#fff","stroke-width":(on?7:5.5),d:d,"stroke-linejoin":"round"}));
   const det=isDet(t), SQ=!byI&&(!det||on)?sqOf(t):null, sq=SQ&&SQ.length;
@@ -928,7 +930,11 @@ function wiDist(s){
  const X=v=>L+(W-L-R)*v/top, Y=c=>H-B-(H-B-26)*c/cm;
  WIB.forEach((v,i)=>{const x0=X(v),x1=X(i<4?Math.min(WIB[i+1],top):top); if(x1>x0){s.appendChild(el("rect",{x:x0,y:20,width:x1-x0,height:H-B-20,fill:WIC[i],opacity:.08}));
   const tx=el("text",{x:(x0+x1)/2,y:14,fill:"var(--mut)","font-size":10,"text-anchor":"middle"});tx.textContent=WIN[i];s.appendChild(tx)}});
- cnt.forEach((c,i)=>{if(!c)return; s.appendChild(el("rect",{x:X(i*bw)+1,y:Y(c),width:Math.max(1,X(bw)-X(0)-2),height:H-B-Y(c),fill:WIC[wiBand(i*bw+bw/2)],stroke:"var(--ink)","stroke-opacity":.25}))});
+ const binOf=v=>Math.min(nb-1,Math.floor(v/bw));
+ cnt.forEach((c,i)=>{if(!c)return; const on=BIN&&BIN.i===i, r=el("rect",{x:X(i*bw)+1,y:Y(c),width:Math.max(1,X(bw)-X(0)-2),height:H-B-Y(c),fill:WIC[wiBand(i*bw+bw/2)],stroke:"var(--ink)","stroke-opacity":on?1:.25,"stroke-width":on?2.5:1,opacity:BIN&&!on?.4:1});
+  r.style.cursor="pointer"; const tt=el("title"); tt.textContent=`${c} member${c>1?"s":""} at ${i*bw}–${(i+1)*bw} km/h`; r.appendChild(tt);
+  r.onclick=()=>{BIN=on?null:{i,lo:i*bw,hi:(i+1)*bw,ms:new Set(M.filter((x,k)=>binOf(pk[k])===i).map(x=>x.m))}; sel=null; selH=null; drawMap(); chart()};
+  s.appendChild(r)});
  for(let v=0;v<=top;v+=NARROW?20:10){const tx=el("text",{x:X(v),y:H-B+16,fill:"var(--mut)","font-size":11,"text-anchor":"middle"});tx.textContent=v;s.appendChild(tx)}
  const yl=el("text",{x:(L+W-R)/2,y:H-6,fill:"var(--mut)","font-size":11,"text-anchor":"middle"});yl.textContent="peak wind index (km/h)";s.appendChild(yl);
  [0,Math.round(cm/2),cm].filter((v,i,a)=>a.indexOf(v)===i).forEach(c=>{const tx=el("text",{x:L-8,y:Y(c)+4,fill:"var(--mut)","font-size":11,"text-anchor":"end"});tx.textContent=c;s.appendChild(tx)});
@@ -946,6 +952,7 @@ function wiDist(s){
  const v=pk.slice().sort((a,b)=>a-b), q=p=>v[Math.round(p*(v.length-1))];
  $("#chead").textContent=`Peak Hong Kong wind index in each of the ${pk.length} members`;
  $("#cnote").innerHTML=J([`median <b>${Math.round(q(.5))} km/h</b> (${WIN[wiBand(q(.5))]})`,`10–90%: ${Math.round(q(.1))}–${Math.round(q(.9))} km/h`]
+  .concat([BIN?`map: <b>${BIN.ms.size}</b> member${BIN.ms.size>1?"s":""} at ${BIN.lo}–${BIN.hi} km/h · click the bar again for all`:"click a bar to see its tracks"])
   .concat(vpk!==null?[`${memLab(vm,1)}: ${Math.round(vpk)} km/h`]:[]).concat(dpk!==null?[`${memLab(DEFM(),0).replace(/^the /,"")}: ${Math.round(dpk)} km/h`]:[]).concat(obs!==null?[`HKO observed: ${Math.round(obs)} km/h`]:[]));
 }
 function chart(){
