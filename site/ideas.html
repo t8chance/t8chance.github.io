@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ideas</title>
+<meta name="description" content="Send an idea or suggestion for the Hong Kong typhoon signal forecasts.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+:root{
+ --bg:#edf1f4;--card:#fff;--soft:#e3e9ee;--ink:#13202b;--mut:#55636f;--line:#d3dbe2;--link:#1a5ea8;--ok:#1f7a4d;--warn:#9a5b00;
+ --mast:#3b4a57;--sig:#13202b;--sky1:#dfe8ef;--sky2:#f3f6f8;
+ --shadow:0 1px 2px rgba(19,32,43,.06),0 12px 32px rgba(19,32,43,.09);
+ --disp:"Barlow Condensed","Roboto Condensed","Arial Narrow",sans-serif;
+ --body:"Barlow",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang HK","Noto Sans TC",sans-serif}
+@media (prefers-color-scheme:dark){:root{
+ --bg:#0f1923;--card:#16222e;--soft:#1c2a37;--ink:#e2e9ef;--mut:#93a3b1;--line:#273746;--link:#8cbcff;--ok:#5fd39a;--warn:#f0b35a;
+ --mast:#9fb0bf;--sig:#e2e9ef;--sky1:#14212d;--sky2:#192837;
+ --shadow:0 1px 0 rgba(255,255,255,.03);color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+a{color:var(--link)}
+:focus-visible{outline:2px solid var(--link);outline-offset:3px}
+.wrap{max-width:1060px;margin:0 auto;padding:0 16px}
+.mast{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 28px;padding:24px 0 18px}
+.mast .name{font:700 clamp(24px,3vw,30px)/1.05 var(--disp);color:var(--ink);text-decoration:none}
+.mast nav{display:flex;flex-wrap:wrap;gap:4px 20px;font-size:15px;font-weight:500}
+.mast nav a{color:var(--ink);text-decoration:none}
+.mast nav a:hover,.mast nav a[aria-current]{color:var(--link);text-decoration:underline}
+main{padding:min(6vh,56px) 0 72px}
+.grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:40px;align-items:center}
+.kicker{margin:0 0 8px;font:600 14px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+h1{margin:0 0 14px;font:700 clamp(40px,6vw,68px)/.98 var(--disp);text-wrap:balance}
+.lead{margin:0 0 26px;max-width:46ch;color:var(--mut);font-size:18px}
+form{display:grid;gap:12px;max-width:560px}
+textarea,input[type=text]{width:100%;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
+textarea{min-height:140px;resize:vertical;line-height:1.5}
+textarea:focus,input[type=text]:focus{outline:none;border-color:var(--ink)}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px}
+button{font:700 19px/1 var(--disp);letter-spacing:.02em;cursor:pointer;border:0;border-radius:999px;padding:15px 30px;background:var(--ink);color:var(--card)}
+button:disabled{opacity:.55;cursor:default}
+button:not(:disabled):hover{transform:translateY(-1px)}
+.st{margin:0;min-height:1.5em;font-weight:600}
+.st.ok{color:var(--ok)} .st.err{color:var(--warn)}
+.count{color:var(--mut);font-size:14px;font-variant-numeric:tabular-nums}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.fine{margin:18px 0 0;color:var(--mut);font-size:14px;max-width:52ch}
+.mastfig{margin:0;justify-self:center;width:min(100%,260px)}
+.mastfig svg{display:block;width:100%;height:auto;border-radius:22px;background:linear-gradient(var(--sky1),var(--sky2));border:1px solid var(--line)}
+.pole,.yard{stroke:var(--mast);stroke-width:7;stroke-linecap:round}
+.line{stroke:var(--mast);stroke-width:1.6;opacity:.7}
+.base{fill:var(--mast)}
+#sig{transition:transform 1.6s cubic-bezier(.22,.9,.24,1)}
+#sig .shape{fill:var(--sig)}
+.cap{font:700 17px var(--disp);fill:var(--ink);text-anchor:middle}
+.flaghint{font:500 13px var(--body);fill:var(--mut);text-anchor:middle}
+@media (max-width:760px){.grid{grid-template-columns:1fr;gap:26px}.mastfig{order:-1;width:min(70%,220px)}main{padding-top:12px}}
+@media (prefers-reduced-motion:reduce){#sig{transition:none}button:not(:disabled):hover{transform:none}}
+</style>
+<style>.langsw{position:fixed;top:10px;right:12px;z-index:60;font:600 14px/1 system-ui,-apple-system,sans-serif;padding:8px 13px;border-radius:999px;background:#fff;color:#13202b;border:1px solid #c9d2db;text-decoration:none;box-shadow:0 1px 4px rgba(0,0,0,.12)}@media (prefers-color-scheme:dark){.langsw{background:#1d2731;color:#e8eef3;border-color:#3a4652}} html.demo .langsw{display:none}</style></head>
+<body>
+<div class="wrap">
+<header class="mast"><a class="name" href="index.html">Hong Kong typhoon signal forecasts</a>
+ <nav aria-label="pages"><a href="index.html">Forecasts</a><a href="guide.html">Tour</a><a href="verify.html">How good is it?</a><a href="ideas.html" aria-current="page">Ideas</a></nav>
+</header>
+
+<main>
+ <div class="grid">
+  <section>
+   <p class="kicker">Ideas &amp; suggestions</p>
+   <h1>Got an idea? Hoist it.</h1>
+   <p class="lead">Something you would like to see, something that confused you, a storm we should add. Write it below and hoist it up the mast. We read every one.</p>
+   <form id="f" novalidate>
+    <label class="hp" for="msg">Your idea</label>
+    <textarea id="msg" maxlength="2000" placeholder="e.g. Show the chance of No. 8 for Macau too" required></textarea>
+    <input type="text" id="who" maxlength="120" autocomplete="off" placeholder="Name or email, only if you would like a reply (optional)">
+    <input class="hp" type="text" id="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <div class="row"><button id="go" type="submit">Hoist it ↑</button><span class="count" id="cnt">0 / 2000</span></div>
+    <p class="st" id="st" role="status" aria-live="polite"></p>
+   </form>
+   <p class="fine">Your message goes only to the people who run this site. Nothing you write is published.</p>
+  </section>
+  <figure class="mastfig" aria-hidden="true">
+   <svg viewBox="0 0 220 420" role="img">
+    <line class="line" x1="140" y1="78" x2="140" y2="372"></line>
+    <line class="pole" x1="110" y1="40" x2="110" y2="380"></line>
+    <line class="yard" x1="80" y1="78" x2="140" y2="78"></line>
+    <circle class="base" cx="110" cy="36" r="6"></circle>
+    <rect class="base" x="80" y="378" width="60" height="12" rx="4"></rect>
+    <g id="sig" style="transform:translateY(0px)"><g class="shape" id="shape" transform="translate(140 336)"></g></g>
+    <text class="cap" id="cap" x="110" y="410"></text>
+    <text class="flaghint" id="hint" x="110" y="24">waiting for your idea</text>
+   </svg>
+  </figure>
+ </div>
+</main>
+</div>
+<script>
+const ENDPOINT = "https://formspree.io/f/xzedolla";
+(()=>{
+const $=s=>document.querySelector(s), msg=$("#msg"), who=$("#who"), go=$("#go"), st=$("#st"), cnt=$("#cnt"), sig=$("#sig"), shape=$("#shape"), cap=$("#cap"), hint=$("#hint");
+const SHAPES=[["No. 1",'<rect x="-22" y="-21" width="44" height="10"/><rect x="-5" y="-21" width="10" height="42"/>'],
+ ["No. 3",'<rect x="-22" y="11" width="44" height="10"/><rect x="-5" y="-21" width="10" height="42"/>'],
+ ["No. 8",'<path d="M0 -21 L24 21 L-24 21 Z"/>'],
+ ["No. 10",'<rect x="-22" y="-5" width="44" height="10"/><rect x="-5" y="-22" width="10" height="44"/>']];
+let n=0; try{n=+sessionStorage.getItem("hk_ideas")||0}catch(e){}
+const show=k=>{const s=SHAPES[Math.min(k,3)]; shape.innerHTML=s[1]; return s[0]};
+show(n);
+msg.addEventListener("input",()=>{cnt.textContent=`${msg.value.length} / 2000`});
+const TRY=/[?&]try=1\b/.test(location.search);
+if(!ENDPOINT&&!TRY){go.disabled=true; st.className="st err"; st.textContent="The ideas box opens soon."}
+$("#f").addEventListener("submit",async e=>{e.preventDefault();
+ const text=msg.value.trim();
+ if($("#hp").value) return;
+ if(text.length<3){st.className="st err"; st.textContent="Write a few words first."; msg.focus(); return}
+ if(!ENDPOINT&&!TRY) return;
+ go.disabled=true; st.className="st"; st.textContent="Hoisting…";
+ const contact=who.value.trim(), body={message:text, contact, lang:document.documentElement.lang, page:location.pathname.split("/").pop()||"ideas.html",
+  _subject:"New idea for the Hong Kong typhoon signal site"};
+ if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact)) body.email=contact;
+ try{
+  const gs=/script\.google\.com/.test(ENDPOINT);
+  const r=!ENDPOINT?{ok:true}:await fetch(ENDPOINT,gs?{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(body)}
+                                 :{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(body)});
+  if(!gs&&!r.ok) throw new Error(r.status);
+  sig.style.transition="none"; sig.style.transform="translateY(0px)"; const name=show(n); void sig.getBoundingClientRect(); sig.style.transition="";
+  hint.textContent=""; cap.textContent=""; requestAnimationFrame(()=>{sig.style.transform="translateY(-222px)"});
+  setTimeout(()=>{cap.textContent=`Signal ${name} hoisted`},1500);
+  n+=1; try{sessionStorage.setItem("hk_ideas",String(n))}catch(x){}
+  st.className="st ok"; st.textContent=ENDPOINT?"Hoisted — thanks! We have it.":"Hoisted (preview: nothing was sent).";
+  msg.value=""; cnt.textContent="0 / 2000";
+  setTimeout(()=>{go.disabled=false},1600);
+ }catch(x){st.className="st err"; st.textContent="It did not go through. Please try again in a moment."; go.disabled=false}
+});
+})();
+</script>
+<a id="langsw" class="langsw" href="ideas-zh.html" lang="zh-Hant">中文</a><script>(function(){var a=document.getElementById("langsw");if(!a)return;if(window.top!==window.self){a.style.display="none";return}a.href=a.getAttribute("href")+location.search+location.hash;a.addEventListener("click",function(){try{localStorage.setItem("hk_lang","zh")}catch(e){}})})();</script></body>
+</html>

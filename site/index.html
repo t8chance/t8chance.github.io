@@ -81,9 +81,11 @@ input[type=checkbox],input[type=range]{accent-color:var(--ink)}
 .tlcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px 12px;margin:0 0 12px}
 /* BASIC mode (2026-10-17) */
 body.basic .adv{display:none!important}
+body.basic.bsel #chead.adv,body.basic.bsel .cbox.adv,body.basic.bsel #cnote.adv{display:block!important} .bwx{display:none} body.basic.bsel .bwx{display:block;max-width:70ch}
 .modesw{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;vertical-align:middle;margin-left:4px}.modesw a{padding:3px 11px;font-size:13px;text-decoration:none;color:var(--mut)}.modesw a.on{background:var(--ink);color:var(--card)}
 .bcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px 14px;margin:0 0 12px}
 .bcard .bh{font:700 clamp(24px,5vw,32px)/1.15 var(--disp);margin:0 0 12px;text-wrap:balance}
+.ans .bh{font:700 clamp(24px,3.6vw,32px)/1.15 var(--disp);margin:8px 0 10px;text-wrap:balance}
 .bbar{display:grid;grid-template-columns:64px 1fr 52px;gap:10px;align-items:center;margin:7px 0}.bbar b{font-weight:700}
 .bbar .tr{height:14px;border-radius:7px;background:var(--soft);overflow:hidden}.bbar .fl{height:100%;border-radius:7px;min-width:2px}
 .bbar .pc{font:700 18px var(--disp);text-align:right;font-variant-numeric:tabular-nums}
@@ -161,7 +163,7 @@ footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin
 </style><style>.langsw{position:fixed;top:10px;right:12px;z-index:60;font:600 14px/1 system-ui,-apple-system,sans-serif;padding:8px 13px;border-radius:999px;background:#fff;color:#13202b;border:1px solid #c9d2db;text-decoration:none;box-shadow:0 1px 4px rgba(0,0,0,.12)}@media (prefers-color-scheme:dark){.langsw{background:#1d2731;color:#e8eef3;border-color:#3a4652}} html.demo .langsw{display:none}</style></head><body>
 <div class="wrap">
 <header class="mast"><h1>Hong Kong typhoon signal forecasts</h1>
-<nav aria-label="pages"><a class="tour" href="guide.html">New here? Take the tour</a><a href="verify.html">How good is it?</a></nav>
+<nav aria-label="pages"><a class="tour" href="guide.html">New here? Take the tour</a><a href="verify.html">How good is it?</a><a href="ideas.html">Ideas</a></nav>
 <p class="disc">ECMWF ensemble forecasts turned into Hong Kong signal chances. Research output — the Hong Kong Observatory is the only authority for actual signals.</p></header>
 
  <div class="toolbar">
@@ -178,7 +180,7 @@ footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin
  <div class="mapbar"><button id="zoomBtn">zoom to Hong Kong</button>
 
    <button id="detBtn" style="display:none" title="ECMWF's main forecast, made once in finer detail than the members, shown on its own: track, time bar, charts">deterministic run</button>
-   <button id="allPlay" title="every member's storm together through time, 12 forecast hours per second">▶ all members</button>
+   <button id="allPlay" title="every member's storm together through time">▶ all members</button>
    <label class="note"><input type="checkbox" id="only150"> within 150 km only</label></div>
  <p class="note mapexp" id="mapexp"></p>
  <div class="mapwrap"><div class="scrollx"><svg id="map" viewBox="0 0 1000 600" tabindex="0" aria-label="Forecast map"></svg></div>
@@ -194,12 +196,13 @@ footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin
  <p class="note" id="maphint">Tap or click a line to follow one member.</p>
  </div>
 
- <h2 class="sech adv">Member charts</h2>
+ <h2 class="sech adv mch">Member charts</h2>
  <h2 id="chead">Most threatening member</h2>
  <div class="bar" id="tabs"></div>
  <div class="scrollx"><svg id="chart" viewBox="0 0 1000 320"></svg></div>
  <div id="stationchart" style="display:none"></div>
  <p class="note" id="cnote"></p>
+ <p class="note bwx" id="bwx">The Hong Kong wind index is one number for how windy Hong Kong is overall: an unofficial index from HKCOC, a weighted average of the 10-minute winds and gusts at 20 Hong Kong Observatory stations, in km/h. Light below 14, fresh 14–24, strong 25–44, very strong 45–74, extreme 75 or more.</p>
 
  <footer id="foot"></footer>
 </div>
@@ -261,9 +264,9 @@ let VB=VIEWS.region.slice(), HOME=VIEWS.region.slice(), moved=false;
 const PUB=true;
 let colBy="signal"; 
 let cyc=cycles.find(RECENT)||cycles[0], ens="ifsens", view="region", tab="signal", sel=null, selH=null, TR=null;
-const MODES={ai:["aifsens","pangu"],ec:["ifsens","tigge"]}, MODEN={ai:"AI models",ec:"ECMWF physics (IFS)"};
-const ENSN={ifsens:"IFS (physics)",aifsens:"AIFS (AI)",tigge:"ECMWF ENS of the time (physics)",pangu:"Pangu (AI)"};
-const FCN={ifsens:"ECMWF physics (IFS)",aifsens:"ECMWF AI (AIFS)",tigge:"Old ECMWF (physics)",pangu:"Pangu-Weather (AI)"}, ORDER=["ifsens","aifsens","tigge","pangu"];
+const MODES={ai:["aifsens","deepmind","pangu"],ec:["ifsens","tigge"]}, MODEN={ai:"AI models",ec:"ECMWF physics (IFS)"};
+const ENSN={ifsens:"IFS (physics)",aifsens:"AIFS (AI)",tigge:"ECMWF ENS of the time (physics)",pangu:"Pangu (AI)",deepmind:"DeepMind (AI)"};
+const FCN={ifsens:"ECMWF physics (IFS)",aifsens:"ECMWF AI (AIFS)",tigge:"Old ECMWF (physics)",pangu:"Pangu-Weather (AI)",deepmind:"Google DeepMind (AI)"}, ORDER=["ifsens","aifsens","deepmind","tigge","pangu"];
 const modeOf=e=>Object.keys(MODES).find(k=>MODES[k].includes(e));
 const chooseEns=c=>{const av=HK[c]||{}; if(!av[ens]) ens=MODES[mode].find(e=>av[e])||ORDER.find(e=>av[e])||ens; mode=modeOf(ens)||mode};
 let mode="ec";
@@ -282,10 +285,10 @@ const BASIC=(()=>{const qs=new URLSearchParams(location.search); if(qs.get("demo
  try{const q=qs.get("mode");
  if(q==="basic"||q==="advanced"){localStorage.setItem("hk_mode",q); return q==="basic"} const m=localStorage.getItem("hk_mode"); return m?m==="basic":PUB}catch(e){return PUB}})();
 if(BASIC){document.body.classList.add("basic"); mode="ec"; if(!MODES.ec.includes(ens)) ens="ifsens";
- [$("#ensbtns")&&$("#ensbtns").closest(".grp"),$("#checks"),$("#detBtn"),$("#only150")&&$("#only150").closest("label"),$("#mapexp"),$("#chead"),$("#tabs"),
+  [$("#ensbtns")&&$("#ensbtns").closest(".grp"),$("#checks"),$("#detBtn"),$("#only150")&&$("#only150").closest("label"),$("#mapexp"),$("#chead"),$("#tabs"),
   $("#chart")&&$("#chart").closest(".scrollx"),$("#stationchart"),$("#cnote")].forEach(e=>e&&e.classList.add("adv"));
  const ds=$(".mast .disc"); if(ds) ds.textContent="Chances of tropical cyclone warning signals for Hong Kong, from computer forecasts. Research output — the Hong Kong Observatory is the only authority for actual signals.";
- $("#maphint").textContent="Each line is one possible path; its colour shows the signal expected along it."; const kh=$("#mapkey .kh"); if(kh) kh.textContent="Signal expected along each path"; const kn=$("#mapkey .kn"); if(kn) kn.classList.add("adv"); const ap=$("#allPlay"); if(ap) ap.textContent="▶ play"}
+ $("#maphint").textContent="Each line is one possible path; its colour shows the signal expected along it. Click a line to see how windy Hong Kong gets along it."; const sa=$("#showAll"); if(sa) sa.textContent="← All paths"; const cb=$("#chart")&&$("#chart").closest(".scrollx"); if(cb) cb.classList.add("cbox"); const kh=$("#mapkey .kh"); if(kh) kh.textContent="Signal expected along each path"; const kn=$("#mapkey .kn"); if(kn) kn.classList.add("adv"); const ap=$("#allPlay"); if(ap) ap.textContent="▶ play"}
 if(!/[?&]demo=/.test(location.search)){const nv=$(".mast nav"); if(nv){const sw=document.createElement("span"); sw.className="modesw";
  sw.innerHTML=`<a href="#" data-m="basic" class="${BASIC?"on":""}">Basic</a><a href="#" data-m="advanced" class="${BASIC?"":"on"}">Advanced</a>`; nv.appendChild(sw);
  sw.querySelectorAll("a").forEach(a=>a.onclick=e=>{e.preventDefault(); try{localStorage.setItem("hk_mode",a.dataset.m)}catch(x){}
@@ -383,7 +386,7 @@ $("#play").onclick=()=>{if(playing){stopPlay();chart();return}
  playing=true; playM=t.m; lastTs=0; lastChart=0; $("#play").textContent="❚❚ pause"; step()};
 $("#slider").oninput=e=>{selH=+e.target.value; drawMoment(); chart()};
 function refM(){if(!TR)return null; const has=m=>TR.tracks.some(t=>t.m===m); return (ens==="ifsens"||ens==="tigge")&&has(52)?52:ens==="aifsens"&&has(51)?51:null}
-let allH=null, allPlaying=false, allTs=0, allStart=0, allEnd=0, AG=null, AXY=null; const ALLSPD=12;
+let allH=null, allPlaying=false, allTs=0, allStart=0, allEnd=0, AG=null, AXY=null; const ALLSPD=BASIC?48:24;
 function drawAll(){if(!AG||!AXY)return; while(AG.firstChild)AG.removeChild(AG.firstChild); if(allH===null||!TR)return;
  const {X,Y,W,H,only}=AXY, byI=false, det=t=>t.m===52&&(ens==="ifsens"||ens==="tigge");
  TR.tracks.filter(t=>t.wf&&t.pts&&t.wf.length===t.pts.length&&t.wf.length>1&&(!only||t.ca[0]<150)).sort((a,b)=>det(a)-det(b)).forEach(t=>{const w=t.wf;
@@ -451,7 +454,8 @@ function head(){
  $("#ensbtns").innerHTML=ORDER.filter(e=>avE[e]).map(e=>`<button data-e="${e}" class="${e===ens?"on":""}">${FCN[e]}</button>`).join(" ");
 
  $("#ensbtns").querySelectorAll("button").forEach(b=>b.onclick=()=>{ens=b.dataset.e; mode=modeOf(ens)||mode; sel=null;selH=null;head();load()});
- $("#zoomBtn").onclick=e=>{view=view==="region"?"hk":"region";VB=VIEWS[view].slice();HOME=VB.slice();e.target.textContent=view==="region"?"zoom to Hong Kong":"zoom out";drawMap()};
+ $("#zoomBtn").onclick=e=>{view=view==="region"?"hk":"region";VB=BASIC&&view==="hk"?[113.55,114.75,21.95,22.75]:VIEWS[view].slice();
+ HOME=VB.slice();e.target.textContent=view==="region"?"zoom to Hong Kong":"zoom out";drawMap()};
  $("#showAll").onclick=()=>{sel=null;selH=null;BIN=null;drawMap();chart()};
  $("#only150").onchange=drawMap;
 
@@ -503,6 +507,9 @@ function load(){
  if(d&&d.generated){const g=new Date(d.generated.replace(" ","T")+":00Z"), hrs=(Date.now()-g)/3.6e6;
   $("#stamp").innerHTML=`<b>${FCN[ens]||ens}</b>`+(d.experimental?` · <b>experimental</b>`:"")
    +(ens==="pangu"?" · re-forecast from ERA5, one run, own tracker":"")
+   +(ens==="deepmind"?(d.tracks_withheld
+      ?`<br><span class="dmcite">Google DeepMind Weather Lab. © 2024-6 Google LLC, whose machine learning models were used to create the experimental data made available under the following licence terms https://storage.googleapis.com/weathernext-public/terms-of-use.pdf. This data is intended for experimental modelling only and is not intended, validated, or approved for real world use.</span>`
+      :` · data: <a href="https://deepmind.google.com/science/weatherlab" target="_blank" rel="noopener">Google DeepMind Weather Lab</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>) <span>turned into Hong Kong signal chances here; Google is not involved in this site</span>`):"")
    +` · produced ${d.generated} UTC (${hrs<1?"<1 h":Math.round(hrs)+" h"} ago)`
    +(cyc===cycles[0]&&hrs>18?` — <b style="color:var(--no8)">this copy is behind</b>`:"")
    +(pastOf(cyc)?` · past case: ${pastOf(cyc)}${cyc<"2025"?" (this storm was used to set up the site)":" (a fair test: not used to set up the site)"}`:"")
@@ -552,13 +559,15 @@ function load(){
  let tb="";
  if(LV.some(([sg])=>nOf(sg)>0)||hcases.length){
   const x=topL&&E&&E[topL[0]]&&E[topL[0]].n?E[topL[0]]:null;
+  const pcA=sg=>one?(nOf(sg)?100:0):Math.round(100*nOf(sg)/(d.members||50)), noneA=100-Math.max(...LV.map(([sg])=>pcA(sg)));
   const ans=`<div class="ans"><div class="k">${one?"This run gives":"Expected signal"}</div>`
-   +`<div class="badge" style="color:${topL?topL[3]:"var(--mut)"}">${topL?topL[1]:"none"}</div>`+(!topL&&!one&&nOf("No3")?`<div class="v"><b>${nOf("No3")}</b> of ${d.members} give No. 3</div>`:"")
+   +`<div class="bh" style="color:${topL?topL[3]:"var(--ink)"}">${one?(topL?`Signal ${topL[1]}`:"No signal"):topL?`Signal ${topL[1]} likely (${pcA(topL[0])}%)`:`Most likely no signal (${noneA}%)`}</div>`
+   +(one?"":LV.map(([sg,lab,L,col])=>`<div class="bbar"><b>${lab}</b><div class="tr"><div class="fl" style="width:${pcA(sg)}%;background:${col}"></div></div><span class="pc">${pcA(sg)}%</span></div>`).join(""))
    +(topL?`<div class="v">${one?"":`from <b>${nOf(topL[0])}</b> of ${d.members} members`}${x?`${one?"":" · "}${x.groups?`<b>${MAING(x).n}</b> of them `:""}${hk(x.start[1])} → ${hk(x.end[1])} HKT · <b>${x.hours[1]}&nbsp;h</b>`:""}</div>`:"")
    +(x&&x.groups?`<div class="note">other periods: ${x.groups.filter(g=>g!==MAING(x)).map(g=>`${g.n} member${g.n>1?"s":""} ${hk(g.start[1])} → ${hkS(g.end[1])}`).join(" · ")}</div>`:"")
-   +`<div class="v gs" id="galeF"></div><div class="note">${pass}</div>`
+   +`<div class="note" style="margin-top:8px">${pass}</div></div>%%WIND%%<div class="ans"><div class="k">Wind at Hong Kong's reference stations</div><div class="v gs" id="galeF"></div>`
    +`<details class="what"><summary>What do these numbers mean?</summary>`
-   +(!one?`<div class="mexp">ECMWF runs every forecast <b>${d.members} times</b>, each from a slightly different start, to show how sure it is. Each run is a <i>member</i>${topL?`: <b>${nOf(topL[0])} of ${d.members}</b> (${Math.round(100*nOf(topL[0])/d.members)}%) of them bring ${topL[1]}.`:nOf("No3")?`. Only <b>${nOf("No3")} of ${d.members}</b> bring No. 3 or higher, fewer than half, so no signal has a majority.`:". None of them brings No. 3 or higher."}${ens==="ifsens"?` ECMWF also makes one main forecast in finer detail, the <b>deterministic run</b> (black dashed on the map).`:ens==="aifsens"?` The <b>control run</b> is the one member started without any change (black dashed on the map).`:""}</div>`:"")
+   +(!one?`<div class="mexp">${ens==="deepmind"?"Google DeepMind's model":"ECMWF"} runs every forecast <b>${d.members} times</b>, each from a slightly different start, to show how sure it is. Each run is a <i>member</i>${topL?`: <b>${nOf(topL[0])} of ${d.members}</b> (${Math.round(100*nOf(topL[0])/d.members)}%) of them bring ${topL[1]}.`:nOf("No3")?`. Only <b>${nOf("No3")} of ${d.members}</b> bring No. 3 or higher, fewer than half, so no signal has a majority.`:". None of them brings No. 3 or higher."}${ens==="ifsens"?` ECMWF also makes one main forecast in finer detail, the <b>deterministic run</b> (black dashed on the map).`:ens==="aifsens"?` The <b>control run</b> is the one member started without any change (black dashed on the map).`:""}</div>`:"")
    +(one?`<p><b>One run.</b> This forecast is a single run, so it gives one answer instead of a share of members.</p>`
         :`<p><b>Members.</b> ECMWF runs each forecast ${d.members||50} times, each from slightly different starting conditions. Each run is a member. A count like "20 of ${d.members||50} members" means 20 of those runs give that signal at some point, so it gives a rough idea of the chance. It is the share of members, not a calibrated probability that HKO will issue the signal.</p>`
          +(ens==="ifsens"?`<p><b>Deterministic run.</b> Besides the ${d.members||50} members, ECMWF makes one main forecast in finer detail. It is the black dashed line on the map, and its own numbers say "deterministic". It is still one forecast, so it can be right or wrong like any member.</p>`:ens==="aifsens"?`<p><b>Control run.</b> The AI forecast's member started without any change. It is the black dashed line on the map.</p>`:"")
@@ -567,7 +576,9 @@ function load(){
    +`<p><b>Storm and hurricane force</b> count the same 8 stations, at 88 and 118 km/h (10-minute average wind). Each station's own chance and expected wind are in <b>Stations</b> just above, for the deterministic run, and in the Station guide tab under the map, which shows the same run until you click another track.</p>`
    +`<p><b>8-station average.</b> The average over the 8 reference stations of each station's highest 10-minute mean wind in the storm. Past storms are ranked by it: ${R8N} storms since 2007 that brought No. 3 or higher, from the same station records the station numbers are built on. For a forecast it is shown for each member, as a reference only, under the table in the Station guide tab, from that member's wind guide at the 8 stations; below ${R8MIN} km/h the guide cannot tell storms apart, so no rank is given.</p></details></div>`;
   const hko=hcases.length&&!window.HK_DEMO?`<div class="ans"><div class="k">HKO actually issued</div><div class="badge" style="color:${colL[clsL(hkoTop)]}">No. ${hkoTop}</div>`
-   +hcases.map(c=>{const t=HKOEV[c].top, y=HKOEV[c]["L"+clsL(t)];return `<div class="v">${c}: No. ${t}${y?` · ${hkS(y[0])} → ${hkS(y[1])} HKT · <b>${Math.round(y[2])}&nbsp;h</b>`:""}</div>${HKOGALE[c]!=null?`<div class="gh" style="margin-top:12px">Reference stations, recorded by HKO</div><div class="v gs"><span class="gl">Gale force</span> ${gdots(HKOGALE[c],HKOGALE[c])} <b class="gn">${HKOGALE[c]}</b> of 8</div>`:""}${HKOSH[c]?[["Storm force",0],["Hurricane force",1]].map(([l,i])=>`<div class="v gs"><span class="gl" title="from HKO's reported maximum hourly mean winds (80 / 107 km/h); the station table uses the highest 10-minute mean">${l}</span> ${gdots(HKOSH[c][i],HKOSH[c][i])} <b class="gn">${HKOSH[c][i]}</b> of 8</div>`).join(""):""}${rank8Obs(c)}`}).join("")+`</div>`:"";
+   +hcases.map(c=>{const t=HKOEV[c].top, y=HKOEV[c]["L"+clsL(t)];return `<div class="v">${c}: No. ${t}${y?` · ${hkS(y[0])} → ${hkS(y[1])} HKT · <b>${Math.round(y[2])}&nbsp;h</b>`:""}</div>%%HW%%${HKOGALE[c]!=null?`<div class="gh" style="margin-top:12px">Reference stations, recorded by HKO</div><div class="v gs"><span class="gl">Gale force</span> ${gdots(HKOGALE[c],HKOGALE[c])} <b class="gn">${HKOGALE[c]}</b> of 8</div>`:""}${HKOSH[c]?[["Storm force",0],["Hurricane force",1]].map(([l,i])=>`<div class="v gs"><span class="gl" title="from HKO's reported maximum hourly mean winds (80 / 107 km/h); the station table uses the highest 10-minute mean">${l}</span> ${gdots(HKOSH[c][i],HKOSH[c][i])} <b class="gn">${HKOSH[c][i]}</b> of 8</div>`).join(""):""}${rank8Obs(c)}%%HE%%`}).join("")+`</div>`:"";
+  const [ansS,ansW]=ans.split("%%WIND%%"), hkW=[...hko.matchAll(/%%HW%%([\s\S]*?)%%HE%%/g)].map(m=>m[1]).join("");
+  const hkoS=hko.replace(/%%HW%%[\s\S]*?%%HE%%/g,""), hkoW=hko&&hkW.replace(/<[^>]*>/g,"").trim()?`<div class="ans"><div class="k">HKO recorded</div>${hkW}</div>`:"";
   const card=([sg,lab,L,col])=>{const x_=E&&E[sg], a=d[sg]&&d[sg].any, n=nOf(sg);
    const rows=[[one?"reached":"members",one?`<b>${n?"yes":"no"}</b>`:`<b>${n}</b> of ${d.members}${(L!==10&&a&&a[1]!==a[2])?` <span class="rng">(${a[1]}–${a[2]})</span>`:""}`]];
    if(x_&&x_.groups) rows.push(["main period",`<b>${MAING(x_).n}</b> members`]);
@@ -578,7 +589,7 @@ function load(){
    if(x_&&x_.det) rows.push(["deterministic",`${hkS(x_.det[0])} → ${hkS(x_.det[1])} · ${x_.det[2]}&nbsp;h`]);
    hcases.forEach(c=>{const y=HKOEV[c]["L"+L];rows.push([`HKO ${c.split(" ")[0]}`,y?`<b>${hkS(y[0])} → ${hkS(y[1])}</b> · ${Math.round(y[2])}&nbsp;h`:"not issued"])});
    return `<div class="lv" style="--c:${col}"><h3>${lab}</h3><dl>${rows.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl></div>`};
-  tb=`<h2 class="sech">The forecast</h2><div class="hero">${ans}${hko}</div><h2 class="sech">When</h2><div class="tlcard"><div class="k">Timeline · Hong Kong time</div><div id="tl"></div></div>`
+  tb=`<h2 class="sech">The forecast</h2><div class="hero">${ansS}${hkoS}${ansW}${hkoS?hkoW||"<div></div>":""}</div><h2 class="sech">When</h2><div class="tlcard"><div class="k">Timeline · Hong Kong time</div><div id="tl"></div></div>`
    +(window.HK_DEMO?"":`<h2 class="sech">Trend</h2><div class="tlcard"><div class="k">Run to run · chance of each signal</div><div class="r2rlg"><span><b style="color:var(--no3)">—</b> No. 3</span><span><b style="color:var(--no8)">—</b> No. 8</span><span><b style="color:var(--no10)">—</b> No. 10</span><span>- - 50%</span>${casesOf(cyc).some(c=>HKOEV[c]&&HKOEV[c].L3)?`<span><b style="opacity:.35">█</b> HKO No. 3 or higher up</span>`:""}</div><div id="r2r"></div><p class="note" style="margin:2px 0 0">Each dot is one run; click a dot to open that run.</p></div>`)
    +`<details class="nums"><summary>Numbers per signal</summary><div class="lvgrid">${LV.map(card).join("")}</div>`
    +(E?"":`<p class="note">start, end and hours: not in this run's data</p>`)
@@ -595,6 +606,9 @@ function load(){
  drawTL({E,one,members:d.members||0,MJ,hcases,init:Date.UTC(+cyc.slice(0,4),+cyc.slice(4,6)-1,+cyc.slice(6,8),+cyc.slice(8,10))});
  drawR2R();
  const key=cyc+"_"+ens;
+ [...document.querySelectorAll(".mapbar,#mapkey,#mapnav,#chead,#tabs,.sech.mch"),$("#chart")&&$("#chart").closest(".scrollx")].forEach(e=>{if(e)e.style.display=d.tracks_withheld?"none":""});
+ if(d.tracks_withheld){TR=null; $("#map").innerHTML=""; $("#map").style.display="none"; $("#chart").innerHTML=""; $("#cnote").textContent="";
+  $("#maphint").textContent="Tracks are not shown for live Google DeepMind forecasts: Google's terms let this site publish only the signal chances while a forecast is live. The tracks appear here once the storm has passed."; return}
  if(window.HKT&&window.HKT[key]){TR=window.HKT[key];drawTabs();drawMap();chart();fillGale();fillBasic();return}
  const sc=document.createElement("script");sc.src=`../data/tracks_${key}.js`;
  sc.onload=()=>{TR=(window.HKT||{})[key];drawTabs();drawMap();chart();fillGale();fillBasic()};
@@ -880,10 +894,10 @@ function drawMap(){
     selH=t.wf[best[1]][0]+best[2]*(t.wf[best[1]+1][0]-t.wf[best[1]][0])}
    else{sel=(sel===t.m?null:t.m);selH=null}
    drawMap();chart()};
-  if(!BASIC){path.style.cursor="pointer"; path.onclick=clickLine}
+  path.style.cursor="pointer"; path.onclick=clickLine;
   (t.others||[]).forEach(o=>{s.appendChild(el("path",{fill:"none",stroke:on?"#555":"#999","stroke-width":on?1.6:0.8,"stroke-dasharray":"5 4",
     opacity:on?0.9:0.35,d:o.pts.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join(" ")}))});
-  path.onmouseenter=()=>$("#maphint").innerHTML=on&&t.wf
+  path.onmouseenter=()=>$("#maphint").innerHTML=BASIC?`Closest to Hong Kong: <b>${Math.round(t.ca[0])} km</b>. Click the line to see how windy Hong Kong gets along it.`:on&&t.wf
     ?`<b>${memLab(t.m)}</b>: click anywhere on its line, drag the time bar or press play to see the storm${""} at any moment (the charts below follow).`
     :`<b>${memLab(t.m)}</b>${top?" — most threatening":""}: closest ${Math.round(t.ca[0])} km at ${t.ca[1]}Z, peak No. 8 ${t.p8.toFixed(2)}${""}. Click to see it below.`;
   s.appendChild(path);
@@ -1003,6 +1017,9 @@ function chart(){
   return;
  }
  s.style.display=""; sg.style.display="none"; if(!TR)return;
+ if(BASIC){document.body.classList.toggle("bsel",sel!==null); if(sel===null){window._bsel=null; return}
+  tab="wi"; showWIMean=false; showWIDist=false;
+  if(window._bsel!==sel){window._bsel=sel; setTimeout(()=>{try{$("#chead").scrollIntoView({behavior:"smooth",block:"nearest"})}catch(e){}},60)}}
  if(tab==="wi"&&showWIDist){wiDist(s);return}
  const t=TR.tracks.find(x=>x.m===(sel??DEFM())); if(!t){$("#cnote").textContent="";return}
  const PW=Math.round((s.parentNode&&s.parentNode.clientWidth)||1000), NARROW=PW<700;
@@ -1010,7 +1027,8 @@ function chart(){
  const EW=tab==="wi"&&showWIMean?wiEnsemble():null;
  let series=EW?EW.rows.map(r=>[labOfH(r.h),r.mean]):tab==="signal"?memberSignal(t):tab==="wi"?(t.wix||[]).map(([h,v])=>[labOfH(h),v]):((tab==="p3"?t.s3:tab==="p8"?t.s8:t.s10)||[]);
  $("#chead").textContent=EW?`Ensemble mean of ${EW.n} members — Hong Kong wind index through time`:`${memLab(t.m,1)}${t.m===TR.top?" (most threatening)":""} — ${tab==="signal"?"expected signal":tab==="p3"?"chance of No. 3":tab==="p8"?"chance of No. 8":tab==="wi"?"Hong Kong wind index":"chance of No. 10"} through time`;
- if(!series.length){$("#cnote").textContent=tab==="wi"?(t.wix?"this member's storm never comes within 800 km of Hong Kong, the range the wind index covers":"no wind index for this run (runs exported before it was added)"):"no values for this member in this run";return}
+ if(BASIC)$("#chead").textContent="Along this path: how windy Hong Kong gets";
+ if(!series.length){$("#cnote").textContent=BASIC&&tab==="wi"?"Along this path the storm stays more than 800 km from Hong Kong.":tab==="wi"?(t.wix?"this member's storm never comes within 800 km of Hong Kong, the range the wind index covers":"no wind index for this run (runs exported before it was added)"):"no values for this member in this run";return}
  if(NARROW&&!EW&&tab!=="wi"&&true){const on=memberSignal(t).filter(p=>p[1]>=1).map(p=>labH(p[0]));
   if(on.length){const a=Math.min(...on)-12, b=Math.max(...on)+15, k=series.filter(p=>{const h=labH(p[0]); return h>=a&&h<=b}); if(k.length>=2) series=k}}
  const hs=series.map((p,i)=>labH(p[0]));
@@ -1131,6 +1149,8 @@ if(tab==="wi"){const dd=line((TRU.wi||[]).map(([z,v])=>[isoH(z),v]));
        `${ca}${""}`,
 
        drv, obs])+`<br>${wind}`;
+ if(BASIC&&tab==="wi"&&wpk){const d=new Date(T0()+labH(wpk[0])*36e5+8*36e5), z=n=>String(n).padStart(2,"0");
+  $("#cnote").innerHTML=`Peak <b>${Math.round(wpk[1])} km/h</b> (${WIN[wiBand(wpk[1])]}), around ${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getUTCDay()]} ${d.getUTCDate()} ${MON[d.getUTCMonth()]} ${z(d.getUTCHours())}:00 (Hong Kong time)`+(truthNow()?" · dashed line: what Hong Kong really had":"")}
 }
 const DEMO=(location.search.match(/[?&]demo=(play|member|map|stations|toolbar|answer|timeline|stationtable)\b/)||[])[1]||"";
 if(DEMO){window.HK_DEMO=DEMO; document.documentElement.classList.add("demo","demo-"+DEMO);
