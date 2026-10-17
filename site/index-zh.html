@@ -59,6 +59,7 @@ input[type=checkbox],input[type=range]{accent-color:var(--ink)}
 .status{margin:0 0 20px}
 .hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px;margin:0 0 14px}
 .hero>.ans:only-child{grid-column:1/-1}
+.ans.na{background:repeating-linear-gradient(45deg,var(--card) 0 8px,var(--soft) 8px 11px)}.ans.na .badge,.ans.na .v{color:var(--mut)}
 .ans{min-width:0;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px 16px;box-shadow:var(--shadow)}
 /* 2026-10-17: the HKO card in the same style as the forecast card */
 .ans .k,.tlcard .k{font:600 16px/1.2 var(--disp);color:var(--mut)}
@@ -94,7 +95,7 @@ body.basic.bsel #chead.adv,body.basic.bsel .cbox.adv,body.basic.bsel #cnote.adv{
 .sech{font:700 13px/1 var(--disp);letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:24px 0 10px}#status>.sech:first-child{margin-top:6px}
 html.demo .sech{display:none} #mapexp{display:none} .mapbar .mapnav{margin:0 0 0 auto}
 .r2rlg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--mut);margin:-2px 0 6px}.r2rlg b{font-weight:700}
-.r2rp{margin:0 0 4px}.r2rp .t{font:600 13px/1.3 var(--disp);color:var(--ink);margin:6px 0 0}#r2r svg{display:block;width:100%;height:auto;border:0;border-radius:0;background:none}#r2r circle{cursor:pointer}
+.r2rp{margin:0 0 4px}.r2rp .t{font:600 13px/1.3 var(--disp);color:var(--ink);margin:6px 0 0}#r2r svg{display:block;width:100%;height:auto;border:0;border-radius:0;background:none}#r2r circle,#r2r rect.na{cursor:pointer}
 #tl svg{border:0;border-radius:0;background:transparent;box-shadow:none}
 .tlleg{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:12.5px;color:var(--mut);margin-top:8px}
 .tlleg i{display:inline-block;width:22px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
@@ -213,6 +214,7 @@ footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin
 const $=s=>document.querySelector(s), HK=window.HK||{}, cycles=Object.keys(HK).sort().reverse();
 const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const fmtc=c=>`${c.slice(6,8)} ${MON[+c.slice(4,6)-1]} ${c.slice(8,10)}Z`;
+const NAv=d=>!!d&&d.ens==="deepmind"&&!!d.quiet;
 const PAST=[["2025091612","2025091812","Mitag 2025 — HKO No. 3 on 19 Sep"],["2025091812","2025092212","Ragasa 2025 — HKO No. 10 on 23–24 Sep"],
  ["2025100112","2025100312","Matmo 2025 — HKO No. 3 on 4–5 Oct"],["2025101712","2025101912","Fengshen 2025 — HKO No. 3 on 20–21 Oct"],
  ["2026072012","2026072412","Noul 2026 — HKO No. 9 on 25 Jul"],
@@ -468,10 +470,11 @@ function unavailable(){const other=Object.keys(MODES).find(k=>k!==mode);
   +`<div class="v">no ${MODEN[mode]} run for ${NOSAME}</div><div class="note">pick a run in the menu above, or switch back to ${MODEN[other]}</div></div>`;
  TR=null; MC=null; allH=null; if(allPlaying)allStop(); $("#map").innerHTML=""; $("#chart").innerHTML=""; $("#cnote").textContent=""; $("#tabs").innerHTML=""; syncPlayer();
  $("#map").style.display="none"; $("#chart").style.display="none"}
+const r2rCard=()=>`<h2 class="sech">Trend</h2><div class="tlcard"><div class="k">Run to run · chance of each signal</div><div class="r2rlg"><span><b style="color:var(--no3)">—</b> No. 3</span><span><b style="color:var(--no8)">—</b> No. 8</span><span><b style="color:var(--no10)">—</b> No. 10</span><span>- - 50%</span>${casesOf(cyc).some(c=>HKOEV[c]&&HKOEV[c].L3)?`<span><b style="opacity:.35">█</b> HKO No. 3 or higher up</span>`:""}</div><div id="r2r"></div><p class="note" style="margin:2px 0 0">Each dot is one run; click a dot to open that run.</p></div>`;
 function drawR2R(){const box=$("#r2r"); if(!box)return;
  const cs=casesOf(cyc), Wn=PAST.filter(p=>cs.includes(p[2].split(" — ")[0]));
  const runs=(Wn.length?cycles.filter(c=>Wn.some(p=>c>=p[0]&&c<=p[1])):cycles.filter(c=>Math.abs(tUc(c)-tUc(cyc))<=5*864e5)).slice().sort();
- const nRun=(c,e)=>{const d=(HK[c]||{})[e]; if(!d||(d.members||0)<=1)return null; const E=d.event||{};
+ const nRun=(c,e)=>{const d=(HK[c]||{})[e]; if(!d||(d.members||0)<=1)return null; if(NAv(d))return {c,na:true}; const E=d.event||{};
   const n=sg=>d.quiet?0:(E[sg]?E[sg].n:(d[sg]&&d[sg].any?d[sg].any[0]:0)); return {c,M:d.members,No3:n("No3"),No8:n("No8"),No10:n("No10")}};
  const ens_=ORDER.filter(e=>(BASIC?MODES.ec.includes(e):e===ens)&&runs.filter(c=>nRun(c,e)).length>=2);
  if(!ens_.length){box.closest(".tlcard").style.display="none";return}
@@ -481,16 +484,23 @@ function drawR2R(){const box=$("#r2r"); if(!box)return;
  const z=n=>String(n).padStart(2,"0"), SGc=[["No3","var(--no3)"],["No8","var(--no8)"],["No10","var(--no10)"]];
  box.innerHTML=ens_.map(e=>{const P=runs.map(c=>nRun(c,e)).filter(Boolean), pc=(p,sg)=>100*p[sg]/p.M, Y=v=>T+(H-T-B)*(1-v/100);
   let g=hko.map(([a,b])=>{const x0=Math.max(X(a),L),x1=Math.min(X(b),W-R);return x1>x0?`<rect x="${x0}" y="${T}" width="${x1-x0}" height="${H-T-B}" style="fill:var(--ink)" opacity=".08"></rect>`:""}).join("");
+  const tp=p=>tUc(p.c), naR=P.map((p,i)=>p.na?[i?(tp(P[i-1])+tp(p))/2:tp(p)-3*36e5,i<P.length-1?(tp(p)+tp(P[i+1]))/2:tp(p)+3*36e5,p.c]:null).filter(Boolean);
+  if(naR.length) g+=`<defs><pattern id="nah-${e}" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" style="stroke:var(--mut)" stroke-width="1.4" opacity=".55"></line></pattern></defs>`
+   +naR.map(([a,b,c])=>{const x0=Math.max(X(a),L), w=Math.max(Math.min(X(b),W-R)-x0,2).toFixed(1);
+    return `<rect class="na" x="${x0.toFixed(1)}" y="${T}" width="${w}" height="${H-T-B}" style="fill:var(--soft)" data-c="${c}" data-e="${e}"><title>${fmtc(c)}: not available</title></rect>`
+     +`<rect x="${x0.toFixed(1)}" y="${T}" width="${w}" height="${H-T-B}" fill="url(#nah-${e})" pointer-events="none"></rect>`}).join("");
   [0,100].forEach(v=>{g+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" style="stroke:var(--line)"></line><text x="${L-5}" y="${Y(v)+4}" text-anchor="end" font-size="11" style="fill:var(--mut)">${v}%</text>`});
   g+=`<line x1="${L}" x2="${W-R}" y1="${Y(50)}" y2="${Y(50)}" style="stroke:var(--mut)" stroke-dasharray="4 3"></line><text x="${L-5}" y="${Y(50)+4}" text-anchor="end" font-size="11" style="fill:var(--mut)">50%</text>`;
   const d0=new Date(t0), days=[]; for(let u=Date.UTC(d0.getUTCFullYear(),d0.getUTCMonth(),d0.getUTCDate()+1);u<=t1;u+=864e5)days.push(u);
   const stp=Math.max(1,Math.ceil(days.length/(W<480?4:8)));
   days.forEach((u,k)=>{if(k%stp)return; const dd=new Date(u); g+=`<line x1="${X(u)}" x2="${X(u)}" y1="${T}" y2="${H-B}" style="stroke:var(--line)" opacity=".6"></line><text x="${X(u)}" y="${H-B+15}" text-anchor="middle" font-size="11" style="fill:var(--mut)">${dd.getUTCDate()}/${dd.getUTCMonth()+1}</text>`});
   if((HK[cyc]||{})[e]) g+=`<line x1="${X(tUc(cyc))}" x2="${X(tUc(cyc))}" y1="${T-4}" y2="${H-B}" style="stroke:var(--ink)" stroke-width="1.6" stroke-dasharray="2 2"></line>`;
-  SGc.forEach(([sg,col])=>{g+=`<path d="${P.map((p,i)=>(i?"L":"M")+X(tUc(p.c)).toFixed(1)+" "+Y(pc(p,sg)).toFixed(1)).join(" ")}" fill="none" style="stroke:${col}" stroke-width="2"></path>`;
-   g+=P.map(p=>`<circle cx="${X(tUc(p.c)).toFixed(1)}" cy="${Y(pc(p,sg)).toFixed(1)}" r="${p.c===cyc&&e===ens?4.5:3.2}" style="fill:${col};stroke:var(--card)" stroke-width="1.2" data-c="${p.c}" data-e="${e}"><title>${fmtc(p.c)}: ${sg.replace("No","No. ")} ${Math.round(pc(p,sg))}% (${p[sg]} of ${p.M} members)</title></circle>`).join("")});
+  SGc.forEach(([sg,col])=>{g+=`<path d="${P.map((p,i)=>p.na?"":(i&&!P[i-1].na?"L":"M")+X(tUc(p.c)).toFixed(1)+" "+Y(pc(p,sg)).toFixed(1)).join(" ")}" fill="none" style="stroke:${col}" stroke-width="2"></path>`;
+   g+=P.filter(p=>!p.na).map(p=>`<circle cx="${X(tUc(p.c)).toFixed(1)}" cy="${Y(pc(p,sg)).toFixed(1)}" r="${p.c===cyc&&e===ens?4.5:3.2}" style="fill:${col};stroke:var(--card)" stroke-width="1.2" data-c="${p.c}" data-e="${e}"><title>${fmtc(p.c)}: ${sg.replace("No","No. ")} ${Math.round(pc(p,sg))}% (${p[sg]} of ${p.M} members)</title></circle>`).join("")});
   return `<div class="r2rp"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="chance of No. 3, 8 and 10 in each run">${g}</svg></div>`}).join("");
- box.querySelectorAll("circle[data-c]").forEach(o=>o.onclick=()=>{cyc=o.dataset.c; ens=o.dataset.e; mode=modeOf(ens)||mode; NOSAME=null; sel=null; selH=null; head(); load()});
+ const lg=box.closest(".tlcard").querySelector(".r2rlg");
+ if(lg&&!lg.querySelector(".nalg")&&box.querySelector("rect.na")) lg.insertAdjacentHTML("beforeend",`<span class="nalg"><b style="color:var(--mut)">▨</b> not available (DeepMind had no storm near Hong Kong to follow)</span>`);
+ box.querySelectorAll("[data-c]").forEach(o=>o.onclick=()=>{cyc=o.dataset.c; ens=o.dataset.e; mode=modeOf(ens)||mode; NOSAME=null; sel=null; selH=null; head(); load()});
 }
 function load(){
  BIN=null;
@@ -528,6 +538,8 @@ function load(){
   const a=$("#toAifs"); if(a)a.onclick=e=>{e.preventDefault();NOSAME=null;mode="ai";ens="aifsens";sel=null;selH=null;head();load()};
   const b=$("#toLast"); if(b)b.onclick=e=>{e.preventDefault();cyc=last;sel=null;selH=null;head();load()};
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";$("#maphint").textContent="";return}
+ if(NAv(d)){$("#status").innerHTML=`<div class="ans na"><div class="k">Highest signal</div><div class="badge">Not available</div><div class="v">DeepMind had no storm near Hong Kong to follow in this run. It only forecasts storms that have already formed, so this is not a forecast of no threat.</div></div>`+(window.HK_DEMO?"":r2rCard());
+  ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";drawR2R();return}
  if(d.quiet){$("#status").innerHTML=BASIC?`<div class="bcard"><div class="bh">No storm near Hong Kong</div><div class="bv">No tropical cyclone is forecast to come within 800 km of Hong Kong.</div></div>`:`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">No threat</div><div class="v">No member's storm comes within 800 km of Hong Kong; the closest is ${Math.round(d.min_dist_km)} km.</div></div>`;
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";return}
  const src=(d.sources||[]).includes("s1")?"s1":"s1", MJ=Math.floor((d.members||51)/2)+1;
@@ -590,7 +602,7 @@ function load(){
    hcases.forEach(c=>{const y=HKOEV[c]["L"+L];rows.push([`HKO ${c.split(" ")[0]}`,y?`<b>${hkS(y[0])} → ${hkS(y[1])}</b> · ${Math.round(y[2])}&nbsp;h`:"not issued"])});
    return `<div class="lv" style="--c:${col}"><h3>${lab}</h3><dl>${rows.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl></div>`};
   tb=`<h2 class="sech">The forecast</h2><div class="hero">${ansS}${hkoS}${ansW}${hkoS?hkoW||"<div></div>":""}</div><h2 class="sech">When</h2><div class="tlcard"><div class="k">Timeline · Hong Kong time</div><div id="tl"></div></div>`
-   +(window.HK_DEMO?"":`<h2 class="sech">Trend</h2><div class="tlcard"><div class="k">Run to run · chance of each signal</div><div class="r2rlg"><span><b style="color:var(--no3)">—</b> No. 3</span><span><b style="color:var(--no8)">—</b> No. 8</span><span><b style="color:var(--no10)">—</b> No. 10</span><span>- - 50%</span>${casesOf(cyc).some(c=>HKOEV[c]&&HKOEV[c].L3)?`<span><b style="opacity:.35">█</b> HKO No. 3 or higher up</span>`:""}</div><div id="r2r"></div><p class="note" style="margin:2px 0 0">Each dot is one run; click a dot to open that run.</p></div>`)
+   +(window.HK_DEMO?"":r2rCard())
    +`<details class="nums"><summary>Numbers per signal</summary><div class="lvgrid">${LV.map(card).join("")}</div>`
    +(E?"":`<p class="note">start, end and hours: not in this run's data</p>`)
    +`<p class="note">${one?"a signal counts when the run's chance reaches":"members with a chance of"} ≥ 0.30 (No. 10: ≥ 0.40) at any hour · times HKT${one?"":", median over those members (10–90% below)"}`+`</p></details>`;
