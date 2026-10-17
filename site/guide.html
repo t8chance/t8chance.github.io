@@ -350,5 +350,6 @@ const close=()=>lb.classList.remove("on"); lb.addEventListener("click",close); a
  let m0="basic"; try{m0=localStorage.getItem("hk_mode")||"basic"}catch(e){} set(m0,false);
  B.forEach(b=>b.onclick=()=>set(b.dataset.t,true))})();
 </script>
+<script src="credits.js"></script>
 <a id="langsw" class="langsw" href="guide-zh.html" lang="zh-Hant">中文</a><script>(function(){var a=document.getElementById("langsw");if(!a)return;if(window.top!==window.self){a.style.display="none";return}a.href=a.getAttribute("href")+location.search+location.hash;a.addEventListener("click",function(){try{localStorage.setItem("hk_lang","zh")}catch(e){}})})();</script></body>
 </html>
