@@ -100,6 +100,8 @@ html.demo .sech{display:none} #mapexp{display:none} .mapbar .mapnav{margin:0 0 0
 .r2rctl{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:0 0 8px}.r2rctl .seg button{padding:5px 11px;font-size:13px}
 .r2rall .r2rlg .sg{display:none}.r2rlgA{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--ink);margin:4px 0 0}.r2rlgA svg{vertical-align:middle;margin-right:4px}#r2r .r2rlgA svg{display:inline-block;width:38px;height:12px}
 .r2rallnote{margin:2px 0 0;font-size:13px;color:var(--mut)}
+#r2r{position:relative}.r2rtip{position:absolute;z-index:6;pointer-events:none;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font-size:13px;line-height:1.5;box-shadow:var(--shadow);white-space:nowrap}
+.r2rtip b{display:block;font-weight:700;margin-bottom:2px}.r2rtip i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}.r2rtip .mu{color:var(--mut)}#r2r .r2rtip svg{display:inline-block;width:16px;height:10px}
 #tl svg{border:0;border-radius:0;background:transparent;box-shadow:none}
 .tlleg{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:12.5px;color:var(--mut);margin-top:8px}
 .tlleg i{display:inline-block;width:22px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
@@ -168,7 +170,7 @@ footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin
 </style><style>.langsw{position:fixed;top:10px;right:12px;z-index:60;font:600 14px/1 system-ui,-apple-system,sans-serif;padding:8px 13px;border-radius:999px;background:#fff;color:#13202b;border:1px solid #c9d2db;text-decoration:none;box-shadow:0 1px 4px rgba(0,0,0,.12)}@media (prefers-color-scheme:dark){.langsw{background:#1d2731;color:#e8eef3;border-color:#3a4652}} html.demo .langsw{display:none}</style></head><body>
 <div class="wrap">
 <header class="mast"><h1>Hong Kong typhoon signal forecasts</h1>
-<nav aria-label="pages"><a class="tour" href="guide.html">New here? Take the tour</a><a href="verify.html">How good is it?</a><a href="ideas.html">Ideas</a></nav>
+<nav aria-label="pages"><a class="tour" href="guide.html">New here? Take the tour</a><a href="verify.html">How good is it?</a><a href="ranking.html">Ranking</a><a href="ideas.html">Ideas</a></nav>
 <p class="disc">ECMWF ensemble forecasts turned into Hong Kong signal chances. Research output — the Hong Kong Observatory is the only authority for actual signals.</p></header>
 
  <div class="toolbar">
@@ -197,7 +199,7 @@ footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin
   <span id="ptime" class="note" style="margin:0;min-width:250px;font-variant-numeric:tabular-nums"></span>
   <select id="speed" title="animation speed"><option value="6">6 h per second</option><option value="12" selected>12 h per second</option><option value="24">24 h per second</option></select>
  </div>
- <div class="mapkey" id="mapkey"><span class="kh">Signal along each track</span><span><i data-lv="1"></i>No. 1</span><span><i data-lv="3"></i>No. 3</span><span><i data-lv="8"></i>No. 8</span><span><i data-lv="9"></i>No. 9</span><span><i data-lv="10"></i>No. 10</span><span><i data-lv="0"></i>none</span><span><i class="kdash"></i><b id="kdet">deterministic run</b></span><span><i class="kthin"></i>other tropical cyclones in the same forecast</span><span class="kn">a signal counts at chance ≥ 0.30 (No. 10: ≥ 0.40)</span></div>
+ <div class="mapkey" id="mapkey"><span class="kh">Signal along each track</span><span><i data-lv="1"></i>No. 1</span><span><i data-lv="3"></i>No. 3</span><span><i data-lv="8"></i>No. 8</span><span><i data-lv="9"></i>No. 9</span><span><i data-lv="10"></i>No. 10</span><span><i data-lv="0"></i>none</span><span><i class="kdash"></i><b id="kdet">deterministic run</b></span><span><i class="kthin"></i>other tropical cyclones in the same forecast</span></div>
  <p class="note" id="maphint">Tap or click a line to follow one member.</p>
  </div>
 
@@ -250,22 +252,24 @@ const HKOSEQ={"Mitag 2025":[["2025-09-17T13:20","2025-09-19T01:20",1],["2025-09-
 const HKOSH={"Noul 2026":[1,0],"Mitag 2025":[0,0],"Ragasa 2025":[3,1],"Matmo 2025":[0,0],"Fengshen 2025":[0,0],"Maliksi 2024":[0,0],"Yagi 2024":[0,0],"Toraji 2024":[0,0],"Wutip 2025":[0,0],"Wipha 2025":[2,1],"Tapah 2025":[1,0],"Ewiniar 2018":[0,0],"Son-Tinh 2018":[0,0],"Bebinca 2018":[0,0],"Barijat 2018":[0,0],"Mangkhut 2018":[5,2],"Yutu 2018":[0,0],"Wipha 2019":[0,0],"Kajiki 2019":[0,0],"Nuri 2020":[0,0],"Sinlaku 2020":[0,0],"Higos 2020":[1,0],"Nangka 2020":[0,0],"Saudel 2020":[0,0],"Cempaka 2021":[0,0],"Lupit 2021":[0,0],"Lionrock 2021":[1,0],"Kompasu 2021":[0,0],"Chaba 2022":[1,0],"Mulan 2022":[0,0],"Ma-On 2022":[0,0],"Nesat 2022":[0,0],"Nalgae 2022":[1,0],"Kammuri 2008":[1,0],"Nuri 2008":[2,0],"Hagupit 2008":[1,0],"Molave 2009":[1,0],"Goni 2009":[0,0],"Koppu 2009":[1,0],"Nesat 2011":[0,0],"Doksuri 2012":[0,0],"Vicente 2012":[2,1],"Kai-Tak 2012":[0,0],"Utor 2013":[0,0],"Usagi 2013":[1,0],"Kalmaegi 2014":[1,0],"Linfa 2015":[0,0],"Nida 2016":[0,0],"Haima 2016":[0,0],"Merbok 2017":[0,0],"Roke 2017":[0,0],"Hato 2017":[2,1],"Pakhar 2017":[1,0],"Khanun 2017":[0,0],"Talim 2023":[0,0],"Saola 2023":[2,1],"Koinu 2023":[0,0]};
 const HKOGALE={"Noul 2026":3,"Mitag 2025":0,"Ragasa 2025":4,"Matmo 2025":1,"Fengshen 2025":0,"Maliksi 2024":0,"Yagi 2024":1,"Toraji 2024":0,"Wutip 2025":0,"Wipha 2025":4,"Tapah 2025":3,"Ewiniar 2018":1,"Son-Tinh 2018":1,"Bebinca 2018":0,"Barijat 2018":0,"Mangkhut 2018":6,"Yutu 2018":0,"Wipha 2019":1,"Kajiki 2019":1,"Nuri 2020":0,"Sinlaku 2020":1,"Higos 2020":2,"Nangka 2020":0,"Saudel 2020":0,"Cempaka 2021":0,"Lupit 2021":0,"Lionrock 2021":2,"Kompasu 2021":1,"Chaba 2022":1,"Mulan 2022":1,"Ma-On 2022":1,"Nesat 2022":0,"Nalgae 2022":1,"Kammuri 2008":2,"Nuri 2008":4,"Hagupit 2008":5,"Molave 2009":3,"Goni 2009":1,"Koppu 2009":4,"Nesat 2011":3,"Doksuri 2012":1,"Vicente 2012":5,"Kai-Tak 2012":1,"Utor 2013":2,"Usagi 2013":3,"Kalmaegi 2014":4,"Linfa 2015":0,"Nida 2016":3,"Haima 2016":3,"Merbok 2017":2,"Roke 2017":0,"Hato 2017":5,"Pakhar 2017":4,"Khanun 2017":1,"Talim 2023":1,"Saola 2023":4,"Koinu 2023":1};
 const HKOWIND={"Noul 2026":[93,67,53,83,55,37,38,62],"Mitag 2025":[48,46,35,38,38,16,15,26],"Ragasa 2025":[121,89,62,85,102,42,51,46],"Matmo 2025":[79,48,46,43,51,28,30,39],"Fengshen 2025":[46,32,19,44,40,19,30,21],"Maliksi 2024":[46,48,33,45,40,30,24,32],"Yagi 2024":[80,54,40,40,53,27,29,28],"Toraji 2024":[56,30,30,30,46,26,20,23],"Wutip 2025":[55,47,32,49,42,30,27,42],"Wipha 2025":[119,87,56,73,89,40,48,44],"Tapah 2025":[99,67,61,54,69,33,35,55],"Ewiniar 2018":[66,48,37,33,43,27,20,33],"Son-Tinh 2018":[71,51,38,52,48,26,27,39],"Bebinca 2018":[61,40,29,32,36,17,19,27],"Barijat 2018":[45,40,29,35,38,21,19,20],"Mangkhut 2018":[173,115,90,110,118,58,62,63],"Yutu 2018":[41,36,24,37,42,22,29,28],"Wipha 2019":[87,60,47,53,56,31,29,43],"Kajiki 2019":[63,39,32,36,42,24,22,26],"Nuri 2020":[57,46,40,35,49,26,24,30],"Sinlaku 2020":[77,57,45,42,51,24,28,33],"Higos 2020":[108,68,56,38,54,29,29,39],"Nangka 2020":[60,48,37,30,53,28,22,26],"Saudel 2020":[48,32,22,41,44,22,29,22],"Cempaka 2021":[57,38,32,36,46,19,22,23],"Lupit 2021":[47,36,24,48,32,15,18,23],"Lionrock 2021":[94,63,46,44,56,33,39,33],"Kompasu 2021":[76,51,40,48,56,30,37,30],"Chaba 2022":[89,60,42,52,57,33,35,48],"Mulan 2022":[78,50,39,30,46,27,30,32],"Ma-On 2022":[87,49,45,45,62,28,29,45],"Nesat 2022":[60,40,40,53,48,25,35,27],"Nalgae 2022":[92,55,37,47,57,27,34,32],"Kammuri 2008":[89,62,55,54,66,37,37,42],"Nuri 2008":[99,83,54,59,96,55,45,63],"Hagupit 2008":[113,81,67,68,82,42,45,46],"Molave 2009":[71,75,61,99,55,50,49,59],"Goni 2009":[71,49,41,36,44,29,28,28],"Koppu 2009":[112,86,76,56,79,41,45,46],"Nesat 2011":[85,78,53,58,66,36,35,39],"Doksuri 2012":[72,57,50,47,62,31,36,37],"Vicente 2012":[140,96,85,68,82,46,47,51],"Kai-Tak 2012":[75,52,44,38,55,27,28,30],"Utor 2013":[77,63,50,43,53,33,37,43],"Usagi 2013":[90,68,51,85,40,37,35,52],"Kalmaegi 2014":[93,78,50,68,66,29,43,40],"Linfa 2015":[50,49,35,44,36,26,16,23],"Nida 2016":[78,81,58,72,55,44,32,54],"Haima 2016":[75,71,50,75,42,29,25,56],"Merbok 2017":[66,63,46,57,56,28,25,38],"Roke 2017":[37,31,28,36,31,18,17,24],"Hato 2017":[133,103,81,78,80,45,49,55],"Pakhar 2017":[113,76,64,62,75,38,42,43],"Khanun 2017":[79,51,39,45,58,30,35,24],"Talim 2023":[87,57,43,42,51,27,32,37],"Saola 2023":[126,75,57,81,94,48,50,53],"Koinu 2023":[76,40,36,42,49,26,27,26]};
-const RANK8=[["Mangkhut",2018,98.6,10],["Hato",2017,78.0,10],["Vicente",2012,76.9,10],["Ragasa",2025,74.8,10],["Saola",2023,73.0,10],["Wipha",2025,69.5,10],["Nuri",2008,69.2,9],["Hagupit",2008,68.0,8],["Koppu",2009,67.6,8],["Molave",2009,64.9,9],["Pakhar",2017,64.1,8],["Noul",2026,61.0,9],["Nida",2016,59.2,8],["Tapah",2025,59.1,8],["Kalmaegi",2014,58.4,8],["Usagi",2013,57.2,8],["Nesat",2011,56.2,8],["Fengshen",2008,55.8,8],["Kammuri",2008,55.2,8],["Haima",2016,52.9,8],["Higos",2020,52.6,9],["Pabuk",2007,52.5,8],["Chaba",2022,52.0,8],["Lionrock",2021,51.0,8],["Neoguri",2008,50.9,3],["Wipha",2019,50.8,8],["Utor",2013,49.9,8],["Doksuri",2012,49.0,8],["Ma-On",2022,48.8,8],["Nalgae",2022,47.6,8],["Merbok",2017,47.4,8],["Talim",2023,47.0,8],["Haima",2011,46.9,3],["Kompasu",2021,46.0,8],["Matmo",2025,45.5,3],["Mujigae",2015,45.4,3],["Khanun",2017,45.1,8],["Rammasun",2014,44.8,3],["Sinlaku",2020,44.6,3],["Son-Tinh",2018,44.0,3],["Yagi",2024,43.9,8],["Kai-Tak",2012,43.6,8],["Jebi",2013,43.1,3],["Sarika",2016,42.0,3],["Mulan",2022,41.5,3],["Nesat",2022,41.0,3],["Goni",2009,40.8,8],["Nock-Ten",2011,40.5,3],["Wutip",2025,40.5,3],["Koinu",2023,40.2,9],["Ewiniar",2018,38.4,3],["Nuri",2020,38.4,3],["Fanapi",2010,38.1,3],["Nangka",2020,38.0,8],["Megi",2010,37.6,3],["Rumbia",2013,37.2,3],["Maliksi",2024,37.2,3],["Chanthu",2010,36.9,3],["Bebinca",2013,36.5,3],["Mujigae",2009,35.9,3],["Dianmu",2016,35.9,3],["Kajiki",2019,35.5,3],["Soudelor",2009,35.2,3],["Linfa",2015,34.9,8],["Mawar",2017,34.1,3],["Cempaka",2021,34.1,3],["Nangka",2009,32.9,3],["Mitag",2025,32.8,3],["Bebinca",2018,32.6,3],["Toraji",2024,32.6,8],["Saudel",2020,32.5,3],["Nalgae",2011,32.4,3],["Yutu",2018,32.4,3],["Fengshen",2025,31.4,3],["Barijat",2018,30.9,3],["Lupit",2021,30.4,3],["Trami",2024,30.2,3],["Talim",2012,28.2,3],["Roke",2017,27.8,8],["Yinxing",2024,26.8,3]], R8N=RANK8.length, R8MIN=55;
+const RANK8=[["Mangkhut",2018,98.3,10],["Hato",2017,78.1,10],["Vicente",2012,76.9,10],["Ragasa",2025,75.1,10],["Saola",2023,73.0,10],["Wipha",2025,69.5,10],["Nuri",2008,69.3,9],["Koppu",2009,68.6,8],["Hagupit",2008,68.3,8],["Molave",2009,64.7,9],["Pakhar",2017,64.1,8],["Noul",2026,61.0,9],["Nida",2016,59.9,8],["Tapah",2025,59.1,8],["Kalmaegi",2014,58.4,8],["Usagi",2013,57.4,8],["Nesat",2011,56.1,8],["Fengshen",2008,56.0,8],["Kammuri",2008,55.3,8],["Haima",2016,52.8,8],["Higos",2020,52.6,9],["Chaba",2022,52.0,8],["Lionrock",2021,51.0,8],["Neoguri",2008,50.9,3],["Wipha",2019,50.8,8],["Utor",2013,50.0,8],["Pabuk",2007,49.1,8],["Ma-On",2022,48.8,8],["Doksuri",2012,48.5,8],["Nalgae",2022,47.9,8],["Merbok",2017,47.2,8],["Talim",2023,47.0,8],["Haima",2011,46.9,3],["Kompasu",2021,46.0,8],["Matmo",2025,45.5,3],["Mujigae",2015,45.4,3],["Khanun",2017,45.2,8],["Rammasun",2014,44.8,3],["Sinlaku",2020,44.6,3],["Son-Tinh",2018,44.0,3],["Yagi",2024,44.0,8],["Kai-Tak",2012,43.5,8],["Jebi",2013,43.1,3],["Sarika",2016,42.0,3],["Mulan",2022,41.5,3],["Goni",2009,41.1,8],["Nesat",2022,41.0,3],["Wutip",2025,40.5,3],["Nock-Ten",2011,40.5,3],["Koinu",2023,40.3,9],["Ewiniar",2018,38.4,3],["Nuri",2020,38.4,3],["Fanapi",2010,38.1,3],["Nangka",2020,38.0,8],["Megi",2010,37.6,3],["Rumbia",2013,37.2,3],["Maliksi",2024,37.2,3],["Chanthu",2010,36.9,3],["Bebinca",2013,36.5,3],["Mujigae",2009,35.9,3],["Dianmu",2016,35.9,3],["Kajiki",2019,35.5,3],["Soudelor",2009,35.2,3],["Linfa",2015,34.2,8],["Mawar",2017,34.1,3],["Cempaka",2021,34.1,3],["Nangka",2009,32.9,3],["Mitag",2025,32.8,3],["Toraji",2024,32.6,8],["Bebinca",2018,32.6,3],["Saudel",2020,32.5,3],["Yutu",2018,32.4,3],["Nalgae",2011,32.4,3],["Fengshen",2025,31.4,3],["Barijat",2018,30.9,3],["Lupit",2021,30.4,3],["Trami",2024,30.2,3],["Talim",2012,28.2,3],["Roke",2017,27.5,8],["Yinxing",2024,26.8,3]], R8N=RANK8.length, R8MIN=55;
 const r8key=r=>`${r[0]} ${r[1]}`.toLowerCase(), ordE=n=>n+((n%100>=11&&n%100<=13)?"th":({1:"st",2:"nd",3:"rd"}[n%10]||"th"));
 const r8rank=(v,skip)=>1+RANK8.filter(r=>r8key(r)!==skip&&r[2]>v).length;
 const r8near=(v,skip)=>{const o=RANK8.filter(r=>r8key(r)!==skip), up=o.filter(r=>r[2]>v).slice(-3).reverse(), dn=o.filter(r=>r[2]<=v).slice(0,3);
  const f=r=>`${r[0]} ${r[1]} ${r[2].toFixed(1)}`; return `<div class="r8s">Similar storms — stronger: ${up.length?up.map(f).join(", "):"none"} · weaker: ${dn.length?dn.map(f).join(", "):"none"}</div>`};
-function rank8Obs(c){const w=HKOWIND[c]; if(!w)return ""; const v=w.reduce((a,b)=>a+b,0)/w.length, k=c.toLowerCase();
+const r8hko=(c,w)=>{const x=RANK8.find(r=>r8key(r)===c.toLowerCase()); return x?x[2]:w.reduce((a,b)=>a+b,0)/w.length};
+function rank8Obs(c){const w=HKOWIND[c]; if(!w)return ""; const v=r8hko(c,w), k=c.toLowerCase();
  return `<div class="r8"><div>8-station average of the highest 10-minute mean: <b>${v.toFixed(1)} km/h</b> · <b>${ordE(r8rank(v,k))}</b> of the ${R8N} storms since 2007 that brought No. 3 or higher</div>${r8near(v,k)}</div>`}
 const LT53=[46.5,40,39,38,43,27,28,30.5];
 function rank8Member(t){if(!t||!t.gst)return "";
  const val=i=>{const w=stationWind(t,i); if(w.fv!=null)return w.fv; const b=w.fb; if(!b)return 46; return ((isFinite(b[0])?b[0]:40)+(isFinite(b[1])?b[1]:130))/2};
  const lt=i=>{const w=stationWind(t,i); return w.fv==null&&(!w.fb||w.fb[1]===52)};
  const v46=SGN.reduce((a,_,i)=>a+val(i),0)/SGN.length, v=v46>=R8MIN?v46:SGN.reduce((a,_,i)=>a+(lt(i)?LT53[i]:val(i)),0)/SGN.length, skip=(casesOf(cyc)[0]||"").toLowerCase(), hk=casesOf(cyc).map(c=>[c,HKOWIND[c]]).find(x=>x[1]);
- const obs=hk?(o=>`<div class="r8s">HKO recorded ${o.toFixed(1)} km/h, ${ordE(r8rank(o,hk[0].toLowerCase()))} of the ${R8N}.</div>`)(hk[1].reduce((a,b)=>a+b,0)/hk[1].length):"";
+ const obs=hk?(o=>`<div class="r8s">HKO recorded ${o.toFixed(1)} km/h, ${ordE(r8rank(o,hk[0].toLowerCase()))} of the ${R8N}.</div>`)(r8hko(hk[0],hk[1])):"";
  const head=`8-station average in this forecast (reference only): <b>${Math.round(v)} km/h</b>`;
- if(v<R8MIN)return `<div class="r8"><div>${head}</div><div class="r8s">Below ${R8MIN} km/h: outside the top ${RANK8.filter(r=>r[2]>=R8MIN).length} of the ${R8N} storms since 2007; the forecast cannot rank weaker storms finely.</div>${obs}</div>`;
- return `<div class="r8"><div>${head} · would rank about <b>${ordE(r8rank(v,skip))}</b> of the ${R8N} storms since 2007</div>${r8near(v,skip)}${obs}</div>`}
+ const go8=`<div class="r8s"><a href="ranking.html?v=${v.toFixed(1)}&g=${t.gale!=null?Math.round(t.gale):""}&glo=${t.gale_lo??""}&ghi=${t.gale_hi??""}&f=${ens}&r=${cyc}&m=${t.m}${memLab(t.m)!=="member "+t.m?"&det="+(t.m===52?"1":"2"):""}${TR&&t.m===TR.top?"&top=1":""}&c=${encodeURIComponent(casesOf(cyc)[0]||"")}">See it in the storm ranking</a></div>`;
+ if(v<R8MIN)return `<div class="r8"><div>${head}</div><div class="r8s">Below ${R8MIN} km/h: outside the top ${RANK8.filter(r=>r[2]>=R8MIN).length} of the ${R8N} storms since 2007; the forecast cannot rank weaker storms finely.</div>${obs}${go8}</div>`;
+ return `<div class="r8"><div>${head} · would rank about <b>${ordE(r8rank(v,skip))}</b> of the ${R8N} storms since 2007</div>${r8near(v,skip)}${obs}${go8}</div>`}
 const caseOf=c=>{const p=PAST.find(p=>c>=p[0]&&c<=p[1]);return p?p[2].split(" — ")[0]:null};
 const pastOf=c=>PAST.filter(p=>c>=p[0]&&c<=p[1]).map(p=>p[2]).join(" / ");
 const SKA={"Unnamed storm (Jun) 2025":"TS0625_2025","Unnamed depression (Aug) 2025":"TD0816_2025"};
@@ -429,8 +433,9 @@ $("#allPlay").onclick=()=>{if(allPlaying){allStop();return} if(!TR)return;
  allPlaying=true; allTs=0; $("#allPlay").textContent="❚❚ pause"; allStep()};
 
 function drawTabs(){
+ if(["p3","p8","p10"].includes(tab)) tab="signal";
  if(tab==="wi"&&!(TR&&TR.tracks.some(x=>x.wix&&x.wix.length))) tab="signal";
- $("#tabs").innerHTML=[["signal","Expected signal"],["p3","Chance of No. 3"],["p8","Chance of No. 8"],["p10","Chance of No. 10"],["wi","Wind index"],["sg","Station guide"]].filter(([k])=>(k!=="wi"||(TR&&TR.tracks.some(x=>x.wix&&x.wix.length)))&&(!WH()||k==="wi"))
+ $("#tabs").innerHTML=[["signal","Expected signal"],["wi","Wind index"],["sg","Station guide"]].filter(([k])=>(k!=="wi"||(TR&&TR.tracks.some(x=>x.wix&&x.wix.length)))&&(!WH()||k==="wi"))
    .map(([k,l])=>`<button data-t="${k}" class="${k===tab?"on":""}">${l}</button>`).join(" ")
 
   +(tab==="wi"&&TR&&TR.tracks.some(x=>x.wix&&x.wix.length)?` <label class="note" style="margin:0 0 0 6px" title="the wind index averaged over all ensemble members, hour by hour"><input type="checkbox" id="wimean"${showWIMean?" checked":""}> ensemble-mean wind index</label> <label class="note" style="margin:0 0 0 6px" title="each member's highest wind index, member by member"><input type="checkbox" id="widist"${showWIDist?" checked":""}> peaks of all members</label>`:"");
@@ -544,6 +549,20 @@ function drawR2R(){const box=$("#r2r"); if(!box)return; const card=box.closest("
  const ctl=BASIC||avail.length<2?"":`<div class="r2rctl"><span class="seg" role="group" aria-label="forecast shown">${avail.map(e=>`<button type="button" data-r="${e}" class="${pick===e?"on":""}">${FSH[e]||e}</button>`).join("")}<button type="button" data-r="all" class="${pick==="all"?"on":""}">All forecasts</button></span>`
   +(pick==="all"?`<span class="seg" role="group" aria-label="signal compared">${SGc.map(([sg])=>`<button type="button" data-sg="${sg}" class="${R2RSIG===sg?"on":""}">${SGN_[sg]}</button>`).join("")}</span>`:"")+`</div>`;
  box.innerHTML=ctl+ens_.map(e=>e==="all"?all(R2RSIG):one(e)).join("");
+ const tip=document.createElement("div"); tip.className="r2rtip"; tip.hidden=true; box.appendChild(tip);
+ box.querySelectorAll(".r2rp svg").forEach((svg,k)=>{const kind=ens_[k], hl=document.createElementNS("http://www.w3.org/2000/svg","line");
+  hl.setAttribute("y1",T); hl.setAttribute("y2",H-B); hl.setAttribute("style","stroke:var(--ink)"); hl.setAttribute("stroke-width","1"); hl.setAttribute("opacity",".35"); hl.setAttribute("pointer-events","none"); hl.style.display="none"; svg.appendChild(hl);
+  const has=kind==="all"?runs.filter(c=>avail.some(e=>nRun(c,e))):runs.filter(c=>nRun(c,kind));
+  const row=(col,txt,sh)=>`<div>${sh?`<svg width="16" height="10" viewBox="0 0 16 10" style="vertical-align:-1px;margin-right:5px">${r2rMk(sh,8,5,3.4,col,"")}${r2rMkEnd(sh)}</svg>`:`<i style="background:${col}"></i>`}<span>${txt}</span></div>`;
+  const val=(p,sg,lab)=>!p?`${lab}: no run`:p.na?`${lab}: not available`:`${lab}: ${Math.round(pc(p,sg))}% (${p[sg]} of ${p.M} members)`;
+  svg.addEventListener("pointermove",ev=>{if(ev.pointerType!=="mouse"||!has.length)return; const m=svg.getScreenCTM(); if(!m)return;
+   const x=(ev.clientX-m.e)/m.a, t=t0+(x-L)/(W-L-R)*(t1-t0), c=has.reduce((b,q)=>Math.abs(tUc(q)-t)<Math.abs(tUc(b)-t)?q:b,has[0]), xc=X(tUc(c));
+   hl.setAttribute("x1",xc); hl.setAttribute("x2",xc); hl.style.display="";
+   tip.innerHTML=kind==="all"?`<b>${fmtc(c)} · ${SGN_[R2RSIG]}</b>`+avail.map(e=>row(SGc.find(s=>s[0]===R2RSIG)[1],val(nRun(c,e),R2RSIG,FSH[e]||e),(FSTY[e]||[])[1]||"circle")).join("")
+    :`<b>${fmtc(c)} · ${FSH[kind]||kind}</b>`+(p=>p&&p.na?`<div class="mu"><span>not available</span></div>`:SGc.map(([sg,col])=>row(col,val(p,sg,SGN_[sg]))).join(""))(nRun(c,kind));
+   tip.hidden=false; const bb=box.getBoundingClientRect(), tw=tip.offsetWidth, th=tip.offsetHeight;
+   let lx=ev.clientX-bb.left+14; if(lx+tw>bb.width) lx=ev.clientX-bb.left-tw-14; tip.style.left=Math.max(0,lx)+"px"; tip.style.top=Math.max(0,ev.clientY-bb.top-th/2)+"px"});
+  svg.addEventListener("pointerleave",()=>{tip.hidden=true; hl.style.display="none"})});
  box.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{R2RSEL=b.dataset.r; drawR2R()});
  box.querySelectorAll("[data-sg]").forEach(b=>b.onclick=()=>{R2RSIG=b.dataset.sg; drawR2R()});
  const lg=card.querySelector(".r2rlg"), na_=lg&&lg.querySelector(".nalg");
@@ -659,7 +678,7 @@ function load(){
    +(window.HK_DEMO?"":r2rCard())
    +`<details class="nums"><summary>Numbers per signal</summary><div class="lvgrid">${LV.map(card).join("")}</div>`
    +(E?"":`<p class="note">start, end and hours: not in this run's data</p>`)
-   +`<p class="note">${one?"a signal counts when the run's chance reaches":"members with a chance of"} ≥ 0.30 (No. 10: ≥ 0.40) at any hour · times HKT${one?"":", median over those members (10–90% below)"}`+`</p></details>`;
+   +`<p class="note">times HKT${one?"":", median over the members giving the signal (10–90% below)"}`+`</p></details>`;
  }
  GA={members:d.members||0,one};
  const basicCard=()=>{const M=d.members||50, pc=sg=>one?(nOf(sg)?100:0):Math.round(100*nOf(sg)/M), x=topL&&E&&E[topL[0]]&&E[topL[0]].n?E[topL[0]]:null;
@@ -970,7 +989,7 @@ function drawMap(){
     opacity:on?0.9:0.35,d:o.pts.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join(" ")}))});
   path.onmouseenter=()=>$("#maphint").innerHTML=BASIC?`Closest to Hong Kong: <b>${Math.round(t.ca[0])} km</b>. Click the line to see how windy Hong Kong gets along it.`:on&&t.wf
     ?`<b>${memLab(t.m)}</b>: click anywhere on its line, drag the time bar or press play to see the storm${""} at any moment (the charts below follow).`
-    :`<b>${memLab(t.m)}</b>${top?" — most threatening":""}: closest ${Math.round(t.ca[0])} km at ${t.ca[1]}Z, peak No. 8 ${t.p8.toFixed(2)}${""}. Click to see it below.`;
+    :`<b>${memLab(t.m)}</b>${top?" — most threatening":""}: closest ${Math.round(t.ca[0])} km at ${t.ca[1]}Z, ${(lv=>lv>=3?`signal ${lv===9?"near No. 10":"No. "+lv}`:"no signal")(tierOf(t)[0])}${""}. Click to see it below.`;
   s.appendChild(path);
   if(on&&t.wf){const hit=el("path",{fill:"none",stroke:"#000","stroke-opacity":0,"stroke-width":14,d:d,"pointer-events":"stroke"});
    hit.style.cursor="crosshair";hit.onclick=clickLine;hit.onmouseenter=path.onmouseenter;s.appendChild(hit)}
@@ -992,7 +1011,7 @@ function drawMap(){
  });
 if(false&&!byI&&W>=820){const lx=W-222, items=[[1,"No. 1"],[3,"No. 3"],[8,"No. 8"],[9,"No. 9"],[10,"No. 10"],[0,"none"]];
   s.appendChild(el("rect",{x:lx-8,y:8,width:222,height:18*items.length+26,rx:5,fill:"#fff",opacity:.9,stroke:"#999","stroke-width":.6,"pointer-events":"none"}));
-  const hd=el("text",{x:lx,y:24,fill:"#111","font-size":11,"font-weight":600,"pointer-events":"none"});hd.textContent=BASIC?"signal expected along each path":"signal along each track (≥ 0.30; No. 10 ≥ 0.40)";s.appendChild(hd);
+  const hd=el("text",{x:lx,y:24,fill:"#111","font-size":11,"font-weight":600,"pointer-events":"none"});hd.textContent=BASIC?"signal expected along each path":"signal along each track";s.appendChild(hd);
   items.forEach(([k,lab],i)=>{const yy=42+18*i; s.appendChild(el("line",{x1:lx,x2:lx+26,y1:yy-4,y2:yy-4,stroke:SIGC[k],"stroke-width":3.4,"pointer-events":"none"}));
    const tx=el("text",{x:lx+34,y:yy,fill:"#111","font-size":11,"pointer-events":"none"});tx.textContent=lab;s.appendChild(tx)})}
  const TRU=truthNow();
@@ -1201,7 +1220,7 @@ if(tab==="wi"){const dd=line((TRU.wi||[]).map(([z,v])=>[isoH(z),v]));
  const flag=t.oor&&t.oor.length?` <span title="outside the range of the past storms this estimate covers: ${t.oor.join(", ")}">⚠</span>`:"";
  const hur="";
  const wind=t.gale!=null
-  ? J([t.t9===10?`<b>No. 10 tier</b> (P ${t.p10.toFixed(2)})`:t.t9===9?`<b>near No. 10</b> (P ${t.p10.toFixed(2)}, up to ${t.p10hi.toFixed(2)})`:"",
+  ? J([t.t9===10?`<b>No. 10 tier</b>`:t.t9===9?`<b>near No. 10</b>`:"",
        `gale stations <b>${nG}</b>${rng}${flag}${t.sev?` at ${t.sev[1].replace(" ","/").slice(3)}Z, ${t.sev[0]} km${""}`:""}`,
 "",
        hur,

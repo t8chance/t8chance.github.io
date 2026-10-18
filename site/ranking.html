@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Storm ranking</title>
+<meta name="description" content="Tropical cyclones since 2007 ranked by the wind at Hong Kong's eight reference stations, with this forecast placed among them.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+:root{
+ --bg:#edf1f4;--card:#fff;--soft:#e3e9ee;--ink:#13202b;--mut:#55636f;--line:#d3dbe2;--link:#1a5ea8;
+ --r10:#fbe1e4;--r9:#fdf0cf;--fc:#1a5ea8;--fcbg:#e3eefa;--no3:#c77700;--no8:#c62828;--no9:#8e2a8a;--no10:#4527a0;
+ --shadow:0 1px 2px rgba(19,32,43,.06),0 12px 32px rgba(19,32,43,.09);
+ --disp:"Barlow Condensed","Roboto Condensed","Arial Narrow",sans-serif;
+ --body:"Barlow",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang HK","Noto Sans TC",sans-serif}
+@media (prefers-color-scheme:dark){:root{
+ --bg:#0f1923;--card:#16222e;--soft:#1c2a37;--ink:#e2e9ef;--mut:#93a3b1;--line:#273746;--link:#8cbcff;
+ --r10:#3a1f26;--r9:#3a3220;--fc:#8cbcff;--fcbg:#17304a;--no3:#f0b35a;--no8:#ff7b72;--no9:#d98ad6;--no10:#b39dff;
+ --shadow:0 1px 0 rgba(255,255,255,.03);color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--body);-webkit-font-smoothing:antialiased}
+a{color:var(--link)}
+.wrap{max-width:1060px;margin:0 auto;padding:0 16px}
+.mast{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 28px;padding:24px 0 14px}
+.mast .name{font:700 clamp(24px,3vw,30px)/1.05 var(--disp);color:var(--ink);text-decoration:none}
+.mast nav{display:flex;flex-wrap:wrap;gap:4px 20px;font-size:15px;font-weight:500}
+.mast nav a{color:var(--ink);text-decoration:none}
+.mast nav a:hover,.mast nav a[aria-current]{color:var(--link);text-decoration:underline}
+h1{margin:10px 0 6px;font:700 clamp(30px,4.6vw,46px)/1.02 var(--disp);text-wrap:balance}
+.kicker{margin:0;font:600 13px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.lead{margin:0 0 16px;color:var(--mut);max-width:70ch}
+.fc{background:var(--fcbg);border:1px solid var(--fc);border-radius:14px;padding:12px 16px;margin:0 0 14px;max-width:760px}
+.fc b{color:var(--ink)}
+.ctl{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:0 0 12px}
+.seg{display:inline-flex;gap:2px;padding:3px;background:var(--soft);border-radius:12px}
+.seg button{border:0;background:transparent;border-radius:9px;padding:6px 12px;font:500 14px var(--body);color:var(--mut);cursor:pointer}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.16)}
+.tw{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-variant-numeric:tabular-nums}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+th{font:600 13px/1.25 var(--body);color:var(--mut);background:var(--soft);vertical-align:bottom;white-space:normal}
+table.nar{min-width:0}table.nar td,table.nar th{padding:7px 7px}table.nar td.l{white-space:normal}table.nar .sg{min-width:0;margin-left:4px}
+td.l,th.l{text-align:left}
+tr.s10 td{background:var(--r10)} tr.s9 td{background:var(--r9)}
+tr.fc td{background:var(--fcbg);font-weight:700;font-size:17px;border-top:2px solid var(--fc);border-bottom:2px solid var(--fc)}
+tr.me td{font-weight:700}
+.sg{display:inline-block;min-width:44px;padding:1px 7px;border-radius:999px;font:600 12px/1.6 var(--body);color:#fff}
+.sg3{background:var(--no3)}.sg8{background:var(--no8)}.sg9{background:var(--no9)}.sg10{background:var(--no10)}.sgf{background:var(--fc)}
+.mut{color:var(--mut);font-weight:400}
+.note{color:var(--mut);font-size:13.5px;margin:10px 0 0;max-width:80ch}
+.key{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--mut);margin:10px 0 0}
+.key i{display:inline-block;width:14px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px;border:1px solid var(--line)}
+main{padding:6px 0 48px}
+</style>
+<style>.langsw{position:fixed;top:10px;right:12px;z-index:60;font:600 14px/1 system-ui,-apple-system,sans-serif;padding:8px 13px;border-radius:999px;background:#fff;color:#13202b;border:1px solid #c9d2db;text-decoration:none;box-shadow:0 1px 4px rgba(0,0,0,.12)}@media (prefers-color-scheme:dark){.langsw{background:#1d2731;color:#e8eef3;border-color:#3a4652}} html.demo .langsw{display:none}</style></head>
+<body>
+<div class="wrap">
+<header class="mast"><a class="name" href="index.html">Hong Kong typhoon signal forecasts</a>
+ <nav aria-label="pages"><a href="index.html">Forecasts</a><a href="guide.html">Tour</a><a href="verify.html">How good is it?</a><a href="ranking.html" aria-current="page">Ranking</a><a href="ideas.html">Ideas</a></nav>
+</header>
+<main id="main" translate="no"></main>
+</div>
+<script src="ranking_data.js"></script>
+<script>
+(()=>{
+const ZH=/^zh/.test(document.documentElement.lang||""), T=(e,z)=>ZH?z:e;
+const SHOWCAT=false;
+const CAT={SuperT:["Super Typhoon","超強颱風"],ST:["Severe Typhoon","強颱風"],T:["Typhoon","颱風"],STS:["Severe Tropical Storm","強烈熱帶風暴"],TS:["Tropical Storm","熱帶風暴"],TD:["Tropical Depression","熱帶低氣壓"]};
+const DIRZ={N:"北",NNE:"東北偏北",NE:"東北",ENE:"東北偏東",E:"東",ESE:"東南偏東",SE:"東南",SSE:"東南偏南",S:"南",SSW:"西南偏南",SW:"西南",WSW:"西南偏西",W:"西",WNW:"西北偏西",NW:"西北",NNW:"西北偏北"};
+const SIGZ={3:"三號",8:"八號",9:"九號",10:"十號"};
+const FN={ifsens:["ECMWF physics (IFS)","ECMWF 物理模式（IFS）"],aifsens:["ECMWF AI (AIFS)","ECMWF 人工智能模式（AIFS）"],deepmind:["Google DeepMind (AI)","Google DeepMind（人工智能）"],
+          tigge:["Old ECMWF (physics)","舊 ECMWF 物理模式"],pangu:["Pangu-Weather (AI)","盤古氣象（人工智能）"]};
+const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const runLab=r=>r&&/^\d{10}$/.test(r)?T(`${+r.slice(6,8)} ${MON[+r.slice(4,6)-1]} ${r.slice(0,4)} ${r.slice(8,10)}Z`,`${r.slice(0,4)}年${+r.slice(4,6)}月${+r.slice(6,8)}日 ${r.slice(8,10)}時 UTC`):"";
+const Q=new URLSearchParams(location.search), num=k=>{const x=parseFloat(Q.get(k)); return isFinite(x)?x:null};
+const F={v:num("v"),g:num("g"),glo:num("glo"),ghi:num("ghi"),f:Q.get("f"),r:Q.get("r"),m:Q.get("m"),top:Q.get("top")==="1",c:(Q.get("c")||"").trim()};
+const mLab=()=>Q.get("det")==="1"?T("deterministic run","高解像度預報"):Q.get("det")==="2"?T("control run","控制預報"):T(`member ${F.m}`,`成員 ${F.m}`);
+const ord=n=>ZH?`第 ${n} 位`:n+((n%100>=11&&n%100<=13)?"th":({1:"st",2:"nd",3:"rd"}[n%10]||"th"));
+let ALL=false;
+const nm=r=>ZH?`${r.zh}`:r.n, key=r=>`${r.n} ${r.y}`.toLowerCase();
+function draw(){
+ const rows=(window.RANKT||[]).filter(r=>ALL||r.sig>=8), me=F.c.toLowerCase();
+ const fcRow=F.v!=null, rk=fcRow?1+rows.filter(r=>r.a10>F.v).length:null, n=rows.length+(fcRow?1:0);
+ const gTxt=F.g==null?"–":`${Math.round(F.g)}${F.glo!=null&&F.ghi!=null&&F.ghi>F.glo?` <span class="mut">(${F.glo}–${F.ghi})</span>`:""}`;
+ const fcLab=fcRow?T(`This forecast · ${(FN[F.f]||[F.f||""])[0]}${F.r?", "+runLab(F.r):""}${F.m?`, ${mLab()}${F.top?" (most threatening)":""}`:""}`,
+                     `本預報 · ${(FN[F.f]||[,F.f||""])[1]}${F.r?"，"+runLab(F.r):""}${F.m?`，${mLab()}${F.top?"（最具威脅）":""}`:""}`):"";
+ let h=`<p class="kicker">${T("Storm ranking","熱帶氣旋排名")}</p><h1>${T("How windy did Hong Kong get?","香港風力有多強？")}</h1>`
+  +`<p class="lead">${T(`Tropical cyclones since 2007 that brought Signal ${ALL?"No. 3":"No. 8"} or higher, ranked by the average over the Hong Kong Observatory's 8 reference stations of each station's highest 10-minute mean wind.`,
+                       `2007 年以來令天文台發出${ALL?"三號":"八號"}或以上信號的熱帶氣旋，按天文台 8 個指定參考測風站各自錄得的最高十分鐘平均風速的平均值排列。`)}</p>`;
+ if(fcRow) h+=`<div class="fc">${T(`<b>${fcLab}</b><br>8-station average about <b>${Math.round(F.v)} km/h</b>, gale at <b>${gTxt}</b> of the 8 stations — it would rank <b>${ord(rk)}</b> of the ${n} below.${F.v<55?" Below 55 km/h this estimate cannot place weaker storms finely: a rough position only.":""}`,
+                                    `<b>${fcLab}</b><br>8 站平均約 <b>${Math.round(F.v)} 公里/小時</b>，<b>${gTxt}</b> 個測風站達烈風 —— 在下表 ${n} 個熱帶氣旋中排${ord(rk)}。${F.v<55?"低於每小時 55 公里時，這個估算未能精確區分較弱的熱帶氣旋，位置僅供大概參考。":""}`)}</div>`;
+ h+=`<div class="ctl"><span class="seg" role="group" aria-label="${T("storms shown","顯示")}"><button type="button" data-a="0" class="${ALL?"":"on"}">${T("No. 8 or higher","八號或以上")} (${(window.RANKT||[]).filter(r=>r.sig>=8).length})</button><button type="button" data-a="1" class="${ALL?"on":""}">${T("No. 3 or higher","三號或以上")} (${(window.RANKT||[]).length})</button></span></div>`;
+ const NAR=innerWidth<700; draw.nar=NAR;
+ const sgB=sig=>`<span class="sg sg${sig}">${ZH?SIGZ[sig]:"No. "+sig}</span>`;
+ const headN=`<tr><th>#</th><th class="l">${T("Tropical cyclone","熱帶氣旋")}</th><th>${T("8-station average, highest 10-min mean (km/h)","8 站最高十分鐘平均風速的平均（公里/小時）")}</th><th>${T("Stations at gale (of 8)","達烈風站數")}</th></tr>`;
+ const head=`<tr><th rowspan="2">#</th><th rowspan="2" class="l">${T("Tropical cyclone","熱帶氣旋")}</th><th rowspan="2">${T("Highest signal","最高信號")}</th>`
+  +`<th colspan="${SHOWCAT?2:1}">${T("At closest approach","最接近香港天文台時")}</th><th colspan="2">${T("8-station average of the highest mean wind (km/h)","8 個參考測風站最高平均風速的平均值（公里/小時）")}</th><th rowspan="2">${T("Stations reaching gale (of 8)","達烈風站數（8 站中）")}</th></tr>`
+  +`<tr>${SHOWCAT?`<th>${T("Category","強度")}</th>`:""}<th>${T("Direction and distance (km)","方位及距離（公里）")}</th><th>${T("60-minute","60 分鐘")}</th><th>${T("10-minute","10 分鐘")}</th></tr>`;
+ const rowN=(r,i)=>{const sig=r.sig===10?10:r.sig===9?9:r.sig>=8?8:3;
+  return `<tr class="${sig===10?"s10":sig===9?"s9":""}${me&&key(r)===me?" me":""}"><td>${i}</td><td class="l">${r.y} ${nm(r)}${sgB(sig)}${me&&key(r)===me?` <span class="mut">${T("· this storm","· 本熱帶氣旋")}</span>`:""}</td><td><b>${r.a10.toFixed(1)}</b></td><td>${r.g}</td></tr>`};
+ const rowH=(r,i)=>{const sig=r.sig===10?10:r.sig===9?9:r.sig>=8?8:3, pre=r.pre?"<sup>#</sup>":"";
+  return `<tr class="${sig===10?"s10":sig===9?"s9":""}${me&&key(r)===me?" me":""}"><td>${i}</td><td class="l">${r.y} ${nm(r)}${me&&key(r)===me?` <span class="mut">${T("· this storm","· 本熱帶氣旋")}</span>`:""}</td>`
+   +`<td><span class="sg sg${sig}">${ZH?SIGZ[sig]:"No. "+sig}</span></td>`
+   +(SHOWCAT?`<td>${r.cat?(ZH?CAT[r.cat][1]:CAT[r.cat][0])+pre:"–"}</td>`:"")
+   +`<td>${r.dir?(ZH?DIRZ[r.dir]:r.dir)+pre:"–"} ${r.km!=null?r.km+pre:""}</td><td>${r.a60!=null?r.a60.toFixed(1):"–"}</td><td><b>${r.a10.toFixed(1)}</b></td><td>${r.g}</td></tr>`};
+ let body="", i=0, put=false;
+ rows.forEach(r=>{if(fcRow&&!put&&r.a10<=F.v){i++; put=true; body+=fcTr(i)} i++; body+=NAR?rowN(r,i):rowH(r,i)});
+ if(fcRow&&!put){i++; body+=fcTr(i)}
+ function fcTr(k){if(NAR)return `<tr class="fc"><td>${k}</td><td class="l">${T("This forecast","本預報")} <span class="mut">${F.m?mLab():""}</span></td><td>${Math.round(F.v)}</td><td>${gTxt}</td></tr>`;
+  return `<tr class="fc"><td>${k}</td><td class="l">${T("This forecast","本預報")} <span class="mut">${F.m?mLab():""}</span></td><td><span class="sg sgf">${T("forecast","預測")}</span></td>`
+  +(SHOWCAT?"<td>–</td>":"")+`<td>–</td><td>–</td><td>${Math.round(F.v)}</td><td>${gTxt}</td></tr>`}
+ h+=`<div class="tw"><table${NAR?' class="nar"':""}><thead>${NAR?headN:head}</thead><tbody>${body}</tbody></table></div>`;+(NAR?`<p class="note">${T(`On a wider screen the table also shows the ${SHOWCAT?"category, ":""}direction and distance at closest approach and the 60-minute average.`,`在較闊的屏幕上，此表亦會顯示最接近時的${SHOWCAT?"強度、":""}方位及距離和 60 分鐘平均值。`)}</p>`:"");
+ h+=`<div class="key"><span><i style="background:var(--r10)"></i>${T("No. 10","十號")}</span><span><i style="background:var(--r9)"></i>${T("No. 9","九號")}</span>${fcRow?`<span><i style="background:var(--fcbg);border-color:var(--fc)"></i>${T("this forecast","本預報")}</span>`:""}</div>`;
+ h+=`<p class="note">${T(`Ranked by the 10-minute average, the one this site estimates (the Observatory's own table ranks by the 60-minute column). No. 8 or higher: the Observatory's 2007–2026 comparison table (cases in 2012 or earlier use the Lau Fau Shan station; # = preliminary). No. 3: the Observatory's tropical cyclone reports as compiled on Wikipedia; the Observatory's table gives no 60-minute average${SHOWCAT?" or category":""} for them.${fcRow?" The forecast row is a reference only: one member's estimated station winds, averaged.":""}`,
+  `按 10 分鐘平均值排列（即本網站估算的數值；天文台的原表按 60 分鐘欄排列）。八號或以上：天文台 2007 至 2026 年比較表（2012 年或以前的個案以流浮山測風站統計；# 為初步數據）。三號：天文台熱帶氣旋報告（維基百科整理）；天文台的表沒有這些熱帶氣旋的 60 分鐘平均值${SHOWCAT?"及強度":""}。${fcRow?"預測一行僅供參考：為單一成員估算的各站風速平均。":""}`)}</p>`;
+ if(!fcRow) h+=`<p class="note">${T("To place a forecast here, open a run on the forecast page, then 'Stations' → 'See it in the storm ranking'.","如要把預測放進此表：在預報頁打開一個運行，再按「測風站」→「在熱帶氣旋排名中查看」。")}</p>`;
+ const M=document.getElementById("main"); M.innerHTML=h;
+ M.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{ALL=b.dataset.a==="1"; draw()});
+ const fr=M.querySelector("tr.fc"); if(fr&&!draw.done){draw.done=true; setTimeout(()=>{try{fr.scrollIntoView({block:"center"})}catch(e){}},80)}
+}
+draw();
+addEventListener("resize",()=>{if((innerWidth<700)!==draw.nar)draw()});
+})();
+</script>
+<script src="credits.js"></script>
+<a id="langsw" class="langsw" href="ranking-zh.html" lang="zh-Hant">中文</a><script>(function(){var a=document.getElementById("langsw");if(!a)return;if(window.top!==window.self){a.style.display="none";return}a.href=a.getAttribute("href")+location.search+location.hash;a.addEventListener("click",function(){try{localStorage.setItem("hk_lang","zh")}catch(e){}})})();</script></body>
+</html>
