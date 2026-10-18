@@ -51,6 +51,7 @@ button.on{background:var(--ink);border-color:var(--ink);color:var(--card)}
 .seg{display:inline-flex;flex-wrap:wrap;gap:2px;padding:3px;background:var(--soft);border-radius:12px}
 .seg button{border:0;background:transparent;border-radius:9px;padding:7px 13px;color:var(--mut)}
 .seg button:hover{color:var(--ink)}
+#ensbtns button.na{opacity:.5}
 .seg button.on{background:var(--raise);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.16)}
 #checks{margin:0 0 0 4px}
 input[type=checkbox],input[type=range]{accent-color:var(--ink)}
@@ -176,7 +177,7 @@ footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin
  </div>
  <div class="status" id="status"></div>
 
- <h2 class="sech">Map</h2>
+ <h2 class="sech" id="maph">Map</h2>
  <div class="mapcard">
  <div class="mapbar"><button id="zoomBtn">zoom to Hong Kong</button>
 
@@ -214,6 +215,18 @@ footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin
 const $=s=>document.querySelector(s), HK=window.HK||{}, cycles=Object.keys(HK).sort().reverse();
 const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const fmtc=c=>`${c.slice(6,8)} ${MON[+c.slice(4,6)-1]} ${c.slice(8,10)}Z`;
+const WH=()=>{const d=(HK[cyc]||{})[ens]; return !!(d&&d.tracks_withheld)};
+const LIVEF=["ifsens","aifsens","deepmind"];
+let PICKED=false;
+const tUcy=c=>Date.UTC(+c.slice(0,4),+c.slice(4,6)-1,+c.slice(6,8),+c.slice(8,10));
+const hktS=t=>{const d=new Date(t+8*36e5), z=n=>String(n).padStart(2,"0"); return `${d.getUTCDate()} ${MON[d.getUTCMonth()]} ${z(d.getUTCHours())}:${z(d.getUTCMinutes())}`};
+function etaOf(e,c){const rs=cycles.filter(x=>(HK[x]||{})[e]&&HK[x][e].generated); if(!rs.length)return null;
+ let D=rs.filter(x=>tUcy(rs[0])-tUcy(x)<=5*864e5).map(x=>[x.slice(8,10),(Date.parse(HK[x][e].generated.replace(" ","T")+":00Z")-tUcy(x))/36e5]).filter(x=>x[1]>0&&x[1]<48);
+ if(!D.length)return null; const lo=Math.min(...D.map(x=>x[1])); D=D.filter(x=>x[1]<=lo+12);
+ const med=a=>{a=a.slice().sort((p,q)=>p-q); return a[Math.floor(a.length/2)]}, same=D.filter(x=>x[0]===c.slice(8,10)).map(x=>x[1]);
+ return tUcy(c)+med(same.length>=2?same:D.map(x=>x[1]))*36e5}
+function nextRun(e){const last=cycles.find(x=>(HK[x]||{})[e]); if(!last)return null; const c=new Date(tUcy(last)+(e==="ifsens"?12:6)*36e5).toISOString().slice(0,13).replace(/[-T]/g,"");
+ const t=etaOf(e,c); return t?{c,t}:null}
 const NAv=d=>!!d&&d.ens==="deepmind"&&!!d.quiet;
 const PAST=[["2025091612","2025091812","Mitag 2025 — HKO No. 3 on 19 Sep"],["2025091812","2025092212","Ragasa 2025 — HKO No. 10 on 23–24 Sep"],
  ["2025100112","2025100312","Matmo 2025 — HKO No. 3 on 4–5 Oct"],["2025101712","2025101912","Fengshen 2025 — HKO No. 3 on 20–21 Oct"],
@@ -414,7 +427,7 @@ $("#allPlay").onclick=()=>{if(allPlaying){allStop();return} if(!TR)return;
 
 function drawTabs(){
  if(tab==="wi"&&!(TR&&TR.tracks.some(x=>x.wix&&x.wix.length))) tab="signal";
- $("#tabs").innerHTML=[["signal","Expected signal"],["p3","Chance of No. 3"],["p8","Chance of No. 8"],["p10","Chance of No. 10"],["wi","Wind index"],["sg","Station guide"]].filter(([k])=>k!=="wi"||(TR&&TR.tracks.some(x=>x.wix&&x.wix.length)))
+ $("#tabs").innerHTML=[["signal","Expected signal"],["p3","Chance of No. 3"],["p8","Chance of No. 8"],["p10","Chance of No. 10"],["wi","Wind index"],["sg","Station guide"]].filter(([k])=>(k!=="wi"||(TR&&TR.tracks.some(x=>x.wix&&x.wix.length)))&&(!WH()||k==="wi"))
    .map(([k,l])=>`<button data-t="${k}" class="${k===tab?"on":""}">${l}</button>`).join(" ")
 
   +(tab==="wi"&&TR&&TR.tracks.some(x=>x.wix&&x.wix.length)?` <label class="note" style="margin:0 0 0 6px" title="the wind index averaged over all ensemble members, hour by hour"><input type="checkbox" id="wimean"${showWIMean?" checked":""}> ensemble-mean wind index</label> <label class="note" style="margin:0 0 0 6px" title="each member's highest wind index, member by member"><input type="checkbox" id="widist"${showWIDist?" checked":""}> peaks of all members</label>`:"");
@@ -442,7 +455,7 @@ function head(){
   :curY?stormsIn(curY).map(k=>`<option value="${k}"${k===curS?" selected":""}>${(LAB[k]||k).replace(/ — HKO No\. (\d+) on /,(m,g)=>g===curY?" — ":m)}</option>`).join(""):"";
  const runs=curS==="__recent"?rec:curS?ST[curS]:[];
  $("#cyc").innerHTML=runs.map(c=>`<option value="${c}"${c===cyc?" selected":""}>${fmtc(c)}</option>`).join("");
- const go=c=>{if(!c)return; cyc=c;NOSAME=null;sel=null;selH=null; chooseEns(c); head();load()};
+ const go=c=>{if(!c)return; cyc=c;NOSAME=null;PICKED=false;sel=null;selH=null; chooseEns(c); head();load()};
  const fam=c=>MODES[mode].some(e=>(HK[c]||{})[e]), pick=a=>a&&(a.find(fam)||a[0]);
  $("#yearSel").onchange=e=>{const y=e.target.value; if(y==="__recent"){pickedStorm=null;go(pick(rec));return} const k=stormsIn(y).find(x=>ST[x].some(fam))||stormsIn(y)[0]; pickedStorm=k; go(pick(ST[k]))};
  $("#stormSel").onchange=e=>{const k=e.target.value; if(k==="__recent"){go(pick(rec));return} pickedStorm=k; go(pick(ST[k]))};
@@ -453,9 +466,11 @@ function head(){
   if(HK[R0]&&k){pickedStorm=k; if(HK[R0].ifsens){ens="ifsens";mode=modeOf(ens)||mode} go(R0); return}
   const y=years[0], k2=y&&stormsIn(y)[0]; if(k2){pickedStorm=k2; go(pick(ST[k2]))}});
  const avE=HK[cyc]||{};
- $("#ensbtns").innerHTML=ORDER.filter(e=>avE[e]).map(e=>`<button data-e="${e}" class="${e===ens?"on":""}">${FCN[e]}</button>`).join(" ");
+ const csE=casesOf(cyc), wE=PAST.filter(p=>csE.includes(p[2].split(" — ")[0])), inView=new Set(RECENT(cyc)?LIVEF:[]);
+ cycles.filter(c=>wE.some(p=>c>=p[0]&&c<=p[1])).forEach(c=>Object.keys(HK[c]||{}).forEach(e=>inView.add(e)));
+ $("#ensbtns").innerHTML=ORDER.filter(e=>avE[e]||inView.has(e)).map(e=>`<button data-e="${e}" class="${e===ens?"on":""}${avE[e]?"":" na"}"${avE[e]?"":` title="not available for this run time"`}>${FCN[e]}</button>`).join(" ");
 
- $("#ensbtns").querySelectorAll("button").forEach(b=>b.onclick=()=>{ens=b.dataset.e; mode=modeOf(ens)||mode; sel=null;selH=null;head();load()});
+ $("#ensbtns").querySelectorAll("button").forEach(b=>b.onclick=()=>{ens=b.dataset.e; mode=modeOf(ens)||mode; PICKED=true; sel=null;selH=null;head();load()});
  $("#zoomBtn").onclick=e=>{view=view==="region"?"hk":"region";VB=BASIC&&view==="hk"?[113.55,114.75,21.95,22.75]:VIEWS[view].slice();
  HOME=VB.slice();e.target.textContent=view==="region"?"zoom to Hong Kong":"zoom out";drawMap()};
  $("#showAll").onclick=()=>{sel=null;selH=null;BIN=null;drawMap();chart()};
@@ -510,7 +525,7 @@ function load(){
  allH=null; if(allPlaying)allStop();
  if(NOSAME){unavailable();return}
  $("#map").style.display=""; $("#chart").style.display="";
- if(!(HK[cyc]||{})[ens]){const av=Object.keys(HK[cyc]||{}); if(av.length){const e0=MODES[mode].find(e=>av.includes(e));
+ if(!(HK[cyc]||{})[ens]&&!PICKED){const av=Object.keys(HK[cyc]||{}); if(av.length){const e0=MODES[mode].find(e=>av.includes(e));
   if(e0) ens=e0; else {mode=Object.keys(MODES).find(k=>MODES[k].some(e=>av.includes(e)))||mode; ens=MODES[mode].find(e=>av.includes(e))||av[0]}; head()}}
  const d=(HK[cyc]||{})[ens];
  $("#foot").innerHTML=`Days are UTC · numbers only, no model files`;
@@ -521,22 +536,25 @@ function load(){
       ?`<br><span class="dmcite">Google DeepMind Weather Lab. © 2024-6 Google LLC, whose machine learning models were used to create the experimental data made available under the following licence terms https://storage.googleapis.com/weathernext-public/terms-of-use.pdf. This data is intended for experimental modelling only and is not intended, validated, or approved for real world use.</span>`
       :` · data: <a href="https://deepmind.google.com/science/weatherlab" target="_blank" rel="noopener">Google DeepMind Weather Lab</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>) <span>turned into Hong Kong signal chances here; Google is not involved in this site</span>`):"")
    +` · produced ${d.generated} UTC (${hrs<1?"<1 h":Math.round(hrs)+" h"} ago)`
+   +((NR=>NR?` · <span class="nextrun">next run ${fmtc(NR.c)} expected about ${hktS(NR.t)} HKT${Date.now()>NR.t+36e5?" (running late)":""}</span>`:"")(RECENT(cyc)&&LIVEF.includes(ens)&&cyc===cycles.find(c=>(HK[c]||{})[ens])?nextRun(ens):null))
    +(cyc===cycles[0]&&hrs>18?` — <b style="color:var(--no8)">this copy is behind</b>`:"")
    +(pastOf(cyc)?` · past case: ${pastOf(cyc)}${cyc<"2025"?" (this storm was used to set up the site)":" (a fair test: not used to set up the site)"}`:"")
 ;}
  else $("#stamp").textContent="";
  if(BASIC&&d&&d.generated){const t=new Date(Date.parse(d.generated.replace(" ","T")+":00Z")+8*36e5), z=n=>String(n).padStart(2,"0");
-  $("#stamp").innerHTML=`Updated ${t.getUTCDate()} ${MON[t.getUTCMonth()]} ${z(t.getUTCHours())}:${z(t.getUTCMinutes())} (Hong Kong time)`+(pastOf(cyc)?`<br>Past storm: ${pastOf(cyc)}`:"")}
+  $("#stamp").innerHTML=`Updated ${t.getUTCDate()} ${MON[t.getUTCMonth()]} ${z(t.getUTCHours())}:${z(t.getUTCMinutes())} (Hong Kong time)`+(pastOf(cyc)?`<br>Past storm: ${pastOf(cyc)}`:"")
+  +((NR=>NR?`<br>Next update expected about ${hktS(NR.t)} (Hong Kong time)`:"")(RECENT(cyc)&&cyc===cycles.find(c=>(HK[c]||{})[ens])?nextRun(ens):null))}
  if(!d){
-  const hh=cyc.slice(8,10), off=(hh==="06"||hh==="18"), other=(HK[cyc]||{});
-  const last=cycles.find(c=>(HK[c]||{})[ens]);
-  $("#status").innerHTML=(ens==="ifsens"&&off)
-   ? `<b>IFS is not run to full range at ${hh}Z</b> — ECMWF takes its ensemble to 144 h at 06 and 18 Z, so these cycles carry AIFS only.`
-     +(Object.keys(other).length?` <a href="#" id="toAifs">Show the AI forecast (AIFS) for this run</a>.`:"")
-     +(last?` Latest IFS run: <a href="#" id="toLast">${fmtc(last)}</a>.`:"")
-   : "No data for this run.";
-  const a=$("#toAifs"); if(a)a.onclick=e=>{e.preventDefault();NOSAME=null;mode="ai";ens="aifsens";sel=null;selH=null;head();load()};
-  const b=$("#toLast"); if(b)b.onclick=e=>{e.preventDefault();cyc=last;sel=null;selH=null;head();load()};
+  const hh=cyc.slice(8,10), last=cycles.find(c=>(HK[c]||{})[ens]), near=cycles.filter(c=>(HK[c]||{})[ens]).sort((a,b)=>Math.abs(tUcy(a)-tUcy(cyc))-Math.abs(tUcy(b)-tUcy(cyc)))[0];
+  const eta=last&&cyc>last&&LIVEF.includes(ens)?etaOf(ens,cyc):null;
+  const why=ens==="ifsens"&&(hh==="06"||hh==="18")?"ECMWF runs its physics ensemble to full range only at 00Z and 12Z."
+   :eta?`Not out yet for ${fmtc(cyc)}. Expected about ${hktS(eta)} Hong Kong time (from the last few days).`:`No run of this forecast for ${fmtc(cyc)}.`;
+  $("#stamp").innerHTML=`<b>${FCN[ens]||ens}</b> · <span>not available for this run time</span>`;
+  $("#status").innerHTML=`<div class="ans na"><div class="k">${FCN[ens]||ens}</div><div class="badge">Not available</div><div class="v">${why}</div>`
+   +(near?`<div class="v">Nearest run with it: <a href="#" id="toNear">${fmtc(near)}</a></div>`:"")+`</div>`;
+  const b=$("#toNear"); if(b)b.onclick=e=>{e.preventDefault();cyc=near;PICKED=false;sel=null;selH=null;head();load()};
+  [...document.querySelectorAll(".mapbar,#mapkey,#mapnav,#maph,#chead,#tabs,.sech.mch"),$("#chart")&&$("#chart").closest(".scrollx")].forEach(e=>{if(e)e.style.display="none"});
+  $("#map").style.display="none"; TR=null; MC=null; sel=null; selH=null; syncPlayer(); $("#selbar").style.display="none";
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";$("#maphint").textContent="";return}
  if(NAv(d)){$("#status").innerHTML=`<div class="ans na"><div class="k">Highest signal</div><div class="badge">Not available</div><div class="v">DeepMind had no storm near Hong Kong to follow in this run. It only forecasts storms that have already formed, so this is not a forecast of no threat.</div></div>`+(window.HK_DEMO?"":r2rCard());
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";drawR2R();return}
@@ -569,7 +587,7 @@ function load(){
  const one=(d.members||0)<=1, clsL=s=>s>=10?10:s>=8?8:3, colL={3:"var(--no3)",8:"var(--no8)",10:"var(--no10)"};
  const pass=one?`closest approach <b>${Math.round(d.min_dist_km)} km</b>`:`<b>${d.within_150km}</b> of ${d.members} members pass within 150 km · <b>${d.within_500km}</b> within 500 km${d.det_ca_km!=null?` · deterministic run ${Math.round(d.det_ca_km)} km`:""}`;
  let tb="";
- if(LV.some(([sg])=>nOf(sg)>0)||hcases.length){
+ if(!d.quiet){
   const x=topL&&E&&E[topL[0]]&&E[topL[0]].n?E[topL[0]]:null;
   const pcA=sg=>one?(nOf(sg)?100:0):Math.round(100*nOf(sg)/(d.members||50)), noneA=100-Math.max(...LV.map(([sg])=>pcA(sg)));
   const ans=`<div class="ans"><div class="k">${one?"This run gives":"Expected signal"}</div>`
@@ -618,9 +636,13 @@ function load(){
  drawTL({E,one,members:d.members||0,MJ,hcases,init:Date.UTC(+cyc.slice(0,4),+cyc.slice(4,6)-1,+cyc.slice(6,8),+cyc.slice(8,10))});
  drawR2R();
  const key=cyc+"_"+ens;
- [...document.querySelectorAll(".mapbar,#mapkey,#mapnav,#chead,#tabs,.sech.mch"),$("#chart")&&$("#chart").closest(".scrollx")].forEach(e=>{if(e)e.style.display=d.tracks_withheld?"none":""});
- if(d.tracks_withheld){TR=null; $("#map").innerHTML=""; $("#map").style.display="none"; $("#chart").innerHTML=""; $("#cnote").textContent="";
-  $("#maphint").textContent="Tracks are not shown for live Google DeepMind forecasts: Google's terms let this site publish only the signal chances while a forecast is live. The tracks appear here once the storm has passed."; return}
+ [...document.querySelectorAll(".mapbar,#mapkey,#mapnav,#maph")].forEach(e=>{if(e)e.style.display=d.tracks_withheld?"none":""});
+ [...document.querySelectorAll("#chead,#tabs,.sech.mch"),$("#chart")&&$("#chart").closest(".scrollx")].forEach(e=>{if(e)e.style.display=""});
+ if(d.tracks_withheld){TR=null; sel=null; selH=null; MC=null; BIN=null; syncPlayer(); $("#selbar").style.display="none"; $("#map").innerHTML=""; $("#map").style.display="none"; $("#chart").innerHTML=""; $("#cnote").textContent="";
+  if(window._defHint===undefined)window._defHint=$("#maphint").innerHTML;
+  $("#maphint").textContent="Tracks are not shown for live Google DeepMind forecasts: while a forecast is live, Google's terms let this site publish only results worked out from it, such as the signal chances and the winds at Hong Kong. The tracks appear here once the storm has passed.";
+  tab="wi"; if(!showWIDist) showWIMean=true}
+ else $("#map").style.display="";
  if(window.HKT&&window.HKT[key]){TR=window.HKT[key];drawTabs();drawMap();chart();fillGale();fillBasic();return}
  const sc=document.createElement("script");sc.src=`../data/tracks_${key}.js`;
  sc.onload=()=>{TR=(window.HKT||{})[key];drawTabs();drawMap();chart();fillGale();fillBasic()};
@@ -638,8 +660,9 @@ function drawTL(a){if(a)TLA=a;a=TLA;const box=document.getElementById("tl");if(!
  LVs.forEach(([sg,,L])=>{const x=E&&E[sg];GS(x).forEach(g=>ext(tU(g.start[0]),tU(g.end[2])));if(x&&x.det)ext(tU(x.det[0]),tU(x.det[1]));
   hcases.forEach(c=>{const y=HKOEV[c]["L"+L];if(y)ext(tU(y[0]),tU(y[1]))})});
  const card=box.parentNode;
- if(!(lo<hi)){box.innerHTML="";card.style.display="none";return}
- card.style.display="";
+ const hd=card.previousElementSibling&&card.previousElementSibling.classList.contains("sech")?card.previousElementSibling:null;
+ if(!(lo<hi)){box.innerHTML="";card.style.display="none";if(hd)hd.style.display="none";return}
+ card.style.display="";if(hd)hd.style.display="";
  if(init<lo&&lo-init<=36*H)lo=init;
  const b6=t=>Math.floor((t+8*H)/(6*H))*6*H-8*H; lo=b6(lo-2*H); hi=b6(hi+8*H);
  const X=t=>LW+(Math.min(Math.max(t,lo),hi)-lo)/(hi-lo)*(R-LW);
@@ -849,7 +872,7 @@ function syncNav(){const b=document.getElementById("mapnav"); if(!b)return; cons
 let MAPW=0;
 function drawMap(){
  if(window.HK_PZ)return;
- const s=$("#map");s.innerHTML="";MC=null;MG=null;if(!TR){syncPlayer();return}
+ const s=$("#map");s.innerHTML="";MC=null;MG=null;if(!TR||WH()){syncPlayer();return}
  const dw=s.getBoundingClientRect().width||(s.parentNode&&s.parentNode.clientWidth)||1200, K=dw>=700?1.2:1.1;
  const W=Math.max(300,Math.round(dw/K)),[lo0,lo1,la0,la1]=VB; MAPW=dw;
  $("#selbar").style.display=sel!==null||BIN?"":"none"; syncNav();
@@ -1135,7 +1158,7 @@ if(tab==="wi"){const dd=line((TRU.wi||[]).map(([z,v])=>[isoH(z),v]));
 
   else{s.appendChild(el("circle",{cx:x(mk),cy:y(series[mk][1]),r:6,fill:"none",stroke:"var(--ink)","stroke-width":2}));
    markTxt(`${fmtH(selH)}: ${series[mk][1].toFixed(2)} (the 3 hours from ${String(series[mk][0]).replace("/"," ")}Z)`,xm)}}
- const pk=Math.max(...t.pts.map(p=>p[2])), ca=`closest ${Math.round(t.ca[0])} km, ${t.ca[1]}Z`;
+ const pk=t.pts?Math.max(...t.pts.map(p=>p[2])):0, ca=t.ca?`closest ${Math.round(t.ca[0])} km, ${t.ca[1]}Z`:"";
  const thrT=tab==="p10"?.4:.3, first=((tab==="p3"?t.s3:tab==="p8"?t.s8:t.s10)||[]).find(p=>p[1]>=thrT);
  const nG=Math.round(t.gale), rng=(t.gale_lo!=null&&t.gale_hi!=null&&t.gale_hi>t.gale_lo)?` (${t.gale_lo}–${t.gale_hi})`:"";
  const J=a=>a.filter(Boolean).map(s=>`<span class="kv">${s}</span>`).join("");
