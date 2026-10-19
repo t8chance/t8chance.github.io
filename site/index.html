@@ -236,7 +236,9 @@ function etaOf(e,c){const rs=cycles.filter(x=>(HK[x]||{})[e]&&HK[x][e].generated
  if(!D.length)return null; const lo=Math.min(...D.map(x=>x[1])); D=D.filter(x=>x[1]<=lo+12);
  const med=a=>{a=a.slice().sort((p,q)=>p-q); return a[Math.floor(a.length/2)]}, same=D.filter(x=>x[0]===c.slice(8,10)).map(x=>x[1]);
  return tUcy(c)+med(same.length>=2?same:D.map(x=>x[1]))*36e5}
-function nextRun(e){const last=cycles.find(x=>(HK[x]||{})[e]); if(!last)return null; const c=new Date(tUcy(last)+(e==="ifsens"?12:6)*36e5).toISOString().slice(0,13).replace(/[-T]/g,"");
+function nextRun(e){const last=cycles.find(x=>(HK[x]||{})[e]); if(!last)return null;
+ const step=h=>new Date(tUcy(last)+h*36e5).toISOString().slice(0,13).replace(/[-T]/g,"");
+ let c=step(6); if(e==="ifsens"&&/(06|18)$/.test(c)&&c<"2026101906") c=step(12);
  const t=etaOf(e,c); return t?{c,t}:null}
 const NAv=d=>!!d&&d.ens==="deepmind"&&!!d.quiet;
 const PAST=[["2025091612","2025092000","Mitag 2025 — HKO No. 3 on 19 Sep"],["2025091812","2025092500","Ragasa 2025 — HKO No. 10 on 23–24 Sep"],
@@ -624,6 +626,7 @@ function load(){
  if(d&&d.generated){const g=new Date(d.generated.replace(" ","T")+":00Z"), hrs=(Date.now()-g)/3.6e6;
   $("#stamp").innerHTML=`<b>${FCN[ens]||ens}</b>`+(d.experimental?` · <b>experimental</b>`:"")
    +(ens==="pangu"?" · re-forecast from ERA5, one run, own tracker":"")
+   +(ens==="ifsens"&&/^(06|18)$/.test(cyc.slice(8,10))?"<span> · this run looks 6 days ahead (ECMWF runs its 06Z and 18Z ensemble to 144 h)</span>":"")
    +(ens==="deepmind"?(d.tracks_withheld
       ?`<br><span class="dmcite">Google DeepMind Weather Lab. © 2024-6 Google LLC, whose machine learning models were used to create the experimental data made available under the following licence terms https://storage.googleapis.com/weathernext-public/terms-of-use.pdf. This data is intended for experimental modelling only and is not intended, validated, or approved for real world use.</span>`
       :` · data: <a href="https://deepmind.google.com/science/weatherlab" target="_blank" rel="noopener">Google DeepMind Weather Lab</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>) <span>turned into Hong Kong signal chances here; Google is not involved in this site</span>`):"")
@@ -635,11 +638,12 @@ function load(){
  else $("#stamp").textContent="";
  if(BASIC&&d&&d.generated){const t=new Date(Date.parse(d.generated.replace(" ","T")+":00Z")+8*36e5), z=n=>String(n).padStart(2,"0");
   $("#stamp").innerHTML=`Updated ${t.getUTCDate()} ${MON[t.getUTCMonth()]} ${z(t.getUTCHours())}:${z(t.getUTCMinutes())} (Hong Kong time)`+(pastOf(cyc)?`<br>Past storm: ${pastOf(cyc)}`:"")
+  +(ens==="ifsens"&&/^(06|18)$/.test(cyc.slice(8,10))?"<br>This update looks 6 days ahead.":"")
   +((NR=>NR?`<br>Next update expected about ${hktS(NR.t)} (Hong Kong time)`:"")(RECENT(cyc)&&cyc===cycles.find(c=>(HK[c]||{})[ens])?nextRun(ens):null))}
  if(!d){
   const hh=cyc.slice(8,10), last=cycles.find(c=>(HK[c]||{})[ens]), near=cycles.filter(c=>(HK[c]||{})[ens]).sort((a,b)=>Math.abs(tUcy(a)-tUcy(cyc))-Math.abs(tUcy(b)-tUcy(cyc)))[0];
   const eta=last&&cyc>last&&LIVEF.includes(ens)?etaOf(ens,cyc):null;
-  const why=ens==="ifsens"&&(hh==="06"||hh==="18")?"ECMWF runs its physics ensemble to full range only at 00Z and 12Z."
+  const why=ens==="ifsens"&&(hh==="06"||hh==="18")&&cyc<"2026101906"?"Until 19 Oct 2026 this site ran ECMWF's physics ensemble only at 00Z and 12Z (at 06Z and 18Z ECMWF runs it 6 days ahead only)."
    :eta?`Not out yet for ${fmtc(cyc)}. Expected about ${hktS(eta)} Hong Kong time (from the last few days).`:`No run of this forecast for ${fmtc(cyc)}.`;
   $("#stamp").innerHTML=`<b>${FCN[ens]||ens}</b> · <span>not available for this run time</span>`;
   $("#status").innerHTML=`<div class="ans na"><div class="k">${FCN[ens]||ens}</div><div class="badge">Not available</div><div class="v">${why}</div>`
