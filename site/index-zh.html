@@ -229,7 +229,7 @@ const fmtc=c=>`${c.slice(6,8)} ${MON[+c.slice(4,6)-1]} ${c.slice(8,10)}Z`;
 const WH=()=>{const d=(HK[cyc]||{})[ens]; return !!(d&&d.tracks_withheld)};
 const LIVEF=["ifsens","aifsens","deepmind"];
 let PICKED=false;
-let CHOSEN=false, PATHS=null, PATHC=null;
+let CHOSEN=false, PATHS=null, PATHC=null, MIX=null;
 const tUcy=c=>Date.UTC(+c.slice(0,4),+c.slice(4,6)-1,+c.slice(6,8),+c.slice(8,10));
 const hktS=t=>{const d=new Date(t+8*36e5), z=n=>String(n).padStart(2,"0"); return `${d.getUTCDate()} ${MON[d.getUTCMonth()]} ${z(d.getUTCHours())}:${z(d.getUTCMinutes())}`};
 function etaOf(e,c){const rs=cycles.filter(x=>(HK[x]||{})[e]&&HK[x][e].generated); if(!rs.length)return null;
@@ -245,6 +245,7 @@ const NAv=d=>!!d&&d.ens==="deepmind"&&!!d.quiet;
 const DEFE=c=>{const a=HK[c]||{}; return a.deepmind&&!a.deepmind.quiet?"deepmind":a.ifsens?"ifsens":a.tigge?"tigge":BASIC?null:a.aifsens?"aifsens":a.pangu?"pangu":a.deepmind?"deepmind":null};
 const DEFR=c=>{const a=HK[c]||{}; return !!(a.deepmind&&!a.deepmind.quiet||a.ifsens||a.tigge)};
 const OPEN=()=>{const r=cycles.filter(RECENT), dm=r.find(c=>(HK[c]||{}).deepmind); return dm&&!HK[dm].deepmind.quiet?dm:r.find(c=>(HK[c]||{}).ifsens)||null};
+const PHINT=()=>`Each line is one possible path from ECMWF physics (IFS)${PATHC===cyc?"":", its run of "+fmtc(PATHC)}; its colour shows the signal expected along it. Everything else on this page is Google DeepMind's forecast: Google's terms don't allow showing its paths while the forecast is live. Click a line to see that path on its own.`;
 const pathRun=c=>{const t=tUcy(c), ok=x=>!!(HK[x]||{}).ifsens&&Math.abs(tUcy(x)-t)<=12*36e5; if(ok(c))return c;
  return cycles.filter(ok).sort((x,y)=>Math.abs(tUcy(x)-t)-Math.abs(tUcy(y)-t)||(x<y?-1:1))[0]||null};
 const PAST=[["2025091612","2025092000","Mitag 2025 — HKO No. 3 on 19 Sep"],["2025091812","2025092500","Ragasa 2025 — HKO No. 10 on 23–24 Sep"],
@@ -526,10 +527,10 @@ function head(){
  cycles.filter(c=>wE.some(p=>c>=p[0]&&c<=p[1])).forEach(c=>Object.keys(HK[c]||{}).forEach(e=>inView.add(e)));
  $("#ensbtns").innerHTML=ORDER.filter(e=>avE[e]||inView.has(e)).map(e=>`<button data-e="${e}" class="${e===ens?"on":""}${avE[e]?"":" na"}"${avE[e]?"":` title="not available for this run time"`}>${FCN[e]}</button>`).join(" ");
 
- $("#ensbtns").querySelectorAll("button").forEach(b=>b.onclick=()=>{ens=b.dataset.e; mode=modeOf(ens)||mode; PICKED=true; CHOSEN=true; sel=null;selH=null;head();load()});
+ $("#ensbtns").querySelectorAll("button").forEach(b=>b.onclick=()=>{if(MIX){cyc=MIX.cyc;MIX=null} ens=b.dataset.e; mode=modeOf(ens)||mode; PICKED=true; CHOSEN=true; sel=null;selH=null;head();load()});
  $("#zoomBtn").onclick=e=>{view=view==="region"?"hk":"region";VB=BASIC&&view==="hk"?[113.55,114.75,21.95,22.75]:VIEWS[view].slice();
  HOME=VB.slice();e.target.textContent=view==="region"?"zoom to Hong Kong":"zoom out";drawMap()};
- $("#showAll").onclick=()=>{sel=null;selH=null;BIN=null;drawMap();chart()};
+ $("#showAll").onclick=()=>{if(MIX){closePath();return} sel=null;selH=null;BIN=null;drawMap();chart()};
  $("#only150").onchange=drawMap;
 
  $("#detBtn").onclick=()=>{const r=refM(); if(r===null)return; sel=(sel===r?null:r);selH=null;drawMap();chart()};
@@ -622,7 +623,7 @@ const DMCITE=d=>d.tracks_withheld   // Google's citation (live) / CC BY credit (
       ?`<br><span class="dmcite">Google DeepMind Weather Lab. © 2024-6 Google LLC, whose machine learning models were used to create the experimental data made available under the following licence terms https://storage.googleapis.com/weathernext-public/terms-of-use.pdf. This data is intended for experimental modelling only and is not intended, validated, or approved for real world use.</span>`
       :` · data: <a href="https://deepmind.google.com/science/weatherlab" target="_blank" rel="noopener">Google DeepMind Weather Lab</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>) <span>turned into Hong Kong signal chances here; Google is not involved in this site</span>`;
 function load(){
- BIN=null; PATHC=null; PATHS=null;
+ BIN=null; PATHC=null; PATHS=null; MIX=null;
  if(BASIC){const ph=c=>!!DEFE(c);
   if(!ph(cyc)){const c2=cycles.find(c=>c<=cyc&&ph(c))||cycles.find(ph); if(c2&&c2!==cyc){cyc=c2; head()}}
   const av=HK[cyc]||{}; if(!CHOSEN||!av[ens]) ens=DEFE(cyc)||"ifsens"; mode=modeOf(ens)||mode}
@@ -750,7 +751,7 @@ function load(){
  [...document.querySelectorAll("#chead,#tabs,.sech.mch"),$("#chart")&&$("#chart").closest(".scrollx")].forEach(e=>{if(e)e.style.display=""});
  if(d.tracks_withheld){TR=null; sel=null; selH=null; MC=null; BIN=null; syncPlayer(); $("#selbar").style.display="none"; $("#map").innerHTML=""; $("#map").style.display=PATHC?"":"none"; $("#chart").innerHTML=""; $("#cnote").textContent="";
   if(window._defHint===undefined)window._defHint=$("#maphint").innerHTML;
-  $("#maphint").textContent=PATHC?`Each line is one possible path from ECMWF physics (IFS)${PATHC===cyc?"":", its run of "+fmtc(PATHC)}; its colour shows the signal expected along it. Everything else on this page is Google DeepMind's forecast: Google's terms don't allow showing its paths while the forecast is live.`:"Tracks are not shown for live Google DeepMind forecasts: while a forecast is live, Google's terms let this site publish only results worked out from it, such as the signal chances and the winds at Hong Kong. The tracks appear here once the storm has passed.";
+  $("#maphint").textContent=PATHC?PHINT():"Tracks are not shown for live Google DeepMind forecasts: while a forecast is live, Google's terms let this site publish only results worked out from it, such as the signal chances and the winds at Hong Kong. The tracks appear here once the storm has passed.";
   if(PATHC){const pc=PATHC, k2=pc+"_ifsens", fin=()=>{if(PATHC!==pc)return; PATHS=(window.HKT||{})[k2]||null; if(PATHS)drawMap()};
    if(window.HKT&&window.HKT[k2])fin(); else{const s2=document.createElement("script"); s2.src=`../data/tracks_${k2}.js`; s2.onload=fin; document.head.appendChild(s2)}}
   tab="wi"; if(!showWIDist) showWIMean=true}
@@ -1007,6 +1008,10 @@ function fillGale(){const f=document.getElementById("galeF"); if(!f)return;
 function syncNav(){const b=document.getElementById("mapnav"); if(!b)return; const R=VIEWS.region, w=VB[1]-VB[0], q=k=>b.querySelector(`[data-nav="${k}"]`);
  q("in").disabled=w<=MINW+1e-6; q("out").disabled=w>=R[1]-R[0]-1e-6; q("home").disabled=VB.every((v,i)=>Math.abs(v-HOME[i])<1e-6)}
 let MAPW=0;
+function openPath(m){if(!PATHS||MIX)return; const pd=(HK[PATHC]||{}).ifsens;
+ MIX={ens,cyc,TR,GA,tab,showWIMean,showWIDist}; ens="ifsens"; cyc=PATHC; TR=PATHS; GA={members:(pd&&pd.members)||51,one:false}; sel=m; selH=null; BIN=null; showWIMean=false; showWIDist=false;
+ drawTabs(); drawMap(); chart()}
+function closePath(){if(!MIX)return; ({ens,cyc,TR,GA,tab,showWIMean,showWIDist}=MIX); MIX=null; sel=null; selH=null; BIN=null; drawTabs(); drawMap(); chart(); $("#maphint").textContent=PHINT()}
 function drawMap(){
  if(window.HK_PZ)return;
  const s=$("#map");s.innerHTML="";MC=null;MG=null;if(WH()?!PATHS:!TR){syncPlayer();return}
@@ -1029,6 +1034,10 @@ function drawMap(){
   $("#selbar").style.display="none"; $("#detBtn").style.display="none"; $("#mapexp").innerHTML="";
   {const k=$("#mapkey"); if(k)k.querySelectorAll("i[data-lv]").forEach(i=>i.style.background=SIGC[i.dataset.lv])} {const kd=$("#kdet"); if(kd)kd.parentNode.style.display="none"}
   PATHS.tracks.filter(t=>t.m!==52&&t.pts&&t.pts.length>1).sort((a,b)=>{const A=tierOf(a),B=tierOf(b);return A[0]-B[0]||A[1]-B[1]}).forEach(t=>{const SQ=sqOf(t);
+   {const hit=el("path",{fill:"none",stroke:"#000","stroke-opacity":0,"stroke-width":9,"pointer-events":"stroke",d:t.pts.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join(" ")});
+    hit.style.cursor="pointer"; hit.onclick=()=>{if(!moved)openPath(t.m)};
+    hit.onmouseenter=()=>$("#maphint").textContent=`ECMWF member ${t.m}${t.ca?`: closest about ${Math.round(t.ca[0])} km from Hong Kong`:""}. Click to see this path on its own.`;
+    hit.onmouseleave=()=>$("#maphint").textContent=PHINT(); s.appendChild(hit)}
    if(!SQ.length)return; const SB=SQ.map(p=>labH(p[0]));
    for(let i=0;i<t.pts.length-1;i++){const a=t.pts[i], b=t.pts[i+1], ha=labH(a[3]), hb=labH(b[3]), dh=hb-ha||1, cuts=[ha,...SB.filter(h=>h>ha+1e-6&&h<hb-1e-6),hb];
     for(let k=0;k<cuts.length-1;k++){const f0=(cuts[k]-ha)/dh, f1=(cuts[k+1]-ha)/dh, lv=sigAt(t,cuts[k]+1e-3,SQ);
@@ -1120,6 +1129,7 @@ if(false&&!byI&&W>=820){const lx=W-222, items=[[1,"No. 1"],[3,"No. 3"],[8,"No. 8
  if(lo1-lo0>=5){
   s.appendChild(el("circle",{cx:hx,cy:hy,r:6,fill:"#f2c200",stroke:"#333","stroke-width":1.2}));
   const t=el("text",{x:hx+9,y:hy+4,fill:"#111","font-size":12,"font-weight":600,"text-anchor":"start"});t.textContent="Hong Kong";s.appendChild(t)}
+ if(MIX&&sel!==null)$("#maphint").textContent=`ECMWF physics (IFS) path: ${memLab(sel,1)}${MIX.cyc===cyc?"":", its run of "+fmtc(cyc)}. The chances on this page stay Google DeepMind's.`;
  MG=el("g",{"pointer-events":"none"});s.appendChild(MG);drawMoment();syncPlayer();
  AXY={X:X,Y:Y,W:W,H:H,only:only}; AG=el("g",{"pointer-events":"none"}); s.appendChild(AG); drawAll();
 }
