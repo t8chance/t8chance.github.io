@@ -558,7 +558,7 @@ function drawR2R(){const box=$("#r2r"); if(!box)return; const card=box.closest("
   const n=sg=>d.quiet?0:(E[sg]?E[sg].n:(d[sg]&&d[sg].any?d[sg].any[0]:0)); return {c,M:d.members,No3:n("No3"),No8:n("No8"),No10:n("No10")}};
  const avail=ORDER.filter(e=>runs.filter(c=>{const p=nRun(c,e); return p&&!p.na}).length>=2);
  const pick=R2RSEL==="all"&&avail.length>1?"all":avail.includes(R2RSEL)?R2RSEL:avail.includes(ens)?ens:avail[0];
- const ens_=BASIC?ORDER.filter(e=>MODES.ec.includes(e)&&avail.includes(e)):pick==="all"?["all"]:pick?[pick]:[];
+ const ens_=BASIC?(ens==="deepmind"&&avail.includes(ens)?[ens]:ORDER.filter(e=>MODES.ec.includes(e)&&avail.includes(e))):pick==="all"?["all"]:pick?[pick]:[];
  if(!ens_.length){card.style.display="none";return}
  card.style.display=""; card.classList.toggle("r2rall",ens_[0]==="all");
  const PW=Math.round(box.clientWidth||600), W=Math.max(300,PW), H=ens_[0]==="all"?180:150, L=30, R=ens_[0]==="all"?(W<480?58:84):10, T=10, B=24;
