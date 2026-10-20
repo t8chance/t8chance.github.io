@@ -194,6 +194,8 @@ const RX=[
  [/^Will HKO raise No\. (\d+)\?$/,(m,n)=>`天文台會否發出${NO[n]}信號？`],
  [/^asked (\d+) (\w{3}), (\d\d:\d\d) HK time( · picture post)?$/,(m,d,M,t,p)=>`${MON[M]}月${d}日 ${t}（香港時間）`+(p?" · 圖片帖文":"")],
  [/^forecast (\d+) h old$/,(m,a)=>`對照時，模式預報已是 ${a} 小時前的版本`],
+ [/^Each line is one possible path from ECMWF physics \(IFS\)(?:, its run of (.+?))?; its colour shows the signal expected along it\. Everything else on this page is Google DeepMind's forecast: Google's terms don't allow showing its paths while the forecast is live\.$/,(m,r)=>`每條線代表 ECMWF 物理模式（IFS）${r?zt(G(r))+" 起報":""}預測的一條可能路徑，顏色顯示沿途預計的信號。本頁其他資料均來自 Google DeepMind 的預報：根據 Google 的使用條款，實時預報的路徑不能在此展示。`],
+ [/^Forecast: (.+)$/,(m,f)=>`預報模式：${EX.get(f)||f}`],
  [/^Not available: (\d+) \(Google DeepMind had no track for the storm yet\)\.$/,(m,n)=>`未能提供：${n} 次（Google DeepMind 當時仍未追蹤該熱帶氣旋）。`],
  [/^(\d+)% is (below|above|inside) MET WARN's (\d+–\d+)%$/,(m,a,w,r)=>w==="inside"?`${a}% 在 MET WARN 的 ${r}% 之內`:`${a}% ${w==="below"?"低於":"高於"} MET WARN 的 ${r}%`],
  [/^(.+?) · runs made before HKO's highest signal$/,(m,a)=>`${a.replace(/ forecasts?, /,"，").replace("ECMWF AI","ECMWF 人工智能模式").replace("Old ECMWF","ECMWF 存檔").replace("Pangu-Weather","盤古氣象")} 年 · 只計算天文台發出最高信號前的預報`],

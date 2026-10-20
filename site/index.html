@@ -229,6 +229,7 @@ const fmtc=c=>`${c.slice(6,8)} ${MON[+c.slice(4,6)-1]} ${c.slice(8,10)}Z`;
 const WH=()=>{const d=(HK[cyc]||{})[ens]; return !!(d&&d.tracks_withheld)};
 const LIVEF=["ifsens","aifsens","deepmind"];
 let PICKED=false;
+let CHOSEN=false, PATHS=null, PATHC=null;
 const tUcy=c=>Date.UTC(+c.slice(0,4),+c.slice(4,6)-1,+c.slice(6,8),+c.slice(8,10));
 const hktS=t=>{const d=new Date(t+8*36e5), z=n=>String(n).padStart(2,"0"); return `${d.getUTCDate()} ${MON[d.getUTCMonth()]} ${z(d.getUTCHours())}:${z(d.getUTCMinutes())}`};
 function etaOf(e,c){const rs=cycles.filter(x=>(HK[x]||{})[e]&&HK[x][e].generated); if(!rs.length)return null;
@@ -241,6 +242,11 @@ function nextRun(e){const last=cycles.find(x=>(HK[x]||{})[e]); if(!last)return n
  let c=step(6); if(e==="ifsens"&&/(06|18)$/.test(c)&&c<"2026101906") c=step(12);
  const t=etaOf(e,c); return t?{c,t}:null}
 const NAv=d=>!!d&&d.ens==="deepmind"&&!!d.quiet;
+const DEFE=c=>{const a=HK[c]||{}; return a.deepmind&&!a.deepmind.quiet?"deepmind":a.ifsens?"ifsens":a.tigge?"tigge":BASIC?null:a.aifsens?"aifsens":a.pangu?"pangu":a.deepmind?"deepmind":null};
+const DEFR=c=>{const a=HK[c]||{}; return !!(a.deepmind&&!a.deepmind.quiet||a.ifsens||a.tigge)};
+const OPEN=()=>{const r=cycles.filter(RECENT), dm=r.find(c=>(HK[c]||{}).deepmind); return dm&&!HK[dm].deepmind.quiet?dm:r.find(c=>(HK[c]||{}).ifsens)||null};
+const pathRun=c=>{const t=tUcy(c), ok=x=>!!(HK[x]||{}).ifsens&&Math.abs(tUcy(x)-t)<=12*36e5; if(ok(c))return c;
+ return cycles.filter(ok).sort((x,y)=>Math.abs(tUcy(x)-t)-Math.abs(tUcy(y)-t)||(x<y?-1:1))[0]||null};
 const PAST=[["2025091612","2025092000","Mitag 2025 — HKO No. 3 on 19 Sep"],["2025091812","2025092500","Ragasa 2025 — HKO No. 10 on 23–24 Sep"],
  ["2025100112","2025100512","Matmo 2025 — HKO No. 3 on 4–5 Oct"],["2025101712","2025102100","Fengshen 2025 — HKO No. 3 on 20–21 Oct"],
  ["2026072012","2026072600","Noul 2026 — HKO No. 9 on 25 Jul"],
@@ -302,7 +308,7 @@ const MODES={ai:["aifsens","deepmind","pangu"],ec:["ifsens","tigge"]}, MODEN={ai
 const ENSN={ifsens:"IFS (physics)",aifsens:"AIFS (AI)",tigge:"ECMWF ENS of the time (physics)",pangu:"Pangu (AI)",deepmind:"DeepMind (AI)"};
 const FCN={ifsens:"ECMWF physics (IFS)",aifsens:"ECMWF AI (AIFS)",tigge:"Old ECMWF (physics)",pangu:"Pangu-Weather (AI)",deepmind:"Google DeepMind (AI)"}, ORDER=["ifsens","aifsens","deepmind","tigge","pangu"];
 const modeOf=e=>Object.keys(MODES).find(k=>MODES[k].includes(e));
-const chooseEns=c=>{const av=HK[c]||{}; if(!av[ens]) ens=MODES[mode].find(e=>av[e])||ORDER.find(e=>av[e])||ens; mode=modeOf(ens)||mode};
+const chooseEns=c=>{const av=HK[c]||{}; if(!CHOSEN&&DEFE(c)) ens=DEFE(c); else if(!av[ens]) ens=MODES[mode].find(e=>av[e])||ORDER.find(e=>av[e])||ens; mode=modeOf(ens)||mode};
 let mode="ec";
 const inMode=c=>MODES[mode].some(e=>(HK[c]||{})[e]);
 let NOSAME=null, pickedStorm=null;
@@ -318,7 +324,8 @@ pickRun();
 const BASIC=(()=>{const qs=new URLSearchParams(location.search); if(qs.get("demo")) return qs.get("mode")==="basic";
  try{const q=qs.get("mode");
  if(q==="basic"||q==="advanced"){localStorage.setItem("hk_mode",q); return q==="basic"} const m=localStorage.getItem("hk_mode"); return m?m==="basic":PUB}catch(e){return PUB}})();
-if(BASIC){document.body.classList.add("basic"); mode="ec"; if(!MODES.ec.includes(ens)) ens="ifsens";
+{const c0=OPEN(); if(c0){cyc=c0; ens=DEFE(c0)||ens; mode=modeOf(ens)||mode}}
+if(BASIC){document.body.classList.add("basic");
   [$("#ensbtns")&&$("#ensbtns").closest(".grp"),$("#checks"),$("#detBtn"),$("#only150")&&$("#only150").closest("label"),$("#mapexp"),$("#chead"),$("#tabs"),
   $("#chart")&&$("#chart").closest(".scrollx"),$("#stationchart"),$("#cnote")].forEach(e=>e&&e.classList.add("adv"));
  const ds=$(".mast .disc"); if(ds) ds.textContent="Chances of tropical cyclone warning signals for Hong Kong, from computer forecasts. Research output — the Hong Kong Observatory is the only authority for actual signals.";
@@ -505,21 +512,21 @@ function head(){
  const runs=curS==="__recent"?rec:curS?ST[curS]:[];
  $("#cyc").innerHTML=runs.map(c=>`<option value="${c}"${c===cyc?" selected":""}>${fmtc(c)}</option>`).join("");
  const go=c=>{if(!c)return; cyc=c;NOSAME=null;PICKED=false;sel=null;selH=null; chooseEns(c); head();load()};
- const fam=c=>MODES[mode].some(e=>(HK[c]||{})[e]), pick=a=>a&&(a.find(fam)||a[0]);
+ const fam=c=>CHOSEN?MODES[mode].some(e=>(HK[c]||{})[e]):DEFR(c), pick=a=>a&&(a===rec&&!CHOSEN&&OPEN()||a.find(fam)||a[0]);
  $("#yearSel").onchange=e=>{const y=e.target.value; if(y==="__recent"){pickedStorm=null;go(pick(rec));return} const k=stormsIn(y).find(x=>ST[x].some(fam))||stormsIn(y)[0]; pickedStorm=k; go(pick(ST[k]))};
  $("#stormSel").onchange=e=>{const k=e.target.value; if(k==="__recent"){go(pick(rec));return} pickedStorm=k; go(pick(ST[k]))};
  $("#cyc").onchange=e=>go(e.target.value);
  $("#viewbtns").querySelectorAll("button").forEach(b=>b.onclick=()=>{
   if(b.dataset.v==="today"){if(!today&&rec.length){pickedStorm=null;go(pick(rec))} return}
   if(!today)return; const R0="2025092112", k=casesOf(R0).find(x=>ST[x]);
-  if(HK[R0]&&k){pickedStorm=k; if(HK[R0].ifsens){ens="ifsens";mode=modeOf(ens)||mode} go(R0); return}
+  if(HK[R0]&&k){pickedStorm=k; go(R0); return}
   const y=years[0], k2=y&&stormsIn(y)[0]; if(k2){pickedStorm=k2; go(pick(ST[k2]))}});
  const avE=HK[cyc]||{};
  const csE=casesOf(cyc), wE=PAST.filter(p=>csE.includes(p[2].split(" — ")[0])), inView=new Set(RECENT(cyc)?LIVEF:[]);
  cycles.filter(c=>wE.some(p=>c>=p[0]&&c<=p[1])).forEach(c=>Object.keys(HK[c]||{}).forEach(e=>inView.add(e)));
  $("#ensbtns").innerHTML=ORDER.filter(e=>avE[e]||inView.has(e)).map(e=>`<button data-e="${e}" class="${e===ens?"on":""}${avE[e]?"":" na"}"${avE[e]?"":` title="not available for this run time"`}>${FCN[e]}</button>`).join(" ");
 
- $("#ensbtns").querySelectorAll("button").forEach(b=>b.onclick=()=>{ens=b.dataset.e; mode=modeOf(ens)||mode; PICKED=true; sel=null;selH=null;head();load()});
+ $("#ensbtns").querySelectorAll("button").forEach(b=>b.onclick=()=>{ens=b.dataset.e; mode=modeOf(ens)||mode; PICKED=true; CHOSEN=true; sel=null;selH=null;head();load()});
  $("#zoomBtn").onclick=e=>{view=view==="region"?"hk":"region";VB=BASIC&&view==="hk"?[113.55,114.75,21.95,22.75]:VIEWS[view].slice();
  HOME=VB.slice();e.target.textContent=view==="region"?"zoom to Hong Kong":"zoom out";drawMap()};
  $("#showAll").onclick=()=>{sel=null;selH=null;BIN=null;drawMap();chart()};
@@ -609,16 +616,20 @@ function drawR2R(){const box=$("#r2r"); if(!box)return; const card=box.closest("
  const lg=card.querySelector(".r2rlg"), na_=lg&&lg.querySelector(".nalg");
  if(lg&&!na_&&box.querySelector("rect.na")) lg.insertAdjacentHTML("beforeend",`<span class="nalg"><b style="color:var(--mut)">▨</b> not available (DeepMind had no storm near Hong Kong to follow)</span>`);
  else if(na_&&!box.querySelector("rect.na")) na_.remove();
- box.querySelectorAll("[data-c]").forEach(o=>o.onclick=()=>{cyc=o.dataset.c; ens=o.dataset.e; mode=modeOf(ens)||mode; NOSAME=null; PICKED=false; sel=null; selH=null; head(); load()});
+ box.querySelectorAll("[data-c]").forEach(o=>o.onclick=()=>{cyc=o.dataset.c; ens=o.dataset.e; mode=modeOf(ens)||mode; NOSAME=null; PICKED=false; if(!BASIC)CHOSEN=true; sel=null; selH=null; head(); load()});
 }
+const DMCITE=d=>d.tracks_withheld   // Google's citation (live) / CC BY credit (past), word for word: Advanced and Basic (2026-10-20)
+      ?`<br><span class="dmcite">Google DeepMind Weather Lab. © 2024-6 Google LLC, whose machine learning models were used to create the experimental data made available under the following licence terms https://storage.googleapis.com/weathernext-public/terms-of-use.pdf. This data is intended for experimental modelling only and is not intended, validated, or approved for real world use.</span>`
+      :` · data: <a href="https://deepmind.google.com/science/weatherlab" target="_blank" rel="noopener">Google DeepMind Weather Lab</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>) <span>turned into Hong Kong signal chances here; Google is not involved in this site</span>`;
 function load(){
- BIN=null;
- if(BASIC){const ph=c=>MODES.ec.some(e=>(HK[c]||{})[e]);
+ BIN=null; PATHC=null; PATHS=null;
+ if(BASIC){const ph=c=>!!DEFE(c);
   if(!ph(cyc)){const c2=cycles.find(c=>c<=cyc&&ph(c))||cycles.find(ph); if(c2&&c2!==cyc){cyc=c2; head()}}
-  const av=HK[cyc]||{}; mode="ec"; if(!MODES.ec.includes(ens)||!av[ens]) ens=MODES.ec.find(e=>av[e])||"ifsens"}
+  const av=HK[cyc]||{}; if(!CHOSEN||!av[ens]) ens=DEFE(cyc)||"ifsens"; mode=modeOf(ens)||mode}
  allH=null; if(allPlaying)allStop();
  if(NOSAME){unavailable();return}
  $("#map").style.display=""; $("#chart").style.display="";
+ if(!BASIC&&!CHOSEN){const e1=DEFE(cyc); if(e1&&e1!==ens){ens=e1; mode=modeOf(ens)||mode; head()}}
  if(!(HK[cyc]||{})[ens]&&!PICKED){const av=Object.keys(HK[cyc]||{}); if(av.length){const e0=MODES[mode].find(e=>av.includes(e));
   if(e0) ens=e0; else {mode=Object.keys(MODES).find(k=>MODES[k].some(e=>av.includes(e)))||mode; ens=MODES[mode].find(e=>av.includes(e))||av[0]}; head()}}
  const d=(HK[cyc]||{})[ens];
@@ -627,9 +638,7 @@ function load(){
   $("#stamp").innerHTML=`<b>${FCN[ens]||ens}</b>`+(d.experimental?` · <b>experimental</b>`:"")
    +(ens==="pangu"?" · re-forecast from ERA5, one run, own tracker":"")
    +(ens==="ifsens"&&/^(06|18)$/.test(cyc.slice(8,10))?"<span> · this run looks 6 days ahead (ECMWF runs its 06Z and 18Z ensemble to 144 h)</span>":"")
-   +(ens==="deepmind"?(d.tracks_withheld
-      ?`<br><span class="dmcite">Google DeepMind Weather Lab. © 2024-6 Google LLC, whose machine learning models were used to create the experimental data made available under the following licence terms https://storage.googleapis.com/weathernext-public/terms-of-use.pdf. This data is intended for experimental modelling only and is not intended, validated, or approved for real world use.</span>`
-      :` · data: <a href="https://deepmind.google.com/science/weatherlab" target="_blank" rel="noopener">Google DeepMind Weather Lab</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>) <span>turned into Hong Kong signal chances here; Google is not involved in this site</span>`):"")
+   +(ens==="deepmind"?DMCITE(d):"")
    +` · produced ${d.generated} UTC (${hrs<1?"<1 h":Math.round(hrs)+" h"} ago)`
    +((NR=>NR?` · <span class="nextrun">next run ${fmtc(NR.c)} expected about ${hktS(NR.t)} HKT${Date.now()>NR.t+36e5?" (running late)":""}</span>`:"")(RECENT(cyc)&&LIVEF.includes(ens)&&cyc===cycles.find(c=>(HK[c]||{})[ens])?nextRun(ens):null))
    +(cyc===cycles[0]&&hrs>18?` — <b style="color:var(--no8)">this copy is behind</b>`:"")
@@ -637,7 +646,7 @@ function load(){
 ;}
  else $("#stamp").textContent="";
  if(BASIC&&d&&d.generated){const t=new Date(Date.parse(d.generated.replace(" ","T")+":00Z")+8*36e5), z=n=>String(n).padStart(2,"0");
-  $("#stamp").innerHTML=`Updated ${t.getUTCDate()} ${MON[t.getUTCMonth()]} ${z(t.getUTCHours())}:${z(t.getUTCMinutes())} (Hong Kong time)`+(pastOf(cyc)?`<br>Past storm: ${pastOf(cyc)}`:"")
+  $("#stamp").innerHTML=`Updated ${t.getUTCDate()} ${MON[t.getUTCMonth()]} ${z(t.getUTCHours())}:${z(t.getUTCMinutes())} (Hong Kong time)`+(pastOf(cyc)?`<br>Past storm: ${pastOf(cyc)}`:"")+`<br><span>Forecast: ${FCN[ens]||ens}</span>`+(ens==="deepmind"?DMCITE(d):"")
   +(ens==="ifsens"&&/^(06|18)$/.test(cyc.slice(8,10))?"<br>This update looks 6 days ahead.":"")
   +((NR=>NR?`<br>Next update expected about ${hktS(NR.t)} (Hong Kong time)`:"")(RECENT(cyc)&&cyc===cycles.find(c=>(HK[c]||{})[ens])?nextRun(ens):null))}
  if(!d){
@@ -734,11 +743,16 @@ function load(){
  drawTL({E,one,members:d.members||0,MJ,hcases,init:Date.UTC(+cyc.slice(0,4),+cyc.slice(4,6)-1,+cyc.slice(6,8),+cyc.slice(8,10))});
  drawR2R();
  const key=cyc+"_"+ens;
- [...document.querySelectorAll(".mapbar,#mapkey,#mapnav,#maph")].forEach(e=>{if(e)e.style.display=d.tracks_withheld?"none":""});
+ PATHC=d.tracks_withheld?pathRun(cyc):null;
+ [...document.querySelectorAll(".mapbar,#mapnav,#maph")].forEach(e=>{if(e)e.style.display=d.tracks_withheld&&!PATHC?"none":""});
+ {const k=$("#mapkey"); if(k)k.style.display=d.tracks_withheld&&!PATHC?"none":""}
+ [$("#allPlay"),$("#only150")&&$("#only150").closest("label")].forEach(e=>{if(e)e.style.display=d.tracks_withheld?"none":""});
  [...document.querySelectorAll("#chead,#tabs,.sech.mch"),$("#chart")&&$("#chart").closest(".scrollx")].forEach(e=>{if(e)e.style.display=""});
- if(d.tracks_withheld){TR=null; sel=null; selH=null; MC=null; BIN=null; syncPlayer(); $("#selbar").style.display="none"; $("#map").innerHTML=""; $("#map").style.display="none"; $("#chart").innerHTML=""; $("#cnote").textContent="";
+ if(d.tracks_withheld){TR=null; sel=null; selH=null; MC=null; BIN=null; syncPlayer(); $("#selbar").style.display="none"; $("#map").innerHTML=""; $("#map").style.display=PATHC?"":"none"; $("#chart").innerHTML=""; $("#cnote").textContent="";
   if(window._defHint===undefined)window._defHint=$("#maphint").innerHTML;
-  $("#maphint").textContent="Tracks are not shown for live Google DeepMind forecasts: while a forecast is live, Google's terms let this site publish only results worked out from it, such as the signal chances and the winds at Hong Kong. The tracks appear here once the storm has passed.";
+  $("#maphint").textContent=PATHC?`Each line is one possible path from ECMWF physics (IFS)${PATHC===cyc?"":", its run of "+fmtc(PATHC)}; its colour shows the signal expected along it. Everything else on this page is Google DeepMind's forecast: Google's terms don't allow showing its paths while the forecast is live.`:"Tracks are not shown for live Google DeepMind forecasts: while a forecast is live, Google's terms let this site publish only results worked out from it, such as the signal chances and the winds at Hong Kong. The tracks appear here once the storm has passed.";
+  if(PATHC){const pc=PATHC, k2=pc+"_ifsens", fin=()=>{if(PATHC!==pc)return; PATHS=(window.HKT||{})[k2]||null; if(PATHS)drawMap()};
+   if(window.HKT&&window.HKT[k2])fin(); else{const s2=document.createElement("script"); s2.src=`../data/tracks_${k2}.js`; s2.onload=fin; document.head.appendChild(s2)}}
   tab="wi"; if(!showWIDist) showWIMean=true}
  else $("#map").style.display="";
  if(window.HKT&&window.HKT[key]){TR=window.HKT[key];wiC2();drawTabs();drawMap();chart();fillGale();fillBasic();return}
@@ -995,7 +1009,7 @@ function syncNav(){const b=document.getElementById("mapnav"); if(!b)return; cons
 let MAPW=0;
 function drawMap(){
  if(window.HK_PZ)return;
- const s=$("#map");s.innerHTML="";MC=null;MG=null;if(!TR||WH()){syncPlayer();return}
+ const s=$("#map");s.innerHTML="";MC=null;MG=null;if(WH()?!PATHS:!TR){syncPlayer();return}
  const dw=s.getBoundingClientRect().width||(s.parentNode&&s.parentNode.clientWidth)||1200, K=dw>=700?1.2:1.1;
  const W=Math.max(300,Math.round(dw/K)),[lo0,lo1,la0,la1]=VB; MAPW=dw;
  $("#selbar").style.display=sel!==null||BIN?"":"none"; syncNav();
@@ -1011,6 +1025,18 @@ function drawMap(){
    if(!s._rl)s._rl=[]; s._rl.push([r,ry])});
  {let last=1e9; (s._rl||[]).sort((a,b)=>b[1]-a[1]).forEach(([r,ry])=>{if(last-ry<15||ry<12)return; last=ry;
    const tx=el("text",{x:hx,y:hy-ry-3,fill:"#555","font-size":11.5,"text-anchor":"middle"}); tx.textContent=r+" km"; s.appendChild(tx)}); s._rl=null}
+ if(WH()){
+  $("#selbar").style.display="none"; $("#detBtn").style.display="none"; $("#mapexp").innerHTML="";
+  {const k=$("#mapkey"); if(k)k.querySelectorAll("i[data-lv]").forEach(i=>i.style.background=SIGC[i.dataset.lv])} {const kd=$("#kdet"); if(kd)kd.parentNode.style.display="none"}
+  PATHS.tracks.filter(t=>t.m!==52&&t.pts&&t.pts.length>1).sort((a,b)=>{const A=tierOf(a),B=tierOf(b);return A[0]-B[0]||A[1]-B[1]}).forEach(t=>{const SQ=sqOf(t);
+   if(!SQ.length)return; const SB=SQ.map(p=>labH(p[0]));
+   for(let i=0;i<t.pts.length-1;i++){const a=t.pts[i], b=t.pts[i+1], ha=labH(a[3]), hb=labH(b[3]), dh=hb-ha||1, cuts=[ha,...SB.filter(h=>h>ha+1e-6&&h<hb-1e-6),hb];
+    for(let k=0;k<cuts.length-1;k++){const f0=(cuts[k]-ha)/dh, f1=(cuts[k+1]-ha)/dh, lv=sigAt(t,cuts[k]+1e-3,SQ);
+     s.appendChild(el("line",{x1:X(a[0]+(b[0]-a[0])*f0),y1:Y(a[1]+(b[1]-a[1])*f0),x2:X(a[0]+(b[0]-a[0])*f1),y2:Y(a[1]+(b[1]-a[1])*f1),stroke:SIGC[lv],"stroke-width":lv>=3?2.2:1.5,"stroke-linecap":"round",opacity:lv===0?.4:.95,"pointer-events":"none"}))}}});
+  stationDots(s,X,Y,lo1-lo0);
+  if(lo1-lo0>=5){s.appendChild(el("circle",{cx:hx,cy:hy,r:6,fill:"#f2c200",stroke:"#333","stroke-width":1.2}));
+   const t=el("text",{x:hx+9,y:hy+4,fill:"#111","font-size":12,"font-weight":600,"text-anchor":"start"});t.textContent="Hong Kong";s.appendChild(t)}
+  syncPlayer(); AXY=null; return}
  const only=$("#only150").checked;
  const isDet=t=>t.m===52&&(ens==="ifsens"||ens==="tigge"), hasDet=TR.tracks.some(isDet);
  const byI=false, pk=t=>Math.max(...t.pts.map(p=>p[2]));
@@ -1352,7 +1378,7 @@ if(DEMO){window.HK_DEMO=DEMO; document.documentElement.classList.add("demo","dem
  if(parent!==window)setTimeout(tour,600)}
 try{const q=new URLSearchParams(location.search), f=q.get("f"); let r=q.get("run");
  if(r==="storm") r=cycles.find(c=>HK[c].ifsens&&!HK[c].ifsens.quiet)||cycles[0];
- if(r&&HK[r]){cyc=r; if(f&&HK[r][f]){ens=f; mode=modeOf(f)||mode}}}catch(e){}
+ if(r&&HK[r]){cyc=r; if(f&&HK[r][f]){ens=f; mode=modeOf(f)||mode; CHOSEN=true} else if(DEFE(r)){ens=DEFE(r); mode=modeOf(ens)||mode}}}catch(e){}
 head();load();
 </script><script src="credits.js"></script>
 <a id="langsw" class="langsw" href="index-zh.html" lang="zh-Hant">中文</a><script>(function(){var a=document.getElementById("langsw");if(!a)return;if(window.top!==window.self){a.style.display="none";return}a.href=a.getAttribute("href")+location.search+location.hash;a.addEventListener("click",function(){try{localStorage.setItem("hk_lang","zh")}catch(e){}})})();</script></body></html>
