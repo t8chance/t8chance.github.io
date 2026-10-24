@@ -1,4 +1,9 @@
+// Live charts for 'How good is it?' (build_verify_charts.py, 2026-10-10): each check drawn in the page instead of a picture.
+// Data: inputs/check_points.js (strength, reach: the same points as check.html) and verify/verify_points.js (gale stations, wind-index
+// peaks). x = what HKO recorded, y = what this site gave, dashed line = same as HKO. Hover or tap a dot for details.
 (()=>{
+// styles live here so every page that loads this script draws the same charts (How good is it?, Inputs by year); colours from the page's
+// --ink / --mut / --line / --card, own tokens with dark values
 const ST=document.createElement("style"); ST.textContent=`
 :root{--vdot:#2b6cb0;--vgrid:#ececec;--vcat:#d9d9d9;--vsoft:#efece6;--vraise:#fff}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--vdot:#6fa8e8;--vgrid:#262626;--vcat:#3a3a3a;--vsoft:#2a2a2a;--vraise:#3a3a3a}}
@@ -29,12 +34,26 @@ const nm=k=>C.names[k]||String(k).replace(/_(\d{4})$/," $1").replace(/_/g," ").t
 const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const run=r=>`${+r.slice(6,8)} ${MON[+r.slice(4,6)-1]} ${r.slice(0,4)}, ${r.slice(8,10)}Z`;
 const FC=[["ifs2025","ECMWF"],["aifs2025","ECMWF AI"],["ifs2024","ECMWF 2024"],["pangu","Pangu-Weather"],["tigge","Old ECMWF"]];
-
+/*PRIVATE*/const CLS=[[34,"storm"],[48,"severe storm"],[64,"typhoon"],[81,"severe typhoon"],[100,"super typhoon"]];/*/PRIVATE*/
 const WIB=[[14,"fresh"],[25,"strong"],[45,"very strong"],[75,"extreme"]];
 const bias=(b,u,hi,lo)=>Math.round(b)===0?[`0 ${u}`,"about right on average"]:[`${Math.abs(Math.round(b))} ${u}`,`too ${b>0?hi:lo} on average`];
-
-
-const KINDS={ gale:{opts:FC,def:"ifs2025",get:k=>{const g=P.gale[k]; if(!g||!g.pts.length)return null; const by={};
+/*PRIVATE*/function xy(m,lim,u,what,keys,hi,lo){   // strength / reach points of check_points.js
+ return {pts:m.pts.map(p=>({x:p[0],y:p[1],t:nm(keys[p[2]]),s:`forecast from ${run(p[3])}, for ${p[4]}Z`,v:`HKO ${Math.round(p[0])} ${u} · this site ${Math.round(p[1])} ${u}`})),
+  tiles:[[m.stats[2],"storms"],bias(m.stats[0],u,hi,lo),[`${Math.round(m.stats[1])} ${u}`,"typical miss"]]}}/*/PRIVATE*/
+/*PRIVATE*/const CM=window.CMPTS||{};   // Inputs by year, section 4: the methods compared on the old ECMWF forecasts (inputs/compare_points.js)
+function cmp(v,k,lim,step,u,cats,xl,yl,hi,lo){const e=(CM[v]||[])[+k]; if(!e)return null; const nc=key=>(CM.names||{})[key]||nm(key);
+ return {sub:`${e.title} · ${e.sub}`,lo:0,lim,step,cats,xl,yl,pts:e.pts.map(p=>({x:p[0],y:p[1],t:nc(e.keys[p[2]]),s:"",v:`HKO ${Math.round(p[0])} ${u} · estimate ${Math.round(p[1])} ${u}`})),
+  tiles:[[e.stats[2],"storms"],bias(e.stats[0],u,hi,lo),[`${Math.round(e.stats[1])} ${u}`,"typical miss"]],read:`On the dashed line = same as HKO; above = too ${hi}, below = too ${lo}.`}}/*/PRIVATE*/
+const KINDS={/*PRIVATE*/
+ cmp_strength:{opts:[["0","From the pressure"],["1","S2"],["2","S3"]],def:"1",get:k=>cmp("strength",k,150,20,"kt",CLS,"HKO's recorded strength (knots)","estimated strength (knots)","strong","weak")},
+ cmp_reach:{opts:[["0","R2"],["1","R1"]],def:"1",get:k=>cmp("reach",k,500,100,"km",null,"HKO's gale-wind reach toward Hong Kong (km)","reach drawn (km)","far","short")},
+ strength:{opts:FC,def:"ifs2025",get:k=>{const m=C.methods[k]; if(!m)return null; return Object.assign(xy(m.strength,150,"kt","strength",m.strength.keys,"strong","weak"),
+  {sub:`${m.title} · ${m.sub.strength}`,lo:0,lim:150,step:20,cats:CLS,xl:"HKO's recorded strength (knots)",yl:"strength this site used (knots)",
+   read:"On the dashed line = same as HKO; above = too strong, below = too weak."})}},
+ reach:{opts:FC,def:"ifs2025",get:k=>{const m=C.methods[k]; if(!m)return null; return Object.assign(xy(m.reach,500,"km","reach",m.reach.keys,"far","short"),
+  {sub:`${m.title} · ${m.sub.reach}`,lo:0,lim:500,step:100,xl:"HKO's gale-wind reach toward Hong Kong (km)",yl:"reach this site drew (km)",
+   read:"On the dashed line = same as HKO; above = too far, below = too short."})}},
+/*/PRIVATE*/ gale:{opts:FC,def:"ifs2025",get:k=>{const g=P.gale[k]; if(!g||!g.pts.length)return null; const by={};
   g.pts.forEach(([o,m,c])=>{const q=by[o+","+m]||(by[o+","+m]={x:o,y:m,n:0,c:[]}); q.n++; q.c.push(c)});
   const e=g.pts.map(p=>p[1]-p[0]), right=e.filter(v=>v===0).length/e.length, miss=e.reduce((a,v)=>a+Math.abs(v),0)/e.length;
   return {sub:`${g.title} · runs made before HKO's highest signal`,lo:-.5,lim:8.5,step:1,xl:"stations with gale, HKO",yl:"stations with gale, this site (middle version)",
@@ -57,14 +76,14 @@ function draw(box,k){
  box.querySelectorAll(".seg button").forEach(b=>b.classList.toggle("on",b.dataset.v===k)); svg.innerHTML=""; hideTip();
  box.querySelector(".vsub").textContent=D?D.sub:"No numbers for this forecast."; box.querySelector(".vread").textContent=D?D.read+" Hover or tap a dot for details.":"";
  box.querySelector(".vtiles").innerHTML=D?D.tiles.map(([n,l])=>`<div><span class="n">${esc(n)}</span>${esc(l)}</div>`).join(""):""; if(!D)return;
- const W=Math.max(320,Math.min(600,Math.round(box.querySelector(".vbody").clientWidth||600))),H=Math.round(W*.93); svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+ const W=Math.max(320,Math.min(600,Math.round(box.querySelector(".vbody").clientWidth||600))),H=Math.round(W*.93); svg.setAttribute("viewBox",`0 0 ${W} ${H}`);   // drawn at its real width: text stays 11 px on a phone
  const L=58,R=16,T=16,B=48,pw=W-L-R,ph=H-T-B,lo=D.lo,lim=D.lim,X=v=>L+(Math.min(v,lim)-lo)/(lim-lo)*pw,Y=v=>T+ph-(Math.min(v,lim)-lo)/(lim-lo)*ph;
  for(let v=Math.ceil(lo/D.step)*D.step;v<=lim+1e-9;v+=D.step){
   svg.appendChild(el("line",{x1:X(v),x2:X(v),y1:Y(lo),y2:Y(lim),class:"gr"})); svg.appendChild(el("line",{x1:X(lo),x2:X(lim),y1:Y(v),y2:Y(v),class:"gr"}));
   const tx=el("text",{x:X(v),y:Y(lo)+17,"text-anchor":"middle"}); tx.textContent=v; svg.appendChild(tx);
   const ty=el("text",{x:L-8,y:Y(v)+4,"text-anchor":"end"}); ty.textContent=v; svg.appendChild(ty)}
  (D.cats||[]).forEach(([v,lab],i)=>{if(v>=lim)return; svg.appendChild(el("line",{x1:X(v),x2:X(v),y1:Y(lo),y2:Y(lim),class:"cat"}));
-  const t=el("text",{x:X(v)+4,y:T+13+(i%2)*13,class:"catl"}); t.textContent=lab; svg.appendChild(t)});
+  const t=el("text",{x:X(v)+4,y:T+13+(i%2)*13,class:"catl"}); t.textContent=lab; svg.appendChild(t)});   // staggered: no overlap
  svg.appendChild(el("rect",{x:L,y:T,width:pw,height:ph,class:"ax"}));
  svg.appendChild(el("line",{x1:X(lo),y1:Y(lo),x2:X(lim),y2:Y(lim),class:"one"}));
  const xl=el("text",{x:L+pw/2,y:H-8,"text-anchor":"middle",class:"axl"}); xl.textContent=D.xl; svg.appendChild(xl);
@@ -73,7 +92,7 @@ function draw(box,k){
   if(p.n&&r>=10){const t=el("text",{x:cx,y:cy+4,"text-anchor":"middle",class:"bn"}); t.textContent=p.n; g.appendChild(t)} return {cx,cy,r,p}});
  svg.appendChild(g);
  marks.filter(m=>m.p.lab).forEach(m=>{const left=m.cx+7+6.4*m.p.lab.length>W-R, t=el("text",{x:left?m.cx-7:m.cx+7,y:m.cy-6,class:"lab","text-anchor":left?"end":"start"});
-  t.textContent=m.p.lab; svg.appendChild(t)});
+  t.textContent=m.p.lab; svg.appendChild(t)});   // flipped to the left near the right edge
  const hlc=el("circle",{class:"hl",r:6}); hlc.style.display="none"; svg.appendChild(hlc);
  const pick=e=>{const pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const q=pt.matrixTransform(svg.getScreenCTM().inverse()), sc=W/svg.getBoundingClientRect().width;
   let best=null,bd=1e9; for(const m of marks){const d=Math.max(0,Math.hypot(m.cx-q.x,m.cy-q.y)-m.r); if(d<bd){bd=d;best=m}}

@@ -1,5 +1,10 @@
+// DATA AND CREDITS footer on every page (2026-10-17, user: 'do we need to do these for IFS and AIFS (credit them)'): the attribution the
+// data licences ask for, shown prominently. ECMWF open data (IFS, AIFS) and ECMWF's archived ensembles (TIGGE): CC BY 4.0, wording from
+// apps.ecmwf.int/datasets/licences/general (service based on ECMWF data + source + licence + disclaimer + modification notice);
+// Google DeepMind Weather Lab: CC BY 4.0 for past forecasts, live ones under Google's experimental-data terms; Pangu-Weather re-forecasts
+// start from ERA5 (Copernicus); observations from the Hong Kong Observatory. Licence wording stays in English on the Chinese pages.
 (function () {
-  if (document.documentElement.classList.contains("demo")) return;
+  if (document.documentElement.classList.contains("demo")) return;                  // not inside the tour's frames
   var zh = /^zh/.test(document.documentElement.lang || "");
   var css = ".credits{max-width:1060px;margin:28px auto 36px;padding:16px 16px 0;border-top:1px solid var(--line,#d3dbe2);font-size:13px;line-height:1.55;color:var(--mut,#55636f)}"
     + ".credits h2{margin:0 0 6px;font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}.credits p{margin:0 0 8px;max-width:none}.credits a{color:inherit}";

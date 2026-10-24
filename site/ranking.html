@@ -103,7 +103,7 @@ function draw(){
  const rowH=(r,i)=>{const sig=r.sig===10?10:r.sig===9?9:r.sig>=8?8:3, pre=r.pre?"<sup>#</sup>":"";
   return `<tr class="${sig===10?"s10":sig===9?"s9":""}${me&&key(r)===me?" me":""}"><td>${i}</td><td class="l">${r.y} ${nm(r)}${me&&key(r)===me?` <span class="mut">${T("· this storm","· 本熱帶氣旋")}</span>`:""}</td>`
    +`<td><span class="sg sg${sig}">${ZH?SIGZ[sig]:"No. "+sig}</span></td>`
-   +(SHOWCAT?`<td>${r.cat?(ZH?CAT[r.cat][1]:CAT[r.cat][0])+pre:"–"}</td>`:"")
+   +(SHOWCAT?`<td>${r.cat?(ZH?CAT[r.cat][1]:CAT[r.cat][0])+pre+(r.catbt?"<sup>≈</sup>":""):"–"}</td>`:"")
    +`<td>${r.dir?(ZH?DIRZ[r.dir]:r.dir)+pre:"–"} ${r.km!=null?r.km+pre:""}</td><td>${r.a60!=null?r.a60.toFixed(1):"–"}</td><td><b>${r.a10.toFixed(1)}</b></td><td>${r.g}</td></tr>`};
  let body="", i=0, put=false;
  rows.forEach(r=>{if(fcRow&&!put&&r.a10<=F.v){i++; put=true; body+=fcTr(i)} i++; body+=NAR?rowN(r,i):rowH(r,i)});
@@ -113,8 +113,8 @@ function draw(){
   +(SHOWCAT?"<td>–</td>":"")+`<td>–</td><td>–</td><td>${Math.round(F.v)}</td><td>${gTxt}</td></tr>`}
  h+=`<div class="tw"><table${NAR?' class="nar"':""}><thead>${NAR?headN:head}</thead><tbody>${body}</tbody></table></div>`;+(NAR?`<p class="note">${T(`On a wider screen the table also shows the ${SHOWCAT?"category, ":""}direction and distance at closest approach and the 60-minute average.`,`在較闊的屏幕上，此表亦會顯示最接近時的${SHOWCAT?"強度、":""}方位及距離和 60 分鐘平均值。`)}</p>`:"");
  h+=`<div class="key"><span><i style="background:var(--r10)"></i>${T("No. 10","十號")}</span><span><i style="background:var(--r9)"></i>${T("No. 9","九號")}</span>${fcRow?`<span><i style="background:var(--fcbg);border-color:var(--fc)"></i>${T("this forecast","本預報")}</span>`:""}</div>`;
- h+=`<p class="note">${T(`Ranked by the 10-minute average, the one this site estimates (the Observatory's own table ranks by the 60-minute column). No. 8 or higher: the Observatory's 2007–2026 comparison table (cases in 2012 or earlier use the Lau Fau Shan station; # = preliminary). No. 3: the Observatory's tropical cyclone reports as compiled on Wikipedia; the Observatory's table gives no 60-minute average${SHOWCAT?" or category":""} for them.${fcRow?" The forecast row is a reference only: one member's estimated station winds, averaged.":""}`,
-  `按 10 分鐘平均值排列（即本網站估算的數值；天文台的原表按 60 分鐘欄排列）。八號或以上：天文台 2007 至 2026 年比較表（2012 年或以前的個案以流浮山測風站統計；# 為初步數據）。三號：天文台熱帶氣旋報告（維基百科整理）；天文台的表沒有這些熱帶氣旋的 60 分鐘平均值${SHOWCAT?"及強度":""}。${fcRow?"預測一行僅供參考：為單一成員估算的各站風速平均。":""}`)}</p>`;
+ h+=`<p class="note">${T(`Ranked by the 10-minute average, the one this site estimates (the Observatory's own table ranks by the 60-minute column). No. 8 or higher: the Observatory's 2007–2026 comparison table (cases in 2012 or earlier use the Lau Fau Shan station; # = preliminary). No. 3: the Observatory's tropical cyclone reports as compiled on Wikipedia; the Observatory's table gives no 60-minute average${SHOWCAT?" or category":""} for them${SHOWCAT?" (≈ = category from the Observatory's best track, its strongest hour within 3 hours of closest approach; done this way, 36 of the 40 storms in the Observatory's table get its own category)":""}.${fcRow?" The forecast row is a reference only: one member's estimated station winds, averaged.":""}`,
+  `按 10 分鐘平均值排列（即本網站估算的數值；天文台的原表按 60 分鐘欄排列）。八號或以上：天文台 2007 至 2026 年比較表（2012 年或以前的個案以流浮山測風站統計；# 為初步數據）。三號：天文台熱帶氣旋報告（維基百科整理）；天文台的表沒有這些熱帶氣旋的 60 分鐘平均值${SHOWCAT?"及強度":""}${SHOWCAT?"（≈ 為按天文台最佳路徑估計的強度：取最接近時前後 3 小時內的最高強度；以此方法，天文台表中 40 個熱帶氣旋有 36 個與其所列強度相同）":""}。${fcRow?"預測一行僅供參考：為單一成員估算的各站風速平均。":""}`)}</p>`;
  if(!fcRow) h+=`<p class="note">${T("To place a forecast here, open a run on the forecast page, then 'Stations' → 'See it in the storm ranking'.","如要把預測放進此表：在預報頁打開一個運行，再按「測風站」→「在熱帶氣旋排名中查看」。")}</p>`;
  const M=document.getElementById("main"); M.innerHTML=h;
  M.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{ALL=b.dataset.a==="1"; draw()});
