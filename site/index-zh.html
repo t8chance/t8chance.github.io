@@ -221,7 +221,7 @@ footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin
 </div>
 <script src="../data/all.js"></script>
 <script src="../data/truth.js"></script>
-<script src="coast.js"></script><script src="ranking_data.js"></script>
+<script src="coast.js"></script><script src="ranking_data.js"></script><script src="metwarn_posts.js"></script>
 <script>
 const $=s=>document.querySelector(s), HK=window.HK||{}, cycles=Object.keys(HK).sort().reverse();
 const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -561,9 +561,10 @@ function drawR2R(){const box=$("#r2r"); if(!box)return; const card=box.closest("
  const pick=R2RSEL==="all"&&avail.length>1?"all":avail.includes(R2RSEL)?R2RSEL:avail.includes(ens)?ens:avail[0];
  const ens_=BASIC?(ens==="deepmind"&&avail.includes(ens)?[ens]:ORDER.filter(e=>MODES.ec.includes(e)&&avail.includes(e))):pick==="all"?["all"]:pick?[pick]:[];
  if(!ens_.length){card.style.display="none";return}
+ const MWA=ens_[0]==="all"?cs.flatMap(k=>(window.MWPOSTS||{})[k]||[]).map(p=>({t:Date.parse(p[0]+":00Z"),lv:p[1],lo:p[2],hi:p[3],w:p[4],pic:p[5]})):[];
  card.style.display=""; card.classList.toggle("r2rall",ens_[0]==="all");
  const PW=Math.round(box.clientWidth||600), W=Math.max(300,PW), H=ens_[0]==="all"?180:150, L=30, R=ens_[0]==="all"?(W<480?58:84):10, T=10, B=24;
- const ts=runs.map(tUc), t0=Math.min(...ts)-3*36e5, t1=Math.max(...ts)+3*36e5, X=t=>L+(W-L-R)*(t-t0)/Math.max(t1-t0,1);
+ const ts=runs.map(tUc).concat(MWA.map(p=>p.t)), t0=Math.min(...ts)-3*36e5, t1=Math.max(...ts)+3*36e5, X=t=>L+(W-L-R)*(t-t0)/Math.max(t1-t0,1);
  const hko=cs.map(c=>HKOEV[c]&&HKOEV[c].L3).filter(Boolean).map(y=>[Date.parse(String(y[0]).replace(" ","T")+(String(y[0]).length<=16?":00Z":"Z")),Date.parse(String(y[1]).replace(" ","T")+(String(y[1]).length<=16?":00Z":"Z"))]);
  const SGc=[["No3","var(--no3)"],["No8","var(--no8)"],["No10","var(--no10)"]], SGN_={No3:"No. 3",No8:"No. 8",No10:"No. 10"}, pc=(p,sg)=>100*p[sg]/p.M, Y=v=>T+(H-T-B)*(1-v/100);
  const frame=()=>{let g=hko.map(([a,b])=>{const x0=Math.max(X(a),L),x1=Math.min(X(b),W-R);return x1>x0?`<rect x="${x0}" y="${T}" width="${x1-x0}" height="${H-T-B}" style="fill:var(--ink)" opacity=".08"></rect>`:""}).join("");
@@ -585,6 +586,8 @@ function drawR2R(){const box=$("#r2r"); if(!box)return; const card=box.closest("
    g+=P.filter(p=>!p.na).map(p=>`<circle cx="${X(tUc(p.c)).toFixed(1)}" cy="${Y(pc(p,sg)).toFixed(1)}" r="${p.c===cyc&&e===ens?4.5:3.2}" style="fill:${col};stroke:var(--card)" stroke-width="1.2" data-c="${p.c}" data-e="${e}"><title>${fmtc(p.c)}: ${SGN_[sg]} ${Math.round(pc(p,sg))}% (${p[sg]} of ${p.M} members)</title></circle>`).join("")});
   return `<div class="r2rp"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="chance of No. 3, 8 and 10 in each run">${g}</svg></div>`};
  const all=sg=>{const col=SGc.find(x=>x[0]===sg)[1]; let g=frame(), labs=[];
+  const MW=MWA.filter(p=>p.lv==={No3:3,No8:8,No10:10}[sg]);
+  MW.forEach(p=>{const x=X(p.t), y1=Y(p.hi), y0=Y(p.lo); g+=`<rect class="mwr" x="${(x-3.5).toFixed(1)}" y="${y1.toFixed(1)}" width="7" height="${Math.max(3,y0-y1).toFixed(1)}" rx="3.5" style="fill:var(--ink);stroke:var(--ink)" fill-opacity=".22" stroke-width="1.2"><title>MET WARN, ${hktS(p.t)} HK time: ${p.w} (${p.lo}–${p.hi}%) for ${SGN_[sg]}${p.pic?" · picture post":""}</title></rect>`});
   avail.forEach(e=>{const P=runs.map(c=>nRun(c,e)).filter(Boolean), [da,sh]=FSTY[e]||["","circle"], Q=P.filter(p=>!p.na);
    g+=`<path d="${path(P,sg)}" fill="none" style="stroke:${col}" stroke-width="2"${da?` stroke-dasharray="${da}"`:""}></path>`;
    g+=Q.map(p=>r2rMk(sh,X(tUc(p.c)),Y(pc(p,sg)),p.c===cyc&&e===ens?4.6:3.3,col,` data-c="${p.c}" data-e="${e}"`)+`<title>${fmtc(p.c)} · ${FCN[e]||e}: ${SGN_[sg]} ${Math.round(pc(p,sg))}% (${p[sg]} of ${p.M} members)</title>`+r2rMkEnd(sh)).join("");
@@ -593,8 +596,9 @@ function drawR2R(){const box=$("#r2r"); if(!box)return; const card=box.closest("
   labs.forEach(l=>{g+=`<line x1="${(l.x+5).toFixed(1)}" x2="${W-R+3}" y1="${l.y0.toFixed(1)}" y2="${l.y.toFixed(1)}" style="stroke:var(--mut)" stroke-width=".8"></line><text x="${W-R+6}" y="${(l.y+4).toFixed(1)}" font-size="11" font-weight="600" style="fill:var(--ink)">${FSH[l.e]||l.e}</text>`});
   const sw=e=>{const [da,sh]=FSTY[e]||["","circle"]; return `<svg width="38" height="12" viewBox="0 0 38 12" aria-hidden="true"><line x1="1" x2="37" y1="6" y2="6" style="stroke:${col}" stroke-width="2"${da?` stroke-dasharray="${da}"`:""}></line>${r2rMk(sh,19,6,3.6,col,"")}${r2rMkEnd(sh)}</svg>`};
   return `<div class="r2rp"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="chance of ${SGN_[sg]} in each run, every forecast">${g}</svg></div>`
-   +`<div class="r2rlgA">${avail.map(e=>`<span>${sw(e)}${FCN[e]||e}</span>`).join("")}</div>`
-   +`<p class="r2rallnote">All forecasts: chance of ${SGN_[sg]} only. Each forecast has its own line style, marker and name at the end of its line.</p>`};
+   +`<div class="r2rlgA">${avail.map(e=>`<span>${sw(e)}${FCN[e]||e}</span>`).join("")}${MW.length?`<span><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="3.5" y="1" width="7" height="12" rx="3.5" style="fill:var(--ink);stroke:var(--ink)" fill-opacity=".22" stroke-width="1.2"></rect></svg>MET WARN</span>`:""}</div>`
+   +`<p class="r2rallnote">All forecasts: chance of ${SGN_[sg]} only. Each forecast has its own line style, marker and name at the end of its line.</p>`
+   +(MW.length?`<p class="r2rallnote">MET WARN: each bar is the range it posted for ${SGN_[sg]}, at the time of the post (an unofficial channel; How good is it? compares the two).</p>`:"")};
  const ctl=BASIC||avail.length<2?"":`<div class="r2rctl"><span class="seg" role="group" aria-label="forecast shown">${avail.map(e=>`<button type="button" data-r="${e}" class="${pick===e?"on":""}">${FSH[e]||e}</button>`).join("")}<button type="button" data-r="all" class="${pick==="all"?"on":""}">All forecasts</button></span>`
   +(pick==="all"?`<span class="seg" role="group" aria-label="signal compared">${SGc.map(([sg])=>`<button type="button" data-sg="${sg}" class="${R2RSIG===sg?"on":""}">${SGN_[sg]}</button>`).join("")}</span>`:"")+`</div>`;
  box.innerHTML=ctl+ens_.map(e=>e==="all"?all(R2RSIG):one(e)).join("");
