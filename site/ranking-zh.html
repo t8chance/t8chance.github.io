@@ -75,7 +75,8 @@ const FN={ifsens:["ECMWF physics (IFS)","ECMWF 物理模式（IFS）"],aifsens:[
 const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const runLab=r=>r&&/^\d{10}$/.test(r)?T(`${+r.slice(6,8)} ${MON[+r.slice(4,6)-1]} ${r.slice(0,4)} ${r.slice(8,10)}Z`,`${r.slice(0,4)}年${+r.slice(4,6)}月${+r.slice(6,8)}日 ${r.slice(8,10)}時 UTC`):"";
 const Q=new URLSearchParams(location.search), num=k=>{const x=parseFloat(Q.get(k)); return isFinite(x)?x:null};
-const F={v:num("v"),g:num("g"),glo:num("glo"),ghi:num("ghi"),f:Q.get("f"),r:Q.get("r"),m:Q.get("m"),top:Q.get("top")==="1",c:(Q.get("c")||"").trim()};
+const F={v:num("v"),g:num("g"),glo:num("glo"),ghi:num("ghi"),f:Q.get("f"),r:Q.get("r"),m:Q.get("m"),top:Q.get("top")==="1",c:(Q.get("c")||"").trim(),cd:Q.get("cd"),ca:num("ca"),cc:Q.get("cc")};
+const FILLF=false;
 const mLab=()=>Q.get("det")==="1"?T("deterministic run","高解像度預報"):Q.get("det")==="2"?T("control run","控制預報"):T(`member ${F.m}`,`成員 ${F.m}`);
 const ord=n=>ZH?`第 ${n} 位`:n+((n%100>=11&&n%100<=13)?"th":({1:"st",2:"nd",3:"rd"}[n%10]||"th"));
 let ALL=false;
@@ -110,7 +111,7 @@ function draw(){
  if(fcRow&&!put){i++; body+=fcTr(i)}
  function fcTr(k){if(NAR)return `<tr class="fc"><td>${k}</td><td class="l">${T("This forecast","本預報")} <span class="mut">${F.m?mLab():""}</span></td><td>${Math.round(F.v)}</td><td>${gTxt}</td></tr>`;
   return `<tr class="fc"><td>${k}</td><td class="l">${T("This forecast","本預報")} <span class="mut">${F.m?mLab():""}</span></td><td><span class="sg sgf">${T("forecast","預測")}</span></td>`
-  +(SHOWCAT?"<td>–</td>":"")+`<td>–</td><td>–</td><td>${Math.round(F.v)}</td><td>${gTxt}</td></tr>`}
+  +(SHOWCAT?`<td>${FILLF&&F.cc&&CAT[F.cc]?(ZH?CAT[F.cc][1]:CAT[F.cc][0]):"–"}</td>`:"")+`<td>${FILLF&&F.cd&&DIRZ[F.cd]&&F.ca!=null?(ZH?DIRZ[F.cd]:F.cd)+" "+F.ca:"–"}</td><td>–</td><td>${Math.round(F.v)}</td><td>${gTxt}</td></tr>`}
  h+=`<div class="tw"><table${NAR?' class="nar"':""}><thead>${NAR?headN:head}</thead><tbody>${body}</tbody></table></div>`;+(NAR?`<p class="note">${T(`On a wider screen the table also shows the ${SHOWCAT?"category, ":""}direction and distance at closest approach and the 60-minute average.`,`在較闊的屏幕上，此表亦會顯示最接近時的${SHOWCAT?"強度、":""}方位及距離和 60 分鐘平均值。`)}</p>`:"");
  h+=`<div class="key"><span><i style="background:var(--r10)"></i>${T("No. 10","十號")}</span><span><i style="background:var(--r9)"></i>${T("No. 9","九號")}</span>${fcRow?`<span><i style="background:var(--fcbg);border-color:var(--fc)"></i>${T("this forecast","本預報")}</span>`:""}</div>`;
  h+=`<p class="note">${T(`Ranked by the 10-minute average, the one this site estimates (the Observatory's own table ranks by the 60-minute column). No. 8 or higher: the Observatory's 2007–2026 comparison table (cases in 2012 or earlier use the Lau Fau Shan station; # = preliminary). No. 3: the Observatory's tropical cyclone reports as compiled on Wikipedia; the Observatory's table gives no 60-minute average${SHOWCAT?" or category":""} for them${SHOWCAT?" (≈ = category from the Observatory's best track, its strongest hour within 3 hours of closest approach; done this way, 36 of the 40 storms in the Observatory's table get its own category)":""}.${fcRow?" The forecast row is a reference only: one member's estimated station winds, averaged.":""}`,

@@ -286,7 +286,7 @@ function rank8Member(t){if(!t||!t.gst)return "";
  const v=r8val(t), skip=(casesOf(cyc)[0]||"").toLowerCase(), hk=casesOf(cyc).map(c=>[c,HKOWIND[c]]).find(x=>x[1]);
  const obs=hk?(o=>`<div class="r8s">HKO recorded ${o.toFixed(1)} km/h, ${ordE(r8rank(o,hk[0].toLowerCase()))} of the ${R8N}.</div>`)(r8hko(hk[0],hk[1])):"";
  const head=`8-station average in this forecast (reference only): <b>${Math.round(v)} km/h</b>`;
- const go8=`<div class="r8s"><a href="ranking-zh.html?v=${v.toFixed(1)}&g=${t.gale!=null?Math.round(t.gale):""}&glo=${t.gale_lo??""}&ghi=${t.gale_hi??""}&f=${ens}&r=${cyc}&m=${t.m}${memLab(t.m)!=="member "+t.m?"&det="+(t.m===52?"1":"2"):""}${TR&&t.m===TR.top&&ens!=="deepmind"?"&top=1":""}&c=${encodeURIComponent(casesOf(cyc)[0]||"")}" data-rktab="1">See it in the storm ranking</a></div>`;
+ const go8=`<div class="r8s"><a href="ranking-zh.html?v=${v.toFixed(1)}&g=${t.gale!=null?Math.round(t.gale):""}&glo=${t.gale_lo??""}&ghi=${t.gale_hi??""}&f=${ens}&r=${cyc}&m=${t.m}${memLab(t.m)!=="member "+t.m?"&det="+(t.m===52?"1":"2"):""}${TR&&t.m===TR.top&&ens!=="deepmind"?"&top=1":""}${FILLF?caQ(t):""}&c=${encodeURIComponent(casesOf(cyc)[0]||"")}" data-rktab="1">See it in the storm ranking</a></div>`;
  if(v<R8MIN)return `<div class="r8"><div>${head}</div><div class="r8s">Below ${R8MIN} km/h: outside the top ${RANK8.filter(r=>r[2]>=R8MIN).length} of the ${R8N} storms since 2007; the forecast cannot rank weaker storms finely.</div>${obs}${go8}</div>`;
  return `<div class="r8"><div>${head} · would rank about <b>${ordE(r8rank(v,skip))}</b> of the ${R8N} storms since 2007</div>${r8near(v,skip)}${obs}${go8}</div>`}
 const caseOf=c=>{const p=PAST.find(p=>c>=p[0]&&c<=p[1]);return p?p[2].split(" — ")[0]:null};
@@ -904,6 +904,17 @@ function stationDist(i,t0,Wp){const M=(GA&&GA.members)||50, best={}, hko=casesOf
 let RKALL=false;
 document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("a[data-rktab]"); if(!a||!$("#tabs"))return; e.preventDefault();
  tab="rk"; drawTabs(); chart(); try{$("#chead").scrollIntoView({behavior:"smooth",block:"start"})}catch(x){}});
+const FILLF=false, C16=["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+function caInfo(t){const P=(t&&t.pts)||[]; if(P.length<2)return {}; const S=[];
+ for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1],ha=labH(a[3]),hb=labH(b[3]),K=Math.max(1,Math.round((hb-ha)*2));
+  for(let k=0;k<K;k++){const f=k/K; S.push({lo:a[0]+(b[0]-a[0])*f,la:a[1]+(b[1]-a[1])*f,h:ha+(hb-ha)*f,v:a[2]!=null&&b[2]!=null?a[2]+(b[2]-a[2])*f:null})}}
+ const Z=P[P.length-1]; S.push({lo:Z[0],la:Z[1],h:labH(Z[3]),v:Z[2]});
+ const m=S.reduce((x,y)=>dist(y.lo,y.la)<dist(x.lo,x.la)?y:x,S[0]), km=dist(m.lo,m.la);
+ const dx=(m.lo-114.174)*Math.cos(22.302*Math.PI/180)*111.32, dy=(m.la-22.302)*110.57, dir=C16[Math.round(((Math.atan2(dx,dy)*180/Math.PI+360)%360)/22.5)%16];
+ const vs=S.filter(s=>Math.abs(s.h-m.h)<=3+1e-6&&s.v!=null).map(s=>s.v), v=vs.length?Math.max(...vs):null;
+ const cat=null;
+ return {dir, km:km<50?Math.max(5,Math.round(km/5)*5):Math.round(km/10)*10, cat}}
+const caQ=t=>{const c=caInfo(t); return c.dir?`&cd=${c.dir}&ca=${c.km}${c.cat?"&cc="+c.cat:""}`:""};
 function rankView(t){const R=window.RANKT||[], ZH=/^zh/.test(document.documentElement.lang||""), T_=(e,z)=>ZH?z:e, NAR=innerWidth<700;
  const SHOWCAT=false;
  const CAT={SuperT:["Super Typhoon","超強颱風"],ST:["Severe Typhoon","強颱風"],T:["Typhoon","颱風"],STS:["Severe Tropical Storm","強烈熱帶風暴"],TS:["Tropical Storm","熱帶風暴"],TD:["Tropical Depression","熱帶低氣壓"]};
@@ -915,7 +926,8 @@ function rankView(t){const R=window.RANKT||[], ZH=/^zh/.test(document.documentEl
  const sgB=s=>`<span class="rksg rksg${s}">${ZH?SIGZ[s]:"No. "+s}</span>`, sigOf=r=>r.sig===10?10:r.sig===9?9:r.sig>=8?8:3;
  const rowW=(r,i)=>{const s=sigOf(r), pre=r.pre?"<sup>#</sup>":"", mine=me&&key(r)===me, nm=`${r.y} ${ZH?r.zh:r.n}${mine?` <span class="mut">${T_("· this storm","· 本熱帶氣旋")}</span>`:""}`;
   return `<tr class="${s===10?"s10":s===9?"s9":""}${mine?" me":""}"><td>${i}</td><td class="l">${nm}${NAR?sgB(s):""}</td>${NAR?"":`<td>${sgB(s)}</td>${SHOWCAT?`<td>${r.cat?(ZH?CAT[r.cat][1]:CAT[r.cat][0])+pre+(r.catbt?`<sup title="${T_("category from the Observatory’s best track","按天文台最佳路徑估計")}">≈</sup>`:""):"–"}</td>`:""}<td>${r.dir?(ZH?DIRZ[r.dir]:r.dir)+pre:"–"} ${r.km!=null?r.km+pre:""}</td><td>${r.a60!=null?r.a60.toFixed(1):"–"}</td>`}<td><b>${r.a10.toFixed(1)}</b></td><td>${r.g}</td></tr>`};
- const rowF=i=>`<tr class="fc"><td>${i}</td><td class="l">${BASIC?T_("This path","此路徑"):T_("This forecast","本預報")} <span class="mut">${BASIC?"":who}</span></td>${NAR?"":`<td><span class="rksg rksgf">${T_("forecast","預測")}</span></td>${SHOWCAT?"<td>–</td>":""}<td>–</td><td>–</td>`}<td>${Math.round(v)}</td><td>${gT}</td></tr>`;
+ const FC=FILLF?caInfo(t):{};
+ const rowF=i=>`<tr class="fc"><td>${i}</td><td class="l">${BASIC?T_("This path","此路徑"):T_("This forecast","本預報")} <span class="mut">${BASIC?"":who}</span></td>${NAR?"":`<td><span class="rksg rksgf">${T_("forecast","預測")}</span></td>${SHOWCAT?`<td>${FC.cat?(ZH?CAT[FC.cat][1]:CAT[FC.cat][0]):"–"}</td>`:""}<td>${FC.dir?(ZH?DIRZ[FC.dir]:FC.dir)+" "+FC.km:"–"}</td><td>–</td>`}<td>${Math.round(v)}</td><td>${gT}</td></tr>`;
  let body="", i=0, put=v==null; rows.forEach(r=>{if(!put&&r.a10<=v){i++; put=true; body+=rowF(i)} i++; body+=rowW(r,i)}); if(!put){i++; body+=rowF(i)}
  const head=NAR?`<tr><th>#</th><th class="l">${T_("Tropical cyclone","熱帶氣旋")}</th><th>${T_("8-station average, highest 10-min mean (km/h)","8 站最高十分鐘平均風速的平均（公里/小時）")}</th><th>${T_("Stations at gale (of 8)","達烈風站數")}</th></tr>`
   :`<tr><th rowspan="2">#</th><th rowspan="2" class="l">${T_("Tropical cyclone","熱帶氣旋")}</th><th rowspan="2">${T_("Highest signal","最高信號")}</th><th colspan="${SHOWCAT?2:1}">${T_("At closest approach","最接近香港天文台時")}</th><th colspan="2">${T_("8-station average of the highest mean wind (km/h)","8 個參考測風站最高平均風速的平均值（公里/小時）")}</th><th rowspan="2">${T_("Stations reaching gale (of 8)","達烈風站數（8 站中）")}</th></tr>`
