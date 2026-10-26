@@ -1,6 +1,6 @@
 (function(){
 "use strict";
-const STORM={"Chanthu":"燦都","Dianmu":"電母","Fanapi":"凡亞比","Jebi":"飛燕","Mawar":"瑪娃","Megi":"鮎魚","Mujigae":"彩虹","Neoguri":"浣熊","Nock-Ten":"洛坦","Pabuk":"帕布","Rammasun":"威馬遜","Rumbia":"溫比亞","Sarika":"莎莉嘉","Soudelor":"蘇迪羅","Trami":"潭美","Yinxing":"銀杏","Barijat":"百里嘉","Bebinca":"貝碧嘉","Cempaka":"查帕卡","Chaba":"暹芭","Danas":"丹娜絲","Doksuri":"杜蘇芮","Ewiniar":"艾雲尼","Fengshen":"風神","Fung-wong":"鳳凰","Fung-Wong":"鳳凰","Goni":"天鵝","Hagupit":"黑格比","Haima":"海馬","Hato":"天鴿","Higos":"海高斯","Kai-Tak":"啟德","Kajiki":"劍魚","Kalmaegi":"海鷗","Kammuri":"北冕","Khanun":"卡努","Koinu":"小犬","Kompasu":"圓規","Koppu":"巨爵","Linfa":"蓮花","Lionrock":"獅子山","Lupit":"盧碧","Ma-On":"馬鞍","Maliksi":"馬力斯","Mangkhut":"山竹","Matmo":"麥德姆","Maysak":"美莎克","Merbok":"苗柏","Mitag":"米娜","Molave":"莫拉菲","Mulan":"木蘭","Nalgae":"尼格","Nangka":"浪卡","Nesat":"納沙","Nida":"妮妲","Nongfa":"藍湖","Noul":"紅霞","Nuri":"鸚鵡","Pakhar":"帕卡","Podul":"楊柳","Ragasa":"樺加沙","Roke":"洛克","Saola":"蘇拉","Saudel":"沙德爾","Sinlaku":"森拉克","Son-Tinh":"山神","Talim":"泰利","Tapah":"塔巴","Toraji":"桃芝","Usagi":"天兔","Utor":"尤特","Vicente":"韋森特","Wipha":"韋帕","Wutip":"蝴蝶","Yagi":"摩羯","Yutu":"玉兔"};
+const STORM={"Champi":"薔琵","Chanthu":"燦都","Dianmu":"電母","Fanapi":"凡亞比","Jebi":"飛燕","Mawar":"瑪娃","Megi":"鮎魚","Mujigae":"彩虹","Neoguri":"浣熊","Nock-Ten":"洛坦","Pabuk":"帕布","Rammasun":"威馬遜","Rumbia":"溫比亞","Sarika":"莎莉嘉","Soudelor":"蘇迪羅","Trami":"潭美","Yinxing":"銀杏","Barijat":"百里嘉","Bebinca":"貝碧嘉","Cempaka":"查帕卡","Chaba":"暹芭","Danas":"丹娜絲","Doksuri":"杜蘇芮","Ewiniar":"艾雲尼","Fengshen":"風神","Fung-wong":"鳳凰","Fung-Wong":"鳳凰","Goni":"天鵝","Hagupit":"黑格比","Haima":"海馬","Hato":"天鴿","Higos":"海高斯","Kai-Tak":"啟德","Kajiki":"劍魚","Kalmaegi":"海鷗","Kammuri":"北冕","Khanun":"卡努","Koinu":"小犬","Kompasu":"圓規","Koppu":"巨爵","Linfa":"蓮花","Lionrock":"獅子山","Lupit":"盧碧","Ma-On":"馬鞍","Maliksi":"馬力斯","Mangkhut":"山竹","Matmo":"麥德姆","Maysak":"美莎克","Merbok":"苗柏","Mitag":"米娜","Molave":"莫拉菲","Mulan":"木蘭","Nalgae":"尼格","Nangka":"浪卡","Nesat":"納沙","Nida":"妮妲","Nongfa":"藍湖","Noul":"紅霞","Nuri":"鸚鵡","Pakhar":"帕卡","Podul":"楊柳","Ragasa":"樺加沙","Roke":"洛克","Saola":"蘇拉","Saudel":"沙德爾","Sinlaku":"森拉克","Son-Tinh":"山神","Talim":"泰利","Tapah":"塔巴","Toraji":"桃芝","Usagi":"天兔","Utor":"尤特","Vicente":"韋森特","Wipha":"韋帕","Wutip":"蝴蝶","Yagi":"摩羯","Yutu":"玉兔"};
 const NO={"1":"一號","3":"三號","8":"八號","9":"九號","10":"十號"};
 const MON={Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12};
 const MONF={January:1,February:2,March:3,April:4,May:5,June:6,July:7,August:8,September:9,October:10,November:11,December:12};
@@ -113,8 +113,9 @@ const EX=new Map(Object.entries({
 }));
 const RX=[
  [/^No\. (8 and 9|\d+) \((\d+) storms?\)$/,(m,a,n)=>`${a==="8 and 9"?"八號及九號":NO[a]}（${n} 個）`],
- [/^· produced (\S+ \S+) UTC \((\d+) h ago\)(?: · past case: (.+?) — HKO No\. (\d+) on (.+?) \(a fair test: not used to set up the site\))?$/,
-  (m,t,h,c,n,d)=>` · ${t} UTC 計算（${h} 小時前）`+(c?` · 過往熱帶氣旋：${G(c)}，天文台曾於${G(d)}發出${NO[n]}信號（沒有用於調校本網站）`:"")],
+ [/^No signal \((\d+) storms?\)$/,(m,n)=>`沒有信號（${n} 個）`],
+ [/^· produced (\S+ \S+) UTC \((\d+) h ago\)(?: · past case: (.+?) — (?:HKO No\. (\d+) on (.+?)|no HKO signal) \(a fair test: not used to set up the site\))?$/,
+  (m,t,h,c,n,d)=>` · ${t} UTC 計算（${h} 小時前）`+(c?` · 過往熱帶氣旋：${G(c)}，`+(n?`天文台曾於${G(d)}發出${NO[n]}信號`:"天文台沒有發出信號")+"（沒有用於調校本網站）":"")],
  [/^of (\d+) members pass within (\d+) km ·$/,(m,a,b)=>` / ${a} 個集合成員在香港 ${b} 公里範圍內掠過 · `],
  [/^within (\d+) km(?: · deterministic run (\d+) km)?$/,(m,a,b)=>` 個在 ${a} 公里範圍內`+(b?` · 高解像度預報最接近時相距 ${b} 公里`:"")],
  [/^of (\d+)$/,(m,a)=>` / ${a} `],
