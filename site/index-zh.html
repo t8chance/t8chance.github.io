@@ -514,8 +514,13 @@ function head(){
  $("#cyc").innerHTML=runs.map(c=>`<option value="${c}"${c===cyc?" selected":""}>${fmtc(c)}</option>`).join("");
  const go=c=>{if(!c)return; cyc=c;NOSAME=null;PICKED=false;sel=null;selH=null; chooseEns(c); head();load()};
  const fam=c=>CHOSEN?MODES[mode].some(e=>(HK[c]||{})[e]):DEFR(c), pick=a=>a&&(a===rec&&!CHOSEN&&OPEN()||a.find(fam)||a[0]);
- $("#yearSel").onchange=e=>{const y=e.target.value; if(y==="__recent"){pickedStorm=null;go(pick(rec));return} const k=stormsIn(y).find(x=>ST[x].some(fam))||stormsIn(y)[0]; pickedStorm=k; go(pick(ST[k]))};
- $("#stormSel").onchange=e=>{const k=e.target.value; if(k==="__recent"){go(pick(rec));return} pickedStorm=k; go(pick(ST[k]))};
+ const cMs=c=>Date.UTC(+c.slice(0,4),+c.slice(4,6)-1,+c.slice(6,8),+c.slice(8,10));
+ const cpaOf=k=>{const tr=((window.HKTRUTH||{})[k]||{}).track; if(!tr||!tr.length) return null; let b=null,bd=1e9;
+  tr.forEach(p=>{const d=Math.hypot((p[0]-114.17)*0.925,p[1]-22.3); if(d<bd){bd=d;b=p[3]}}); return b?Date.parse(String(b).slice(0,16)+":00Z"):null};
+ const pickStorm=k=>{const a=ST[k]; if(!a) return null; const t0=cpaOf(k); if(t0==null) return pick(a); const w=t0-72*36e5, pool=a.some(fam)?a.filter(fam):a;
+  return pool.reduce((b,c)=>Math.abs(cMs(c)-w)<Math.abs(cMs(b)-w)?c:b)};
+ $("#yearSel").onchange=e=>{const y=e.target.value; if(y==="__recent"){pickedStorm=null;go(pick(rec));return} const k=stormsIn(y).find(x=>ST[x].some(fam))||stormsIn(y)[0]; pickedStorm=k; go(pickStorm(k))};
+ $("#stormSel").onchange=e=>{const k=e.target.value; if(k==="__recent"){go(pick(rec));return} pickedStorm=k; go(pickStorm(k))};
  $("#cyc").onchange=e=>go(e.target.value);
  $("#viewbtns").querySelectorAll("button").forEach(b=>b.onclick=()=>{
   if(b.dataset.v==="today"){if(!today&&rec.length){pickedStorm=null;go(pick(rec))} return}
