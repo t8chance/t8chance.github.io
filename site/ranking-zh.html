@@ -84,7 +84,7 @@ const nm=r=>ZH?`${r.zh}`:r.n, key=r=>`${r.n} ${r.y}`.toLowerCase();
 function draw(){
  const rows=(window.RANKT||[]).filter(r=>ALL||r.sig>=8), me=F.c.toLowerCase();
  const fcRow=F.v!=null, rk=fcRow?1+rows.filter(r=>r.a10>F.v).length:null, n=rows.length+(fcRow?1:0);
- const gTxt=F.g==null?"–":`${Math.round(F.g)}${F.glo!=null&&F.ghi!=null&&F.ghi>F.glo?` <span class="mut">(${F.glo}–${F.ghi})</span>`:""}`;
+ const gTxt=F.g==null?"–":`${Math.round(F.g)}`;
  const fcLab=fcRow?T(`This forecast · ${(FN[F.f]||[F.f||""])[0]}${F.r?", "+runLab(F.r):""}${F.m?`, ${mLab()}${F.top?" (most threatening)":""}`:""}`,
                      `本預報 · ${(FN[F.f]||[,F.f||""])[1]}${F.r?"，"+runLab(F.r):""}${F.m?`，${mLab()}${F.top?"（最具威脅）":""}`:""}`):"";
  let h=`<p class="kicker">${T("Storm ranking","熱帶氣旋排名")}</p><h1>${T("How windy did Hong Kong get?","香港風力有多強？")}</h1>`

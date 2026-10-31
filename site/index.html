@@ -516,9 +516,9 @@ function head(){
  $("#yearSel").hidden=today; $("#stormSel").hidden=today;
  {const st=$("#stale"), n=rec[0]; let h=0; if(today&&n) h=(Date.now()-Date.UTC(+n.slice(0,4),+n.slice(4,6)-1,+n.slice(6,8),+n.slice(8,10)))/36e5;
   st.hidden=!(h>30); if(h>30) st.textContent=`Not updating right now: the newest run is ${h>=48?Math.floor(h/24)+" days":Math.round(h)+" hours"} old.`}
- $("#yearSel").innerHTML=years.map(y=>{const n=stormsIn(y).length; return `<option value="${y}"${y===curY?" selected":""}>${y==="other"?"Other runs":y==="0"?"No signal":y==="8"?"No. 8 and 9":"No. "+y} (${n} storm${n>1?"s":""})</option>`}).join("")+(curY===null||today?`<option value="" selected disabled>signal</option>`:"");
+ $("#yearSel").innerHTML=years.map(y=>{const n=stormsIn(y).length; return `<option value="${y}"${y===curY?" selected":""}>${y==="other"?"Other runs":y==="0"?"No signal":y==="8"?"No. 8 and 9":"No. "+y} (${n} storm${n>1?"s":""}${y==="8"?"; * = No. 9":""})</option>`}).join("")+(curY===null||today?`<option value="" selected disabled>signal</option>`:"");
  $("#stormSel").innerHTML=today?""
-  :curY?stormsIn(curY).map(k=>`<option value="${k}"${k===curS?" selected":""}>${(LAB[k]||k).replace(/ — HKO No\. (\d+) on /,(m,g)=>g===curY?" — ":m).replace(/ — no HKO signal$/,"")}</option>`).join(""):"";
+  :curY?stormsIn(curY).map(k=>`<option value="${k}"${k===curS?" selected":""}>${(curY==="8"&&/ — HKO No\. 9 on /.test(LAB[k]||"")?"*":"")+(LAB[k]||k).replace(/ — HKO No\. (\d+) on /,(m,g)=>g===curY||(curY==="8"&&g==="9")?" — ":m).replace(/ — no HKO signal$/,"")}</option>`).join(""):"";
  const runs=curS==="__recent"?rec:curS?ST[curS]:[];
  $("#cyc").innerHTML=runs.map(c=>`<option value="${c}"${c===cyc?" selected":""}>${fmtc(c)}</option>`).join("");
  const go=c=>{if(!c)return; cyc=c;NOSAME=null;PICKED=false;sel=null;selH=null; chooseEns(c); head();load()};
@@ -942,7 +942,7 @@ function rankView(t){const R=window.RANKT||[], ZH=/^zh/.test(document.documentEl
  const DIRZ={N:"北",NNE:"東北偏北",NE:"東北",ENE:"東北偏東",E:"東",ESE:"東南偏東",SE:"東南",SSE:"東南偏南",S:"南",SSW:"西南偏南",SW:"西南",WSW:"西南偏西",W:"西",WNW:"西北偏西",NW:"西北",NNW:"西北偏北"}, SIGZ={3:"三號",8:"八號",9:"九號",10:"十號"};
  const v=t.gst?r8val(t):null, g=t.gale!=null?Math.round(t.gale):null, me=(casesOf(cyc)[0]||"").toLowerCase(), key=r=>`${r.n} ${r.y}`.toLowerCase();
  const rows=R.filter(r=>RKALL||r.sig>=8), rk=v==null?null:1+rows.filter(r=>r.a10>v).length, n=rows.length+(v==null?0:1);
- const gT=g==null?"–":`${g}${t.gale_lo!=null&&t.gale_hi!=null&&t.gale_hi>t.gale_lo?` <span class="mut">(${t.gale_lo}–${t.gale_hi})</span>`:""}`;
+ const gT=g==null?"–":`${g}`;
  const who=BASIC?T_("this path","此路徑"):ZH?memLab(t.m).replace(/^the deterministic run$/,"高解像度預報").replace(/^the control run$/,"控制預報").replace(/^member (\d+)$/,"成員 $1"):memLab(t.m);
  const sgB=s=>`<span class="rksg rksg${s}">${ZH?SIGZ[s]:"No. "+s}</span>`, sigOf=r=>r.sig===10?10:r.sig===9?9:r.sig>=8?8:3;
  const rowW=(r,i)=>{const s=sigOf(r), pre=r.pre?"<sup>#</sup>":"", mine=me&&key(r)===me, nm=`${r.y} ${ZH?r.zh:r.n}${mine?` <span class="mut">${T_("· this storm","· 本熱帶氣旋")}</span>`:""}`;
