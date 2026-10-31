@@ -678,9 +678,9 @@ function load(){
   [...document.querySelectorAll(".mapbar,#mapkey,#mapnav,#maph,#chead,#tabs,.sech.mch"),$("#chart")&&$("#chart").closest(".scrollx")].forEach(e=>{if(e)e.style.display="none"});
   $("#map").style.display="none"; TR=null; MC=null; sel=null; selH=null; syncPlayer(); $("#selbar").style.display="none";
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";$("#maphint").textContent="";drawR2R();return}
- if(d.quiet){$("#status").innerHTML=BASIC?`<div class="bcard"><div class="bh">No storm near Hong Kong</div><div class="bv">No tropical cyclone is forecast to come within 800 km of Hong Kong.</div></div>`:`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">No threat</div><div class="v">No member's storm comes within 800 km of Hong Kong; the closest is ${Math.round(d.min_dist_km)} km.</div></div>`;
+ if(d.quiet){$("#status").innerHTML=(BASIC?`<div class="bcard"><div class="bh">No storm near Hong Kong</div><div class="bv">No tropical cyclone is forecast to come within 800 km of Hong Kong.</div></div>`:`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">No threat</div><div class="v">No member's storm comes within 800 km of Hong Kong; the closest is ${Math.round(d.min_dist_km)} km.</div></div>`)+(window.HK_DEMO?"":r2rCard());
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";
-  quietPaths();return}
+  drawR2R(); quietPaths();return}
  const src=(d.sources||[]).includes("s1")?"s1":"s1", MJ=Math.floor((d.members||51)/2)+1;
  const SG=[["No3","No. 3","var(--no3)"],["No8","No. 8","var(--no8)"],["No10","No. 10","var(--no10)"]];
  const cntD=(sg,k)=>{const x=d[sg]&&d[sg].days&&d[sg].days[k];return x?(x[src]||[0,0,0]):[0,0,0]};
