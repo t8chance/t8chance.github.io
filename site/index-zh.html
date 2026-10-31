@@ -570,7 +570,7 @@ const r2rMkEnd=sh=>sh==="square"?"</rect>":sh==="triangle"||sh==="diamond"?"</pa
 function drawR2R(){const box=$("#r2r"); if(!box)return; const card=box.closest(".tlcard");
  const cs=casesOf(cyc), Wn=PAST.filter(p=>cs.includes(p[2].split(" — ")[0]));
  const runs=(Wn.length?cycles.filter(c=>Wn.some(p=>c>=p[0]&&c<=p[1])):cycles.filter(c=>Math.abs(tUc(c)-tUc(cyc))<=5*864e5)).slice().sort();
- const nRun=(c,e)=>{const d=(HK[c]||{})[e]; if(!d||(d.members||0)<=1)return null; if(NAv(d))return {c,na:true}; const E=d.event||{};
+ const nRun=(c,e)=>{const d=(HK[c]||{})[e]; if(!d||(d.members||0)<=1)return null; const E=d.event||{};
   const n=sg=>d.quiet?0:(E[sg]?E[sg].n:(d[sg]&&d[sg].any?d[sg].any[0]:0)); return {c,M:d.members,No3:n("No3"),No8:n("No8"),No10:n("No10")}};
  const avail=ORDER.filter(e=>runs.filter(c=>{const p=nRun(c,e); return p&&!p.na}).length>=2);
  const pick=R2RSEL==="all"&&avail.length>1?"all":avail.includes(R2RSEL)?R2RSEL:avail.includes(ens)?ens:avail[0];
@@ -684,7 +684,7 @@ function load(){
   [...document.querySelectorAll(".mapbar,#mapkey,#mapnav,#maph,#chead,#tabs,.sech.mch"),$("#chart")&&$("#chart").closest(".scrollx")].forEach(e=>{if(e)e.style.display="none"});
   $("#map").style.display="none"; TR=null; MC=null; sel=null; selH=null; syncPlayer(); $("#selbar").style.display="none";
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";$("#maphint").textContent="";return}
- if(NAv(d)){$("#status").innerHTML=`<div class="ans na"><div class="k">Highest signal</div><div class="badge">Not available</div><div class="v">DeepMind had no storm near Hong Kong to follow in this run. It only forecasts storms that have already formed, so this is not a forecast of no threat.</div></div>`+(window.HK_DEMO?"":r2rCard());
+ if(NAv(d)){$("#status").innerHTML=`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">No storm near Hong Kong</div><div class="v">No storm in Google DeepMind's forecast comes within 800 km of Hong Kong. It follows only storms that have already formed, so a storm that forms later will not show here; the ECMWF forecasts include those.</div></div>`+(window.HK_DEMO?"":r2rCard());
   [...document.querySelectorAll(".mapbar,#mapkey,#mapnav,#maph,#chead,#tabs,.sech.mch"),$("#chart")&&$("#chart").closest(".scrollx")].forEach(e=>{if(e)e.style.display="none"});
   $("#map").style.display="none"; TR=null; MC=null; sel=null; selH=null; syncPlayer(); $("#selbar").style.display="none";
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";$("#maphint").textContent="";drawR2R();return}
