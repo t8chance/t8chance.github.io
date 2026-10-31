@@ -194,7 +194,8 @@ footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin
 
    <button id="detBtn" style="display:none" title="ECMWF's main forecast, made once in finer detail than the members, shown on its own: track, time bar, charts">deterministic run</button>
    <button id="allPlay" title="every member's storm together through time">▶ all members</button>
-   <label class="note"><input type="checkbox" id="only150"> within 150 km only</label></div>
+   <label class="note"><input type="checkbox" id="only150"> within 150 km only</label>
+   <label class="note" id="othL" title="every other storm in this forecast that enters the region and reaches a tropical depression (ECMWF's track file), thin grey"><input type="checkbox" id="othSt"> other storms</label></div>
  <p class="note mapexp" id="mapexp"></p>
  <div class="mapwrap"><div class="scrollx"><svg id="map" viewBox="0 0 1000 600" tabindex="0" aria-label="Forecast map"></svg></div>
   <div id="selbar" style="display:none"><button id="showAll" title="back to every member of this run">← Back to all members</button></div></div>   
@@ -536,6 +537,8 @@ function head(){
  HOME=VB.slice();e.target.textContent=view==="region"?"zoom to Hong Kong":"zoom out";drawMap()};
  $("#showAll").onclick=()=>{if(MIX){closePath();return} sel=null;selH=null;BIN=null;drawMap();chart()};
  $("#only150").onchange=drawMap;
+ {const o=$("#othSt"); if(o)o.onchange=()=>{const k=cyc+"_"+ens; if(!o.checked||(window.HKPATHS||{})[k])return drawMap();
+  const sc=document.createElement("script"); sc.src=`../data/paths_${k}.js`; sc.onload=()=>{if(k===cyc+"_"+ens)drawMap()}; sc.onerror=()=>{$("#maphint").textContent="no file of other storms for this run (IFS and AIFS runs from 16 Oct 2026 on)"}; document.head.appendChild(sc)}}
 
  $("#detBtn").onclick=()=>{const r=refM(); if(r===null)return; sel=(sel===r?null:r);selH=null;drawMap();chart()};
  drawTabs();
@@ -631,7 +634,7 @@ const DMCITE=d=>d.tracks_withheld   // Google's citation (live) / CC BY credit (
       ?`<br><span class="dmcite">Google DeepMind Weather Lab. © 2024-6 Google LLC, whose machine learning models were used to create the experimental data made available under the following licence terms https://storage.googleapis.com/weathernext-public/terms-of-use.pdf. This data is intended for experimental modelling only and is not intended, validated, or approved for real world use.</span>`
       :` · data: <a href="https://deepmind.google.com/science/weatherlab" target="_blank" rel="noopener">Google DeepMind Weather Lab</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>) <span>turned into Hong Kong signal chances here; Google is not involved in this site</span>`;
 function load(){
- BIN=null; PATHC=null; PATHS=null; MIX=null;
+ BIN=null; PATHC=null; PATHS=null; MIX=null; QP=null; if(QVB){VB=QVB; QVB=null}
  if(BASIC){const ph=c=>!!DEFE(c);
   if(!ph(cyc)){const c2=cycles.find(c=>c<=cyc&&ph(c))||cycles.find(ph); if(c2&&c2!==cyc){cyc=c2; head()}}
   const av=HK[cyc]||{}; if(!CHOSEN||!av[ens]) ens=DEFE(cyc)||"ifsens"; mode=modeOf(ens)||mode}
@@ -676,7 +679,8 @@ function load(){
   $("#map").style.display="none"; TR=null; MC=null; sel=null; selH=null; syncPlayer(); $("#selbar").style.display="none";
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";$("#maphint").textContent="";drawR2R();return}
  if(d.quiet){$("#status").innerHTML=BASIC?`<div class="bcard"><div class="bh">No storm near Hong Kong</div><div class="bv">No tropical cyclone is forecast to come within 800 km of Hong Kong.</div></div>`:`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">No threat</div><div class="v">No member's storm comes within 800 km of Hong Kong; the closest is ${Math.round(d.min_dist_km)} km.</div></div>`;
-  ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";return}
+  ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";
+  quietPaths();return}
  const src=(d.sources||[]).includes("s1")?"s1":"s1", MJ=Math.floor((d.members||51)/2)+1;
  const SG=[["No3","No. 3","var(--no3)"],["No8","No. 8","var(--no8)"],["No10","No. 10","var(--no10)"]];
  const cntD=(sg,k)=>{const x=d[sg]&&d[sg].days&&d[sg].days[k];return x?(x[src]||[0,0,0]):[0,0,0]};
@@ -758,6 +762,7 @@ function load(){
  [...document.querySelectorAll(".mapbar,#mapnav,#maph")].forEach(e=>{if(e)e.style.display=d.tracks_withheld&&!PATHC?"none":""});
  {const k=$("#mapkey"); if(k)k.style.display=d.tracks_withheld&&!PATHC?"none":""}
  [$("#allPlay"),$("#only150")&&$("#only150").closest("label")].forEach(e=>{if(e)e.style.display=d.tracks_withheld?"none":""});
+ {const l=$("#othL"); if(l)l.style.display=ens==="ifsens"||ens==="aifsens"?"":"none"}
  [...document.querySelectorAll("#chead,#tabs,.sech.mch"),$("#chart")&&$("#chart").closest(".scrollx")].forEach(e=>{if(e)e.style.display=""});
  if(d.tracks_withheld){TR=null; sel=null; selH=null; MC=null; BIN=null; syncPlayer(); $("#selbar").style.display="none"; $("#map").innerHTML=""; $("#map").style.display=PATHC?"":"none"; $("#chart").innerHTML=""; $("#cnote").textContent="";
   if(window._defHint===undefined)window._defHint=$("#maphint").innerHTML;
@@ -1034,12 +1039,40 @@ function openPath(m){if(!PATHS||MIX)return; const pd=(HK[PATHC]||{}).ifsens;
  MIX={ens,cyc,TR,GA,tab,showWIMean,showWIDist}; ens="ifsens"; cyc=PATHC; TR=PATHS; GA={members:(pd&&pd.members)||51,one:false}; sel=m; selH=null; BIN=null; showWIMean=false; showWIDist=false;
  drawTabs(); drawMap(); chart()}
 function closePath(){if(!MIX)return; ({ens,cyc,TR,GA,tab,showWIMean,showWIDist}=MIX); MIX=null; sel=null; selH=null; BIN=null; drawTabs(); drawMap(); chart(); $("#maphint").textContent=PHINT()}
-function drawMap(){
- if(window.HK_PZ)return;
- const s=$("#map");s.innerHTML="";MC=null;MG=null;if(WH()?!PATHS:!TR){syncPlayer();return}
+var QP=null, QVB=null;
+const QREF=()=>ens==="aifsens"?51:52, QPK=t=>Math.max(...t[2].map(p=>p[2]||0)), QCA=t=>Math.min(...t[2].map(p=>dist(p[0],p[1])));
+const QOK=t=>t[2].length>1&&(t[2][0][2]==null||QPK(t)>=22-0.5), QT=()=>QP.tracks.filter(QOK), QDES=sid=>+String(sid).slice(0,2)<70, QCOL="#3f6d8f";
+function quietPaths(){QP=null; TR=null; MC=null; MG=null; sel=null; selH=null; BIN=null; syncPlayer(); $("#selbar").style.display="none";
+ if(!(ens==="ifsens"||ens==="aifsens"))return;
+ const k=cyc+"_"+ens, fin=()=>{if(k!==cyc+"_"+ens||!((HK[cyc]||{})[ens]||{}).quiet)return; QP=(window.HKPATHS||{})[k]||null; if(!QP)return;
+  const L=QT().flatMap(t=>t[2]), q=(a,p)=>{const v=a.slice().sort((x,y)=>x-y); return v[Math.min(v.length-1,Math.max(0,Math.round(p*(v.length-1))))]};
+  if(L.length){const lo=L.map(p=>p[0]), la=L.map(p=>p[1]); if(!QVB)QVB=VB.slice();
+   VB=[Math.max(95,Math.min(103,q(lo,.05)-2)),Math.min(165,Math.max(143,q(lo,.95)+2)),Math.max(0,Math.min(6,q(la,.05)-2)),Math.min(42,Math.max(33,q(la,.95)+2))]}
+  $("#map").style.display=""; [...document.querySelectorAll("#mapnav,#maph")].forEach(e=>{if(e)e.style.display=""});
+  [...document.querySelectorAll(".mapbar,#mapkey")].forEach(e=>{if(e)e.style.display="none"}); drawMap()};
+ if(window.HKPATHS&&window.HKPATHS[k])fin(); else{const sc=document.createElement("script"); sc.src=`../data/paths_${k}.js`; sc.onload=fin; sc.onerror=()=>{}; document.head.appendChild(sc)}}
+const QHINT=()=>{const T=QT(), n=T.filter(t=>t[0]!==QREF()).length, D=[...new Set(T.map(t=>t[1]).filter(QDES))].sort(), U=new Set(T.map(t=>t[1]).filter(s=>!QDES(s))).size;
+ return `No storm comes within 800 km of Hong Kong in this run, so no signals are worked out. Shown: every storm in it that enters the region and reaches a tropical depression — ${n} member paths`
+  +`${D.length?` of ${D.join(", ")}`:""}${U?`${D.length?" and":" of"} systems not yet named (ECMWF's numbers 70 and up, each member's own)`:""}${""} · black dashed = the ${QREF()===51?"control":"deterministic"} run`};
+function drawQuiet(s){const {X,Y,hx,hy}=mapBase(s); $("#selbar").style.display="none"; syncNav();
+ const dP=P=>P.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join(" "), T=QT();
+ const hov=(path,txt)=>{path.onmouseenter=()=>$("#maphint").innerHTML=txt; path.onmouseleave=()=>$("#maphint").innerHTML=QHINT()};
+ T.filter(t=>t[0]!==QREF()).sort((a,b)=>QPK(a)-QPK(b)).forEach(t=>{
+  t[2].slice(0,-1).forEach((p,i)=>{const q=t[2][i+1]; s.appendChild(el("line",{x1:X(p[0]),y1:Y(p[1]),x2:X(q[0]),y2:Y(q[1]),stroke:QCOL,"stroke-width":1.5,"stroke-linecap":"round",opacity:.8,"pointer-events":"none"}))});
+  const hit=el("path",{fill:"none",stroke:"#000","stroke-opacity":0,"stroke-width":8,"pointer-events":"stroke",d:dP(t[2])});
+  hov(hit,`<b>member ${t[0]}</b> · storm ${t[1]}${""} · closest ${Math.round(QCA(t))} km from Hong Kong`); s.appendChild(hit)});
+ T.filter(t=>t[0]===QREF()).forEach(t=>{const d=dP(t[2]);
+  s.appendChild(el("path",{fill:"none",stroke:"#fff","stroke-width":5,d,opacity:.9,"stroke-linejoin":"round","pointer-events":"none"}));
+  const p=el("path",{fill:"none",stroke:"#000","stroke-width":2.4,"stroke-dasharray":"9 4",d,"stroke-linejoin":"round","pointer-events":"stroke"});
+  hov(p,`<b>${QREF()===51?"control":"deterministic"} run</b> · storm ${t[1]}${""} · closest ${Math.round(QCA(t))} km from Hong Kong`); s.appendChild(p)});
+ const lab={}; [...T.filter(t=>t[0]===QREF()),...T].filter(t=>QDES(t[1])).forEach(t=>{if(!lab[t[1]])lab[t[1]]=t[2][0]});
+ Object.entries(lab).forEach(([sid,p])=>{const tx=el("text",{x:X(p[0])+6,y:Y(p[1])-6,fill:"#111","font-size":11.5,"font-weight":700,"pointer-events":"none",stroke:"#fff","stroke-width":3,"paint-order":"stroke"}); tx.textContent=sid; s.appendChild(tx)});
+ if(VB[1]-VB[0]>=5){s.appendChild(el("circle",{cx:hx,cy:hy,r:6,fill:"#f2c200",stroke:"#333","stroke-width":1.2}));
+  const t=el("text",{x:hx+9,y:hy+4,fill:"#111","font-size":12,"font-weight":600,"text-anchor":"start"});t.textContent="Hong Kong";s.appendChild(t)}
+ $("#maphint").innerHTML=QHINT(); syncPlayer(); AXY=null}
+function mapBase(s){
  const dw=s.getBoundingClientRect().width||(s.parentNode&&s.parentNode.clientWidth)||1200, K=dw>=700?1.2:1.1;
  const W=Math.max(300,Math.round(dw/K)),[lo0,lo1,la0,la1]=VB; MAPW=dw;
- $("#selbar").style.display=sel!==null||BIN?"":"none"; syncNav();
  s.style.touchAction="none"; s.style.cursor=moved?"grabbing":"grab";
  const H=Math.round(W*(la1-la0)*110.57/((lo1-lo0)*111.32*Math.cos((la0+la1)/2*Math.PI/180)));
  s.setAttribute("viewBox",`0 0 ${W} ${H}`);
@@ -1052,6 +1085,14 @@ function drawMap(){
    if(!s._rl)s._rl=[]; s._rl.push([r,ry])});
  {let last=1e9; (s._rl||[]).sort((a,b)=>b[1]-a[1]).forEach(([r,ry])=>{if(last-ry<15||ry<12)return; last=ry;
    const tx=el("text",{x:hx,y:hy-ry-3,fill:"#555","font-size":11.5,"text-anchor":"middle"}); tx.textContent=r+" km"; s.appendChild(tx)}); s._rl=null}
+ return {W,H,X,Y,hx,hy,lo0,lo1,la0,la1}}
+function drawMap(){
+ if(window.HK_PZ)return;
+ const s=$("#map");s.innerHTML="";MC=null;MG=null;
+ if(!TR&&QP&&!WH()){drawQuiet(s);return}
+ if(WH()?!PATHS:!TR){syncPlayer();return}
+ const {W,H,X,Y,hx,hy,lo0,lo1,la0,la1}=mapBase(s);
+ $("#selbar").style.display=sel!==null||BIN?"":"none"; syncNav();
  if(WH()){
   $("#selbar").style.display="none"; $("#detBtn").style.display="none"; $("#mapexp").innerHTML="";
   {const k=$("#mapkey"); if(k)k.querySelectorAll("i[data-lv]").forEach(i=>i.style.background=SIGC[i.dataset.lv])} {const kd=$("#kdet"); if(kd)kd.parentNode.style.display="none"}
@@ -1069,6 +1110,14 @@ function drawMap(){
    const t=el("text",{x:hx+9,y:hy+4,fill:"#111","font-size":12,"font-weight":600,"text-anchor":"start"});t.textContent="Hong Kong";s.appendChild(t)}
   syncPlayer(); AXY=null; return}
  const only=$("#only150").checked;
+ {const o=$("#othSt"), P=(window.HKPATHS||{})[cyc+"_"+ens];
+  if(o&&o.checked&&P){const own={}; TR.tracks.forEach(t=>{(own[t.m]=own[t.m]||new Set()).add(String(t.storm))}); const lab={};
+   P.tracks.filter(t=>t[2].length>1&&!(own[t[0]]&&own[t[0]].has(t[1]))&&QOK(t)&&(sel===null||t[0]===sel)).forEach(t=>{
+    s.appendChild(el("path",{fill:"none",stroke:QCOL,"stroke-width":sel===null?1.3:2,"stroke-dasharray":"1 3","stroke-linecap":"round",opacity:sel===null?.7:.95,"pointer-events":"none","stroke-linejoin":"round",d:t[2].map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join(" ")}));
+    if(QDES(t[1])&&!lab[t[1]])lab[t[1]]=t[2][0]});
+   Object.entries(lab).forEach(([sid,p])=>{const tx=el("text",{x:X(p[0])+6,y:Y(p[1])-6,fill:QCOL,"font-size":11,"font-weight":700,"pointer-events":"none",stroke:"#fff","stroke-width":3,"paint-order":"stroke"}); tx.textContent=sid; s.appendChild(tx)});
+   $("#maphint").innerHTML+=` · <span style="display:inline-block;width:18px;border-top:2px dotted #3f6d8f;vertical-align:middle;margin:0 3px 0 4px"></span> other storms in this forecast that reach a tropical depression (ECMWF's track file; numbers 70 and up = not yet named)`}}
+ 1// it is not an ensemble member (never counted), but it is DRAWN in the members' view as the default reference track
  const isDet=t=>t.m===52&&(ens==="ifsens"||ens==="tigge"), hasDet=TR.tracks.some(isDet);
  const byI=false, pk=t=>Math.max(...t.pts.map(p=>p[2]));
  {const k=$("#mapkey"); if(k){k.style.display=byI?"none":""; k.querySelectorAll("i[data-lv]").forEach(i=>i.style.background=SIGC[i.dataset.lv])}}
