@@ -83,6 +83,9 @@ input[type=checkbox],input[type=range]{accent-color:var(--ink)}
 .tlcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px 12px;margin:0 0 12px}
 /* BASIC mode (2026-10-17) */
 body.basic .adv{display:none!important}
+#easymore{display:none}body.easy .wrap>:not(.mast):not(.toolbar):not(#status):not(#easymore){display:none!important}
+body.easy .toolbar>:not(#stamp){display:none!important}body.easy .toolbar .sub{padding-left:0}body.easy #status .tlcard,body.easy #status .sech{display:none!important}
+body.easy #easymore{display:block;text-align:center;margin:22px 0 8px}#easymore .easygo{display:inline-block;padding:12px 28px;border-radius:999px;border:1px solid var(--line,#ccc);font-weight:700;text-decoration:none}
 body.basic.bsel #chead.adv,body.basic.bsel.tab-wi .cbox.adv,body.basic.bsel #cnote.adv,body.basic.bsel:not(.tab-wi) #stationchart.adv{display:block!important} body.basic.bsel #tabs.adv{display:flex!important} .bwx{display:none} body.basic.bsel.tab-wi .bwx{display:block;max-width:70ch}
 .modesw{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;vertical-align:middle;margin-left:4px}.modesw a{padding:3px 11px;font-size:13px;text-decoration:none;color:var(--mut)}.modesw a.on{background:var(--ink);color:var(--card)}
 .bcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px 14px;margin:0 0 12px}
@@ -325,15 +328,20 @@ pickRun();
 {const nb=$("#mapnav"), mb=$(".mapbar"); if(nb&&mb) mb.appendChild(nb)}
 const BASIC=(()=>{const qs=new URLSearchParams(location.search); if(qs.get("demo")) return qs.get("mode")==="basic";
  try{const q=qs.get("mode");
- if(q==="basic"||q==="advanced"){localStorage.setItem("hk_mode",q); return q==="basic"} const m=localStorage.getItem("hk_mode"); return m?m==="basic":PUB}catch(e){return PUB}})();
+ if(q==="basic"||q==="advanced"||q==="easy"){localStorage.setItem("hk_mode",q); return q!=="advanced"} const m=localStorage.getItem("hk_mode"); return m?m!=="advanced":PUB}catch(e){return PUB}})();
+const EASY=BASIC&&(()=>{const qs=new URLSearchParams(location.search); if(qs.get("demo"))return false; const q=qs.get("mode"); if(q)return q==="easy";
+ try{return localStorage.getItem("hk_mode")==="easy"}catch(e){return false}})();
 {const c0=OPEN(); if(c0){cyc=c0; ens=DEFE(c0)||ens; mode=modeOf(ens)||mode}}
 if(BASIC){document.body.classList.add("basic");
+ if(EASY){document.body.classList.add("easy"); const st=$("#status"); if(st){const m=document.createElement("p"); m.id="easymore";
+  m.innerHTML=`<a href="#" class="easygo">See the details →</a>`; st.after(m); m.querySelector("a").onclick=e=>{e.preventDefault(); try{localStorage.setItem("hk_mode","basic")}catch(x){}
+   const q=new URLSearchParams(location.search); q.set("mode","basic"); location.search=q.toString()}}}
   [$("#ensbtns")&&$("#ensbtns").closest(".grp"),$("#checks"),$("#detBtn"),$("#only150")&&$("#only150").closest("label"),$("#mapexp"),$("#chead"),$("#tabs"),
   $("#chart")&&$("#chart").closest(".scrollx"),$("#stationchart"),$("#cnote")].forEach(e=>e&&e.classList.add("adv"));
  const ds=$(".mast .disc"); if(ds) ds.textContent="Chances of tropical cyclone warning signals for Hong Kong, from computer forecasts. Research output — the Hong Kong Observatory is the only authority for actual signals.";
  $("#maphint").textContent="Each line is one possible path; its colour shows the signal expected along it. Click a line to see how windy Hong Kong gets along it."; const sa=$("#showAll"); if(sa) sa.textContent="← All paths"; const cb=$("#chart")&&$("#chart").closest(".scrollx"); if(cb) cb.classList.add("cbox"); const kh=$("#mapkey .kh"); if(kh) kh.textContent="Signal expected along each path"; const kn=$("#mapkey .kn"); if(kn) kn.classList.add("adv"); const ap=$("#allPlay"); if(ap) ap.textContent="▶ play"}
 if(!/[?&]demo=/.test(location.search)){const nv=$(".mast nav"); if(nv){const sw=document.createElement("span"); sw.className="modesw";
- sw.innerHTML=`<a href="#" data-m="basic" class="${BASIC?"on":""}">Basic</a><a href="#" data-m="advanced" class="${BASIC?"":"on"}">Advanced</a>`; nv.appendChild(sw);
+ sw.innerHTML=`<a href="#" data-m="easy" class="${EASY?"on":""}">Basic</a><a href="#" data-m="basic" class="${BASIC&&!EASY?"on":""}">Advanced</a><a href="#" data-m="advanced" class="${BASIC?"":"on"}">Expert</a>`; nv.appendChild(sw);
  sw.querySelectorAll("a").forEach(a=>a.onclick=e=>{e.preventDefault(); try{localStorage.setItem("hk_mode",a.dataset.m)}catch(x){}
   const q=new URLSearchParams(location.search); q.set("run",cyc); q.set("f",ens); q.set("mode",a.dataset.m); location.search=q.toString()})}}
 function fillBasic(){const b=document.getElementById("bclose"); if(!b||!TR)return; const v=TR.tracks.filter(t=>t.m!==52&&t.ca).map(t=>t.ca[0]).sort((x,y)=>x-y);
@@ -645,7 +653,9 @@ function load(){
  if(!(HK[cyc]||{})[ens]&&!PICKED){const av=Object.keys(HK[cyc]||{}); if(av.length){const e0=MODES[mode].find(e=>av.includes(e));
   if(e0) ens=e0; else {mode=Object.keys(MODES).find(k=>MODES[k].some(e=>av.includes(e)))||mode; ens=MODES[mode].find(e=>av.includes(e))||av[0]}; head()}}
  const d=(HK[cyc]||{})[ens];
- if(!/[?&]demo=/.test(location.search)) try{const q=new URLSearchParams(location.search); q.set("run",cyc); q.set("f",ens); q.set("mode",BASIC?"basic":"advanced"); history.replaceState(null,"",location.pathname+"?"+q.toString()+location.hash)}catch(e){}
+ if(!/[?&]demo=/.test(location.search)) try{const q=new URLSearchParams(location.search), c0=OPEN(), dflt=c0===cyc&&(DEFE(c0)||ens)===ens;
+  if(dflt){q.delete("run");q.delete("f")}else{q.set("run",cyc);q.set("f",ens)} q.set("mode",EASY?"easy":BASIC?"basic":"advanced");
+  history.replaceState(null,"",location.pathname+"?"+q.toString()+location.hash)}catch(e){}
  $("#foot").innerHTML=`Days are UTC · numbers only, no model files`;
  if(d&&d.generated){const g=new Date(d.generated.replace(" ","T")+":00Z"), hrs=(Date.now()-g)/3.6e6;
   $("#stamp").innerHTML=`<b>${FCN[ens]||ens}</b>`+(d.experimental?` · <b>experimental</b>`:"")
