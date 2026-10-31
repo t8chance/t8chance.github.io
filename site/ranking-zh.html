@@ -76,7 +76,7 @@ const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","De
 const runLab=r=>r&&/^\d{10}$/.test(r)?T(`${+r.slice(6,8)} ${MON[+r.slice(4,6)-1]} ${r.slice(0,4)} ${r.slice(8,10)}Z`,`${r.slice(0,4)}年${+r.slice(4,6)}月${+r.slice(6,8)}日 ${r.slice(8,10)}時 UTC`):"";
 const Q=new URLSearchParams(location.search), num=k=>{const x=parseFloat(Q.get(k)); return isFinite(x)?x:null};
 const F={v:num("v"),g:num("g"),glo:num("glo"),ghi:num("ghi"),f:Q.get("f"),r:Q.get("r"),m:Q.get("m"),top:Q.get("top")==="1",c:(Q.get("c")||"").trim(),cd:Q.get("cd"),ca:num("ca"),cc:Q.get("cc")};
-const FILLF=false;
+const FILLF=true;
 const mLab=()=>Q.get("det")==="1"?T("deterministic run","高解像度預報"):Q.get("det")==="2"?T("control run","控制預報"):T(`member ${F.m}`,`成員 ${F.m}`);
 const ord=n=>ZH?`第 ${n} 位`:n+((n%100>=11&&n%100<=13)?"th":({1:"st",2:"nd",3:"rd"}[n%10]||"th"));
 let ALL=false;

@@ -925,7 +925,7 @@ function stationDist(i,t0,Wp){const M=(GA&&GA.members)||50, best={}, hko=casesOf
 let RKALL=false;
 document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("a[data-rktab]"); if(!a||!$("#tabs"))return; e.preventDefault();
  tab="rk"; drawTabs(); chart(); try{$("#chead").scrollIntoView({behavior:"smooth",block:"start"})}catch(x){}});
-const FILLF=false, C16=["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+const FILLF=true, C16=["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
 function caInfo(t){const P=(t&&t.pts)||[]; if(P.length<2)return {}; const S=[];
  for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1],ha=labH(a[3]),hb=labH(b[3]),K=Math.max(1,Math.round((hb-ha)*2));
   for(let k=0;k<K;k++){const f=k/K; S.push({lo:a[0]+(b[0]-a[0])*f,la:a[1]+(b[1]-a[1])*f,h:ha+(hb-ha)*f,v:a[2]!=null&&b[2]!=null?a[2]+(b[2]-a[2])*f:null})}}
