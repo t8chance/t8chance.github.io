@@ -145,14 +145,14 @@ html.tb #story,html.te #story{display:none} html:not(.tb) #bstory{display:none} 
 </div>
 
 <main class="wrap" id="estory"><ol>
- <li id="e1"><h2>1. How likely is No. 3, No. 8 or No. 10?</h2><p>The headline tells you which signal is likely, if any. Each bar shows how many of about 50 computer forecasts bring No. 3, No. 8 or No. 10 to Hong Kong, as a percentage. Under the bars you can see when the signal is most likely and how close the storm is expected to come.</p>
+ <li id="e1"><h2>1. How likely is No. 3, No. 8 or No. 10?</h2><p>The headline tells you which signal is likely, if any, and the line under it shows when this site issued these chances. Each bar shows, as a percentage, how many of about 50 computer forecasts bring that signal or a higher one to Hong Kong, so the three bars do not add up. Under the bars you can see when the signal is expected to start and end, and how close the centre of the storm is expected to come.</p>
   <figure><div class="live"><iframe data-bsrc="index-zh.html?run=storm&amp;f=ifsens&amp;demo=answer&amp;mode=basic" title="The answer: the chance of each signal"></iframe></div></figure></li>
  <li id="e2"><h2>2. Want more detail?</h2><p>Press “See the details” under the answer. It shows how the chance has changed with each new forecast and where the storm may go. For the reference stations and each forecast model, pick Expert at the top of the page.</p>
   <a class="btn openF" href="index-zh.html?mode=easy">Open the forecasts</a></li>
 </ol></main>
 
 <main class="wrap" id="bstory"><ol>
- <li id="b1"><h2>1. How likely is No. 3, No. 8 or No. 10?</h2><p>The headline tells you which signal is likely, if any. Each bar shows how many of about 50 computer forecasts bring No. 3, No. 8 or No. 10 to Hong Kong, as a percentage. Under the bars you can see when the signal is most likely and how close the storm is expected to come.</p>
+ <li id="b1"><h2>1. How likely is No. 3, No. 8 or No. 10?</h2><p>The headline tells you which signal is likely, if any, and the line under it shows when this site issued these chances. Each bar shows, as a percentage, how many of about 50 computer forecasts bring that signal or a higher one to Hong Kong, so the three bars do not add up. Under the bars you can see when the signal is expected to start and end, and how close the centre of the storm is expected to come.</p>
   <figure><div class="live"><iframe data-bsrc="index-zh.html?run=storm&amp;f=ifsens&amp;demo=answer&amp;mode=basic" title="The answer: the chance of each signal"></iframe></div></figure></li>
  <li id="b2"><h2>2. Is it getting more likely?</h2><p>A new forecast comes out every 6 hours, and each dot is the chance that one forecast gave for a signal. If the line rises to the right, that signal is getting more likely.</p>
   <figure><div class="live"><iframe data-bsrc="index-zh.html?run=storm&amp;f=ifsens&amp;demo=timeline&amp;mode=basic" title="How the chance changed with each new forecast"></iframe></div></figure></li>
@@ -187,7 +187,7 @@ html.tb #story,html.te #story{display:none} html:not(.tb) #bstory{display:none} 
    <h2>What the forecast says</h2>
    <p class="s">The headline is the highest signal that more than half of the 50 or so forecast runs reach.</p>
    <div class="f">
-   <p>Each forecast is run about 50 times, and each run is called a member. The headline gives the highest signal that more than half of the members reach, and when it starts and ends in Hong Kong time.</p>
+   <p>Each forecast is run about 50 times, and each run is called a member. The headline gives the highest signal that more than half of the members reach, and when it starts and ends in Hong Kong time. The line under the headline shows when this site issued these chances. Each bar counts the members that reach that signal or a higher one.</p>
    <p>Below that you can see how many of HKO's eight reference stations get gale, storm or hurricane force winds. For a past storm, HKO's own record is shown beside it.</p>
    <p class="ex" id="ex-answer"></p>
    </div>
@@ -209,6 +209,7 @@ html.tb #story,html.te #story{display:none} html:not(.tb) #bstory{display:none} 
    <p class="s">Each line is one member's storm path. Its colour shows the signal that member expects along the way.</p>
    <div class="f">
    <p>ECMWF runs each forecast 50 times, each from a slightly different start, and each run is a member. Each line is one member's storm track. Its colour shows the signal that member expects for Hong Kong when the storm is at that point. Grey is No.&nbsp;1, then come <span class="c3">No.&nbsp;3</span>, <span class="c8">No.&nbsp;8</span>, <span class="c9">No.&nbsp;9</span> and <span class="c10">No.&nbsp;10</span>, and the colour steps down again as the storm moves away.</p>
+   <p>No.&nbsp;9 marks a member that comes close to No.&nbsp;10 without reaching it. This site gives no separate chance for No.&nbsp;9.</p>
    <p>The thick black dashed line is the deterministic run (the control run in ECMWF's AI model). For past storms, the black dashed line with dots is where the storm really went. The circles mark distances from Hong Kong.</p>
    <p>The buttons under the map zoom in and out (+ −), move it (← ↑ ↓ →) and bring back the starting view (↺).</p>
    </div>
@@ -260,9 +261,9 @@ html.tb #story,html.te #story{display:none} html:not(.tb) #bstory{display:none} 
 
   <li class="step" data-k="check" data-w="run"><span class="num">9</span>
    <h2>Check how good it is</h2>
-   <p class="s">Compared with MET WARN's 26 forecasts for the storms of 2025 and 2026, this site was closer 13 times and MET WARN 8 times, and both made the same call 4 times.</p>
+   <p class="s">Of MET WARN's 26 forecasts for the storms of 2025 and 2026, 25 could be compared. This site was closer in 13 of them, MET WARN in 8, and both made the same call in 4.</p>
    <div class="f">
-<p>MET WARN is an unofficial Hong Kong weather channel. It posts how likely it thinks HKO is to raise a signal. Each of its 26 forecasts for the storms of 2025 and 2026 was compared with what HKO did and with this site's chance from the newest forecast out before the post, which is Google DeepMind's when it had the storm and ECMWF's physics forecast otherwise. If this site's chance falls inside MET WARN's range, both made the same call. If not, whichever was nearer to what HKO did counts as closer. None of these storms were used to build this site.</p>
+<p>MET WARN is an unofficial Hong Kong weather channel. It posts how likely it thinks HKO is to raise a signal. Each of its forecasts for the storms of 2025 and 2026 was compared with what HKO did and with this site's chance from the newest forecast out before the post, which is Google DeepMind's when it had the storm and ECMWF's physics forecast otherwise. If this site's chance falls inside MET WARN's range, both made the same call. If not, whichever was nearer to what HKO did counts as closer. None of these storms were used to build this site.</p>
    <p>For No. 3, this site was closer 8 times and MET WARN 4 times, and both made the same call once. For No. 8 and 9, this site was closer 4 times and MET WARN 4 times, and both made the same call twice. For No. 10, this site was closer once and MET WARN never, and both made the same call once. One No. 9 forecast was not compared, because this site does not forecast No. 9.</p>
 
    </div>

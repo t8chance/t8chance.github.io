@@ -94,7 +94,7 @@ body.basic.bsel #chead.adv,body.basic.bsel.tab-wi .cbox.adv,body.basic.bsel #cno
 .bbar{display:grid;grid-template-columns:64px 1fr 52px;gap:10px;align-items:center;margin:7px 0}.bbar b{font-weight:700}
 .bbar .tr{height:14px;border-radius:7px;background:var(--soft);overflow:hidden}.bbar .fl{height:100%;border-radius:7px;min-width:2px}
 .bbar .pc{font:700 18px var(--disp);text-align:right;font-variant-numeric:tabular-nums}
-.bcard .bv{margin:10px 0 0;font-size:15.5px}
+.bcard .bv{margin:10px 0 0;font-size:15.5px}.iss{margin:4px 0 10px;font-size:13.5px;color:var(--mut)}
 .tlcard .k{margin-bottom:8px}
 .sech{font:700 13px/1 var(--disp);letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:24px 0 10px}#status>.sech:first-child{margin-top:6px}
 html.demo .sech{display:none} #mapexp{display:none} .mapbar .mapnav{margin:0 0 0 auto}
@@ -180,7 +180,7 @@ footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin
 <div class="wrap">
 <header class="mast"><h1>Hong Kong typhoon signal forecasts</h1>
 <nav aria-label="pages"><a class="tour" href="guide-zh.html">New here? Take the tour</a><a href="verify-zh.html">How good is it?</a><a href="ideas-zh.html">Ideas</a></nav>
-<p class="disc">ECMWF ensemble forecasts turned into Hong Kong signal chances. Research output — the Hong Kong Observatory is the only authority for actual signals.</p></header>
+<p class="disc">ECMWF and Google DeepMind ensemble forecasts turned into Hong Kong signal chances. Research output — the Hong Kong Observatory is the only authority for actual signals.</p></header>
 
  <div class="toolbar">
   <div class="grp"><span class="lbl">Show</span><span id="viewbtns" class="seg"><button type="button" data-v="today">Today</button><button type="button" data-v="past">Past storms</button></span></div>
@@ -235,6 +235,11 @@ const LIVEF=["ifsens","aifsens","deepmind"];
 let PICKED=false;
 let CHOSEN=false, PATHS=null, PATHC=null, MIX=null;
 const tUcy=c=>Date.UTC(+c.slice(0,4),+c.slice(4,6)-1,+c.slice(6,8),+c.slice(8,10));
+const issuedTxt=(d,c)=>{const H=36e5, p=n=>String(n).padStart(2,"0"), f=t=>{const x=new Date(t+8*H); return `${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][x.getUTCDay()]} ${x.getUTCDate()} ${MON[x.getUTCMonth()]} ${x.getUTCFullYear()}, ${p(x.getUTCHours())}:${p(x.getUTCMinutes())}`};
+ const t0=tUcy(c), g=d&&d.generated?Date.parse(String(d.generated).replace(" ","T")+":00Z"):NaN;
+ if(g>=t0&&g-t0<=48*H) return `Issued ${f(g)} (Hong Kong time)`;
+ return `Forecast started ${f(t0)} (Hong Kong time)`+(isFinite(g)?`, chances worked out in ${new Date(g+8*H).getUTCFullYear()}`:"")};
+const issuedDiv=(d,c)=>`<div class="iss">${issuedTxt(d,c)}</div>`;
 const hktS=t=>{const d=new Date(t+8*36e5), z=n=>String(n).padStart(2,"0"); return `${d.getUTCDate()} ${MON[d.getUTCMonth()]} ${z(d.getUTCHours())}:${z(d.getUTCMinutes())}`};
 function etaOf(e,c){const rs=cycles.filter(x=>(HK[x]||{})[e]&&HK[x][e].generated); if(!rs.length)return null;
  let D=rs.filter(x=>tUcy(rs[0])-tUcy(x)<=5*864e5).map(x=>[x.slice(8,10),(Date.parse(HK[x][e].generated.replace(" ","T")+":00Z")-tUcy(x))/36e5]).filter(x=>x[1]>0&&x[1]<48);
@@ -685,11 +690,11 @@ function load(){
   [...document.querySelectorAll(".mapbar,#mapkey,#mapnav,#maph,#chead,#tabs,.sech.mch"),$("#chart")&&$("#chart").closest(".scrollx")].forEach(e=>{if(e)e.style.display="none"});
   $("#map").style.display="none"; TR=null; MC=null; sel=null; selH=null; syncPlayer(); $("#selbar").style.display="none";
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";$("#maphint").textContent="";return}
- if(NAv(d)){$("#status").innerHTML=`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">No storm near Hong Kong</div><div class="v">No storm in Google DeepMind's forecast comes within 800 km of Hong Kong. It follows only storms that have already formed, so a storm that forms later will not show here; the ECMWF forecasts include those.</div></div>`+(window.HK_DEMO?"":r2rCard());
+ if(NAv(d)){$("#status").innerHTML=`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">No storm near Hong Kong</div>${issuedDiv(d,cyc)}<div class="v">No storm in Google DeepMind's forecast comes within 800 km of Hong Kong. It follows only storms that have already formed, so a storm that forms later will not show here; the ECMWF forecasts include those.</div></div>`+(window.HK_DEMO?"":r2rCard());
   [...document.querySelectorAll(".mapbar,#mapkey,#mapnav,#maph,#chead,#tabs,.sech.mch"),$("#chart")&&$("#chart").closest(".scrollx")].forEach(e=>{if(e)e.style.display="none"});
   $("#map").style.display="none"; TR=null; MC=null; sel=null; selH=null; syncPlayer(); $("#selbar").style.display="none";
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";$("#maphint").textContent="";drawR2R();return}
- if(d.quiet){$("#status").innerHTML=(BASIC?`<div class="bcard"><div class="bh">No storm near Hong Kong</div><div class="bv">No tropical cyclone is forecast to come within 800 km of Hong Kong.</div></div>`:`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">No threat</div><div class="v">No member's storm comes within 800 km of Hong Kong; the closest is ${Math.round(d.min_dist_km)} km.</div></div>`)+(window.HK_DEMO?"":r2rCard());
+ if(d.quiet){$("#status").innerHTML=(BASIC?`<div class="bcard"><div class="bh">No storm near Hong Kong</div>${issuedDiv(d,cyc)}<div class="bv">No tropical cyclone is forecast to come within 800 km of Hong Kong.</div></div>`:`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">No threat</div>${issuedDiv(d,cyc)}<div class="v">No member's storm comes within 800 km of Hong Kong; the closest is ${Math.round(d.min_dist_km)} km.</div></div>`)+(window.HK_DEMO?"":r2rCard());
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";
   drawR2R(); quietPaths();return}
  const src=(d.sources||[]).includes("s1")?"s1":"s1", MJ=Math.floor((d.members||51)/2)+1;
@@ -723,7 +728,7 @@ function load(){
   const x=topL&&E&&E[topL[0]]&&E[topL[0]].n?E[topL[0]]:null;
   const pcA=sg=>one?(nOf(sg)?100:0):Math.round(100*nOf(sg)/(d.members||50)), noneA=100-Math.max(...LV.map(([sg])=>pcA(sg)));
   const ans=`<div class="ans"><div class="k">${one?"This run gives":"Expected signal"}</div>`
-   +`<div class="bh" style="color:${topL?topL[3]:"var(--ink)"}">${one?(topL?`Signal ${topL[1]}`:"No signal"):topL?`Signal ${topL[1]} likely (${pcA(topL[0])}%)`:`Most likely no signal (${noneA}%)`}</div>`
+   +`<div class="bh" style="color:${topL?topL[3]:"var(--ink)"}">${one?(topL?`Signal ${topL[1]}`:"No signal"):topL?`Signal ${topL[1]} likely (${pcA(topL[0])}%)`:`Most likely no signal (${noneA}%)`}</div>${issuedDiv(d,cyc)}`
    +(one?"":LV.map(([sg,lab,L,col])=>`<div class="bbar"><b>${lab}</b><div class="tr"><div class="fl" style="width:${pcA(sg)}%;background:${col}"></div></div><span class="pc">${pcA(sg)}%</span></div>`).join(""))
    +(topL?`<div class="v">${one?"":`from <b>${nOf(topL[0])}</b> of ${d.members} members`}${x?`${one?"":" · "}${x.groups?`<b>${MAING(x).n}</b> of them `:""}${hk(x.start[1])} → ${hk(x.end[1])} HKT · <b>${x.hours[1]}&nbsp;h</b>`:""}</div>`:"")
    +(x&&x.groups?`<div class="note">other periods: ${x.groups.filter(g=>g!==MAING(x)).map(g=>`${g.n} member${g.n>1?"s":""} ${hk(g.start[1])} → ${hkS(g.end[1])}`).join(" · ")}</div>`:"")
@@ -761,11 +766,11 @@ function load(){
  GA={members:d.members||0,one};
  const basicCard=()=>{const M=d.members||50, pc=sg=>one?(nOf(sg)?100:0):Math.round(100*nOf(sg)/M), x=topL&&E&&E[topL[0]]&&E[topL[0]].n?E[topL[0]]:null;
   const none=100-Math.max(...LV.map(([sg])=>pc(sg)));
-  return `<div class="bcard"><div class="bh" style="color:${topL?topL[3]:"var(--ink)"}">${topL?`Signal ${topL[1]} likely (${pc(topL[0])}%)`:`Most likely no signal (${none}%)`}</div>`
+  return `<div class="bcard"><div class="bh" style="color:${topL?topL[3]:"var(--ink)"}">${topL?`Signal ${topL[1]} likely (${pc(topL[0])}%)`:`Most likely no signal (${none}%)`}</div>${issuedDiv(d,cyc)}`
    +LV.map(([sg,lab,L,col])=>`<div class="bbar"><b>${lab}</b><div class="tr"><div class="fl" style="width:${pc(sg)}%;background:${col}"></div></div><span class="pc">${pc(sg)}%</span></div>`).join("")
-   +(x?`<div class="bv">Most likely from <b>${hk(x.start[1])}</b> to <b>${hk(x.end[1])}</b> (Hong Kong time)</div>`:"")+`<div class="bv" id="bclose"></div></div>`
+   +(x?`<div class="bv">Expected from <b>${hk(x.start[1])}</b> to <b>${hk(x.end[1])}</b> (Hong Kong time)</div>`:"")+`<div class="bv" id="bclose"></div></div>`
    +`<div class="tlcard"><div class="k">How the chance changed with each new forecast</div><div class="r2rlg"><span><b style="color:var(--no3)">—</b> No. 3</span><span><b style="color:var(--no8)">—</b> No. 8</span><span><b style="color:var(--no10)">—</b> No. 10</span><span>- - 50%</span>${casesOf(cyc).some(c=>HKOEV[c]&&HKOEV[c].L3)?`<span><b style="opacity:.35">█</b> HKO No. 3 or higher up</span>`:""}</div><div id="r2r"></div><p class="note" style="margin:2px 0 0">Each dot is one forecast; click a dot to open it.</p></div>`};
- $("#status").innerHTML=BASIC?basicCard():tb||`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">none</div><div class="note">${pass}</div></div>`;
+ $("#status").innerHTML=BASIC?basicCard():tb||`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">none</div>${issuedDiv(d,cyc)}<div class="note">${pass}</div></div>`;
  drawTL({E,one,members:d.members||0,MJ,hcases,init:Date.UTC(+cyc.slice(0,4),+cyc.slice(4,6)-1,+cyc.slice(6,8),+cyc.slice(8,10))});
  drawR2R();
  const key=cyc+"_"+ens;
