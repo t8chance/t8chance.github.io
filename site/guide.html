@@ -121,12 +121,9 @@ html:not(.full) .step .f{display:none}
 #lb img{display:block;margin:60px auto 40px;max-width:none;border-radius:12px;box-shadow:var(--shadow)}
 #lb .x{position:fixed;top:12px;right:14px;border:0;border-radius:10px;padding:9px 14px;font:600 15px/1 var(--body);background:var(--ink);color:var(--bg);cursor:pointer}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-/* the tour's choice: Basic or Advanced (2026-10-17) */
-.tpick{margin:16px 0 0}.tpick .q{font-size:14px;color:var(--mut);margin:0 0 8px}.tpick .ch{display:flex;gap:10px;flex-wrap:wrap}
-.tpick button{font:inherit;cursor:pointer;padding:10px 16px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-align:left;max-width:270px}
-.tpick button b{display:block;font-size:16px}.tpick button small{display:block;opacity:.8;font-size:13px;margin-top:3px}.tpick button.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
-html.tb #story{display:none} html:not(.tb) #bstory{display:none}
-#bstory{max-width:780px;margin:0 auto;padding:8px 16px 28px}#bstory ol{list-style:none;margin:0;padding:0;display:grid;gap:38px}#bstory h2{margin:0 0 8px;text-wrap:balance}#bstory p{max-width:65ch}#bstory figure{margin:12px 0 0}
+/* one tour per view (2026-11-01): html.te = Basic (#estory), html.tb = Advanced (#bstory), neither = Expert (#story) */
+html.tb #story,html.te #story{display:none} html:not(.tb) #bstory{display:none} html:not(.te) #estory{display:none}
+#bstory,#estory{max-width:780px;margin:0 auto;padding:8px 16px 28px}#bstory ol,#estory ol{list-style:none;margin:0;padding:0;display:grid;gap:38px}#bstory h2,#estory h2{margin:0 0 8px;text-wrap:balance}#bstory p,#estory p{max-width:65ch}#bstory figure,#estory figure{margin:12px 0 0}
 </style>
 <style>.langsw{position:fixed;top:10px;right:12px;z-index:60;font:600 14px/1 system-ui,-apple-system,sans-serif;padding:8px 13px;border-radius:999px;background:#fff;color:#13202b;border:1px solid #c9d2db;text-decoration:none;box-shadow:0 1px 4px rgba(0,0,0,.12)}@media (prefers-color-scheme:dark){.langsw{background:#1d2731;color:#e8eef3;border-color:#3a4652}} html.demo .langsw{display:none}</style></head>
 <body>
@@ -141,11 +138,17 @@ html.tb #story{display:none} html:not(.tb) #bstory{display:none}
   <p class="fine">Research output. The Hong Kong Observatory is the only authority for actual signals.</p>
   <p class="fine" id="tourrun"></p>
   <div class="acts"><a class="btn openF" href="index.html">Open the forecasts</a></div>
-  <div class="tpick" id="tpick"><div class="q">Start the tour: which page?</div><div class="ch"><button type="button" data-t="basic"><b>Advanced</b><small>Signal chances and the possible paths</small></button><button type="button" data-t="advanced"><b>Expert</b><small>Everything, incl. stations and each forecast model</small></button></div></div>
  </div>
- <figure><div class="live"><iframe id="heroF" src="index.html?run=storm&amp;f=ifsens&amp;demo=answer" title="The answer cards of the newest forecast with a storm near Hong Kong" loading="lazy"></iframe></div></figure>
+ <figure><div class="live"><iframe id="heroF" data-src="index.html?run=storm&amp;f=ifsens&amp;demo=answer" title="The answer cards of the newest forecast with a storm near Hong Kong" loading="lazy"></iframe></div></figure>
 </section>
 </div>
+
+<main class="wrap" id="estory"><ol>
+ <li id="e1"><h2>1. How likely is No. 3, No. 8 or No. 10?</h2><p>The headline says whether a signal is likely. The bars give the chance of No. 3, No. 8 and No. 10: the share of about 50 computer forecasts that bring each signal to Hong Kong. Below them: when the signal is most likely, and how close the storm is expected to come.</p>
+  <figure><div class="live"><iframe data-bsrc="index.html?run=storm&amp;f=ifsens&amp;demo=answer&amp;mode=basic" title="The answer: the chance of each signal"></iframe></div></figure></li>
+ <li id="e2"><h2>2. Want more detail?</h2><p>Press See the details below the answer to see how the chance has changed with each new forecast and where the storm may go. For the reference stations and each forecast model, choose Expert at the top of the page.</p>
+  <a class="btn openF" href="index.html?mode=easy">Open the forecasts</a></li>
+</ol></main>
 
 <main class="wrap" id="bstory"><ol>
  <li id="b1"><h2>1. How likely is No. 3, No. 8 or No. 10?</h2><p>The headline says whether a signal is likely. The bars give the chance of No. 3, No. 8 and No. 10: the share of about 50 computer forecasts that bring each signal to Hong Kong. Below them: when the signal is most likely, and how close the storm is expected to come.</p>
@@ -341,14 +344,12 @@ const close=()=>lb.classList.remove("on"); lb.addEventListener("click",close); a
 })();
 </script>
 <script>
-(()=>{const R=document.documentElement, B=[...document.querySelectorAll("#tpick button")], hf=document.getElementById("heroF");
- const set=(m,go)=>{R.classList.toggle("tb",m==="basic"); B.forEach(b=>b.classList.toggle("on",b.dataset.t===m)); try{localStorage.setItem("hk_mode",m)}catch(e){}
-  document.querySelectorAll(".openF").forEach(a=>a.href="index.html?mode="+m);
-  if(m==="basic") document.querySelectorAll("#bstory iframe[data-bsrc]").forEach(f=>{if(!f.getAttribute("src"))f.src=f.dataset.bsrc});
-  if(hf){const u0=hf.getAttribute("src"), u=u0.replace(/&mode=basic/,"")+(m==="basic"?"&mode=basic":""); if(u!==u0)hf.setAttribute("src",u)}
-  if(go){const t=document.getElementById(m==="basic"?"b1":"s1"); if(t)t.scrollIntoView({behavior:"smooth",block:"start"})}};
- let m0="basic"; try{m0=localStorage.getItem("hk_mode")||"basic"}catch(e){} set(m0,false);
- B.forEach(b=>b.onclick=()=>set(b.dataset.t,true))})();
+(()=>{const R=document.documentElement, hf=document.getElementById("heroF"), ok=v=>v==="easy"||v==="basic"||v==="advanced";
+ let m=new URLSearchParams(location.search).get("mode"); if(!ok(m)){m="basic"; try{const s=localStorage.getItem("hk_mode"); if(ok(s))m=s}catch(e){}}
+ R.classList.toggle("te",m==="easy"); R.classList.toggle("tb",m==="basic");
+ document.querySelectorAll(".openF").forEach(a=>a.href="index.html?mode="+m);
+ if(m!=="advanced") document.querySelectorAll((m==="easy"?"#estory":"#bstory")+" iframe[data-bsrc]").forEach(f=>{if(!f.getAttribute("src"))f.src=f.dataset.bsrc});
+ if(hf)hf.setAttribute("src",hf.dataset.src+(m!=="advanced"?"&mode=basic":""))})();
 </script>
 <script src="credits.js"></script>
 <a id="langsw" class="langsw" href="guide-zh.html" lang="zh-Hant">中文</a><script>(function(){var a=document.getElementById("langsw");if(!a)return;if(window.top!==window.self){a.style.display="none";return}a.href=a.getAttribute("href")+location.search+location.hash;a.addEventListener("click",function(){try{localStorage.setItem("hk_lang","zh")}catch(e){}})})();</script></body>

@@ -343,7 +343,8 @@ if(BASIC){document.body.classList.add("basic");
 if(!/[?&]demo=/.test(location.search)){const nv=$(".mast nav"); if(nv){const sw=document.createElement("span"); sw.className="modesw";
  sw.innerHTML=`<a href="#" data-m="easy" class="${EASY?"on":""}">Basic</a><a href="#" data-m="basic" class="${BASIC&&!EASY?"on":""}">Advanced</a><a href="#" data-m="advanced" class="${BASIC?"":"on"}">Expert</a>`; nv.appendChild(sw);
  sw.querySelectorAll("a").forEach(a=>a.onclick=e=>{e.preventDefault(); try{localStorage.setItem("hk_mode",a.dataset.m)}catch(x){}
-  const q=new URLSearchParams(location.search); q.set("run",cyc); q.set("f",ens); q.set("mode",a.dataset.m); location.search=q.toString()})}}
+  const q=new URLSearchParams(location.search); q.set("run",cyc); q.set("f",ens); q.set("mode",a.dataset.m); location.search=q.toString()})}
+ document.querySelectorAll(".mast nav a.tour").forEach(a=>a.href=a.getAttribute("href").split("?")[0]+"?mode="+(EASY?"easy":BASIC?"basic":"advanced"))}
 function fillBasic(){const b=document.getElementById("bclose"); if(!b||!TR)return; const v=TR.tracks.filter(t=>t.m!==52&&t.ca).map(t=>t.ca[0]).sort((x,y)=>x-y);
  b.innerHTML=v.length?`Expected closest distance to Hong Kong: <b>about ${Math.max(10,Math.round(v[Math.floor(v.length/2)]/10)*10)} km</b>`:""}
 const dist=(lo,la)=>Math.hypot((lo-114.174)*Math.cos(22.302*Math.PI/180)*111.32,(la-22.302)*110.57);
