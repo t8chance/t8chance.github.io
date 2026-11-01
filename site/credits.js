@@ -20,7 +20,7 @@
     "<b>Pangu-Weather</b> re-forecasts (via WeatherBench 2), started from ERA5: contains modified Copernicus Climate Change Service information.",
     "<b>Hong Kong Observatory</b>: best tracks, tropical cyclone warning signals and station winds used to check and set up the forecasts. The Hong Kong Observatory is the only authority for actual signals; this site is research output and is not endorsed by any of the organisations above."
   ];
-  var zhs = "本網站使用以下機構提供的預報數據，推算香港發出各號熱帶氣旋警告信號的機會，並製作相關圖表。這些機構均未參與本網站的製作，亦不代表認可本網站。所有熱帶氣旋警告信號均以香港天文台的正式公布為準。";   // 2026-11-01 reviewer wording
+  var zhs = "本網站使用以下機構提供的預報數據，推算香港天文台發出各號熱帶氣旋警告信號的機會，並製作相關圖表。這些機構均未參與本網站的製作，亦不代表認可本網站。所有熱帶氣旋警告信號均以香港天文台的正式公布為準。";   // 2026-11-01 reviewer wording
   var f = document.createElement("footer"); f.className = "credits"; f.setAttribute("aria-label", "Data and credits");
   f.innerHTML = "<h2>" + (zh ? "資料來源及鳴謝" : "Data and credits") + "</h2>" + (zh ? "<p>" + zhs + "</p>" : "")
     + en.map(function (s) { return '<p lang="en" translate="no" class="cr">' + s + "</p>"; }).join("");
