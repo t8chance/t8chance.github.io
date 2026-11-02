@@ -84,7 +84,7 @@ input[type=checkbox],input[type=range]{accent-color:var(--ink)}
 /* BASIC mode (2026-10-17) */
 body.basic .adv{display:none!important}
 #easymore{display:none}body.easy .wrap>:not(.mast):not(.toolbar):not(#status):not(#easymore){display:none!important}
-body.easy .toolbar>:not(#stamp){display:none!important}body.easy .toolbar .sub{padding-left:0}body.easy #status .tlcard,body.easy #status .sech{display:none!important}
+body.easy .toolbar>:not(#stamp):not(.grp){display:none!important}/* Basic shows Today / Past storms and the run pickers too (2026-11-02, user: 'in easy mode, enable past storms also'); the forecast buttons stay hidden (.adv) */body.easy .toolbar .sub{padding-left:0}body.easy #status .tlcard,body.easy #status .sech{display:none!important}
 body.easy #easymore{display:block;text-align:center;margin:22px 0 8px}#easymore .easygo{display:inline-block;padding:12px 28px;border-radius:999px;border:1px solid var(--line,#ccc);font-weight:700;text-decoration:none}
 body.basic.bsel #chead.adv,body.basic.bsel.tab-wi .cbox.adv,body.basic.bsel #cnote.adv,body.basic.bsel:not(.tab-wi) #stationchart.adv{display:block!important} body.basic.bsel #tabs.adv{display:flex!important} .bwx{display:none} body.basic.bsel.tab-wi .bwx{display:block;max-width:70ch}
 .modesw{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;vertical-align:middle;margin-left:4px}.modesw a{padding:3px 11px;font-size:13px;text-decoration:none;color:var(--mut)}.modesw a.on{background:var(--ink);color:var(--card)}
@@ -396,11 +396,11 @@ function drawBasicMap(bx,T,R,k){
    s.appendChild(el("line",{x1:X(a[0]+(b[0]-a[0])*f0),y1:Y(a[1]+(b[1]-a[1])*f0),x2:X(a[0]+(b[0]-a[0])*f1),y2:Y(a[1]+(b[1]-a[1])*f1),stroke:SIGC[lv],"stroke-width":3.8,"stroke-linecap":"round"}))}}
  s.appendChild(el("circle",{cx:hx,cy:hy,r:6,fill:"#f2c200",stroke:"#333","stroke-width":1.2}));
  {const t=el("text",{x:hx+9,y:hy+4,fill:"#111","font-size":12,"font-weight":600,stroke:"#fff","stroke-width":3,"paint-order":"stroke"}); t.textContent="Hong Kong"; s.appendChild(t)}
- let lx=-1e9, ly=-1e9; const hit=(a,b)=>a[0]<b[2]&&b[0]<a[2]&&a[1]<b[3]&&b[1]<a[3], HKB=[hx+6,hy-13,hx+90,hy+8];
+ const PL=[]; const hit=(a,b)=>a[0]<b[2]&&b[0]<a[2]&&a[1]<b[3]&&b[1]<a[3], HKB=[hx+6,hy-13,hx+90,hy+8]; PL.push(HKB);
  R.pts.forEach(p=>{if(!/ 00$/.test(String(p[3]).replace("/"," ")))return; const x=X(p[0]), y=Y(p[1]); if(x<0||x>W||y<0||y>H)return;
   s.appendChild(el("circle",{cx:x,cy:y,r:4,fill:"#fff",stroke:"#222","stroke-width":1.5}));
-  if(Math.hypot(x-lx,y-ly)<40)return;
-  const at=[[x+7,y-8,"start"],[x+7,y+19,"start"],[x-7,y-8,"end"]].find(([ax,ay,an])=>{const x0=an==="end"?ax-48:ax; return !hit([x0,ay-13,x0+48,ay+3],HKB)}); if(!at)return; lx=x; ly=y;
+  const at=[[x+7,y-8,"start"],[x+7,y+19,"start"],[x-7,y-8,"end"],[x-7,y+19,"end"]].map(([ax,ay,an])=>{const x0=an==="end"?ax-48:ax; return [ax,ay,an,[x0,ay-13,x0+48,ay+3]]})
+   .find(([,,,bx_])=>bx_[0]>=2&&bx_[2]<=W-2&&bx_[1]>=0&&bx_[3]<=H&&!PL.some(q=>hit(bx_,q))); if(!at)return; PL.push(at[3]);
   const d=new Date(T0()+labH(p[3])*36e5+8*36e5), t=el("text",{x:at[0],y:at[1],"text-anchor":at[2],fill:"#111","font-size":12,"font-weight":600,stroke:"#fff","stroke-width":3,"paint-order":"stroke"});
   t.textContent=`${d.getUTCDate()} ${MON[d.getUTCMonth()]}`; s.appendChild(t)})}
 const dist=(lo,la)=>Math.hypot((lo-114.174)*Math.cos(22.302*Math.PI/180)*111.32,(la-22.302)*110.57);
