@@ -470,7 +470,7 @@ const WIR8=[-8.1599,1.05516];
 function wiC2(){if(!TR||TR._c2)return; TR._c2=1;
  TR.tracks.forEach(t=>{if(!t.wix||!t.wix.length)return; let v8; try{v8=r8val(t)}catch(e){return} if(!(v8>=55))return;
   const pk=Math.max(...t.wix.map(w=>w[1])); if(!(pk>0))return; const k=(WIR8[0]+WIR8[1]*v8)/pk;
-  t.wix0=t.wix; t.wix=t.wix.map(([hh,v])=>[hh,Math.round(v*k*10)/10])})}
+  t.wix0=t.wix; t.wix=t.wix.map(([hh,v])=>[hh,Math.round(v*(1+(k-1)*Math.pow(v/pk,4))*10)/10])})}
 const wiAt=(t,h)=>{const w=t.wix; if(!w||!w.length||h<w[0][0]-1e-6||h>w[w.length-1][0]+1e-6) return null;
  let i=0; while(i<w.length-2&&h>w[i+1][0]) i++; const j=Math.min(i+1,w.length-1);
  if(j>i&&w[j][0]-w[i][0]>1.5) return null;
