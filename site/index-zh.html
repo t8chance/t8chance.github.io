@@ -94,7 +94,8 @@ body.basic.bsel #chead.adv,body.basic.bsel.tab-wi .cbox.adv,body.basic.bsel #cno
 .bbar{display:grid;grid-template-columns:64px 1fr 52px;gap:10px;align-items:center;margin:7px 0}.bbar b{font-weight:700}
 .bbar .tr{height:14px;border-radius:7px;background:var(--soft);overflow:hidden}.bbar .fl{height:100%;border-radius:7px;min-width:2px}
 .bbar .pc{font:700 18px var(--disp);text-align:right;font-variant-numeric:tabular-nums}
-.bcard .bv{margin:10px 0 0;font-size:15.5px}.iss{margin:4px 0 10px;font-size:13.5px;color:var(--mut)}
+.bcard .bv{margin:10px 0 0;font-size:15.5px}.bmapc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px 10px;margin:0 0 12px}.bmapc:empty{display:none}
+.bmapc .bmh{font-weight:700;font-size:17px;margin:0 0 8px}.bmapc svg{display:block;width:100%;height:auto;border-radius:10px}.bmapc .note{margin:6px 0 0}.iss{margin:4px 0 10px;font-size:13.5px;color:var(--mut)}
 .tlcard .k{margin-bottom:8px}
 .sech{font:700 13px/1 var(--disp);letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:24px 0 10px}#status>.sech:first-child{margin-top:6px}
 html.demo .sech{display:none} #mapexp{display:none} .mapbar .mapnav{margin:0 0 0 auto}
@@ -350,8 +351,58 @@ if(!/[?&]demo=/.test(location.search)){const nv=$(".mast nav"); if(nv){const sw=
  sw.querySelectorAll("a").forEach(a=>a.onclick=e=>{e.preventDefault(); try{localStorage.setItem("hk_mode",a.dataset.m)}catch(x){}
   const q=new URLSearchParams(location.search); q.set("run",cyc); q.set("f",ens); q.set("mode",a.dataset.m); location.search=q.toString()})}
  document.querySelectorAll(".mast nav a.tour").forEach(a=>a.href=a.getAttribute("href").split("?")[0]+"?mode="+(EASY?"easy":BASIC?"basic":"advanced"))}
-function fillBasic(){const b=document.getElementById("bclose"); if(!b||!TR)return; const v=TR.tracks.filter(t=>t.m!==52&&t.ca).map(t=>t.ca[0]).sort((x,y)=>x-y);
- b.innerHTML=v.length?`Expected closest distance to Hong Kong: <b>about ${Math.max(10,Math.round(v[Math.floor(v.length/2)]/10)*10)} km</b>`:""}
+const REFK=()=>{if(ens!=="deepmind")return cyc+"_"+ens; const c=pathRun(cyc); return c?c+"_ifsens":(HK[cyc]||{}).tigge?cyc+"_tigge":null};
+const refOf=(T,k)=>{if(!T||!T.tracks)return null; const ok=t=>t.pts&&t.pts.length&&t.ca, R=T.tracks.find(t=>t.m===(k.endsWith("_aifsens")?51:52)&&ok(t));
+ if(R)return R; const one=T.tracks.filter(ok); return one.length===1?one[0]:null};
+const kmP=(a,b)=>Math.hypot((a[0]-b[0])*111.32*Math.cos((a[1]+b[1])/2*Math.PI/180),(a[1]-b[1])*110.57);
+const sameStorm=(R,t)=>{if(String(R.storm)===String(t.storm))return true; const m=new Map(t.pts.map(p=>[String(p[3]),p]));
+ const d=R.pts.filter(p=>m.has(String(p[3]))).map(p=>kmP(p,m.get(String(p[3])))).sort((a,b)=>a-b); return d.length>=2&&d[Math.floor(d.length/2)]<400};
+function fillBasic(){const b=document.getElementById("bclose"); if(!b)return; const bx=document.getElementById("bmapbox"), k=REFK(); b.innerHTML=""; if(bx)bx.innerHTML="";
+ if(!k)return; const go=()=>{if(REFK()!==k||document.getElementById("bclose")!==b)return; const T=(window.HKT||{})[k], R=refOf(T,k); if(!R)return;
+  const top=bx?+bx.dataset.top||0:0, sg=T.tracks.filter(t=>t!==R&&t.m!==52&&t.pts&&t.pts.length&&tierOf(t)[0]>=3);
+  if(top&&sg.length>=3&&sg.filter(t=>sameStorm(R,t)).length<sg.length/2)return;
+  const yr=+k.slice(0,4), [md,hm]=String(R.ca[1]).split(" "), [mo,dd]=md.split("-").map(Number), [hh,mi]=hm.split(":").map(Number);
+  const t=new Date(Date.UTC(mo<+k.slice(4,6)?yr+1:yr,mo-1,dd,hh,mi)+8*36e5), DWK=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const who=k.endsWith("_aifsens")?"the control run of ECMWF's AI model":ens==="pangu"?"this forecast":"ECMWF's main forecast";
+  b.innerHTML=`In ${who}, the storm comes closest to Hong Kong on <b>${DWK[t.getUTCDay()]} ${t.getUTCDate()} ${MON[t.getUTCMonth()]}</b>, about <b>${Math.max(10,Math.round(R.ca[0]/10)*10).toLocaleString("en-US")} km</b> away.`
+   +(ens==="deepmind"?" Google DeepMind does not make a main forecast.":"");
+  if(EASY&&bx&&top>=3)drawBasicMap(bx,T,R,k)};
+ if((window.HKT||{})[k])go(); else{const s=document.createElement("script"); s.src=`../data/tracks_${k}.js`; s.onload=go; document.head.appendChild(s)}}
+function drawBasicMap(bx,T,R,k){
+ const at=new Map(); if(R.m===51||R.m===52)T.tracks.filter(t=>t!==R&&t.m!==52&&t.pts&&t.pts.length>1&&sameStorm(R,t)).forEach(t=>t.pts.forEach(p=>{const L=String(p[3]); if(!at.has(L))at.set(L,[]); at.get(L).push(p)}));
+ const sh=R.pts.map(p=>{const q=at.get(String(p[3]))||[]; if(q.length<10)return null; const d=q.map(x=>kmP(p,x)).sort((a,b)=>a-b); return d[Math.ceil(.7*d.length)-1]});
+ let L0=114.174,L1=L0,B0=22.302,B1=B0;
+ R.pts.forEach((p,i)=>{if(dist(p[0],p[1])>1500)return; const r=Math.min(sh[i]||0,300), dy=r/110.57, dx=r/(111.32*Math.cos(p[1]*Math.PI/180));
+  L0=Math.min(L0,p[0]-dx); L1=Math.max(L1,p[0]+dx); B0=Math.min(B0,p[1]-dy); B1=Math.max(B1,p[1]+dy)});
+ const cx=(L0+L1)/2, cy=(B0+B1)/2, kx=Math.cos(cy*Math.PI/180), nar=(bx.parentNode.clientWidth||innerWidth)<600, A0=nar?.72:.55, A1=nar?.85:.68;
+ let w=Math.max(L1-L0+2,10), h=Math.max(B1-B0+2,7);
+ if(h*110.57>A1*w*111.32*kx) w=h*110.57/(A1*111.32*kx); else if(h*110.57<A0*w*111.32*kx) h=A0*w*111.32*kx/110.57;
+ const SQ=sqOf(R), LVS=[...new Set(R.pts.slice(0,-1).flatMap((p,i)=>{const a=labH(p[3]),b=labH(R.pts[i+1][3]);return [sigAt(R,a+1e-3,SQ),...SQ.map(x=>labH(x[0])).filter(x=>x>a&&x<b).map(x=>sigAt(R,x+1e-3,SQ))]}))].sort((a,b)=>a-b);
+ const ai=k.endsWith("_aifsens"), S=[ens==="deepmind"?"The line and the shaded area come from ECMWF's physics model, because Google DeepMind does not make a main forecast."
+   :ai?"The line is the control run of ECMWF's AI model.":ens==="pangu"?"The line is this forecast's path of the storm.":"The line is ECMWF's main forecast of the storm's path.",
+  "Its colour shows the signal expected in Hong Kong as the storm passes.", "The dots mark the centre at 08:00 Hong Kong time each day.",
+  ...(sh.some(x=>x!=null)?[ai?"The shaded area is where seven of every ten of the AI model's computer forecasts put the centre of the storm.":"The shaded area is where seven of every ten of ECMWF's computer forecasts put the centre of the storm."]:[])];
+ bx.innerHTML=`<div class="bmh">Expected path of the storm</div><svg></svg><div class="mapkey">${LVS.map(l=>`<span><i style="background:${SIGC[l]}"></i>${l?SIGN[l]:"no signal"}</span>`).join("")}</div><p class="note">${S.join(" ")}</p>`;
+ const s=bx.querySelector("svg"), {W,H,X,Y,hx,hy,la0,la1}=mapBase(s,[cx-w/2,cx+w/2,cy-h/2,cy+h/2]), pr=r=>r/110.57*(H/(la1-la0));
+ const g=el("g",{opacity:.2,fill:"#2f5d8a"});
+ R.pts.forEach((p,i)=>{if(sh[i]==null)return; const x0=X(p[0]),y0=Y(p[1]),r0=pr(sh[i]); g.appendChild(el("circle",{cx:x0,cy:y0,r:r0}));
+  const q=R.pts[i+1]; if(!q||sh[i+1]==null)return; const x1=X(q[0]),y1=Y(q[1]),r1=pr(sh[i+1]),L=Math.hypot(x1-x0,y1-y0)||1,nx=-(y1-y0)/L,ny=(x1-x0)/L;
+  g.appendChild(el("polygon",{points:[[x0+nx*r0,y0+ny*r0],[x1+nx*r1,y1+ny*r1],[x1-nx*r1,y1-ny*r1],[x0-nx*r0,y0-ny*r0]].map(a=>a[0].toFixed(1)+","+a[1].toFixed(1)).join(" ")}))});
+ s.appendChild(g);
+ s.appendChild(el("path",{fill:"none",stroke:"#fff","stroke-width":7,"stroke-linejoin":"round","stroke-linecap":"round",d:R.pts.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join(" ")}));
+ const SB=SQ.map(p=>labH(p[0]));
+ for(let i=0;i<R.pts.length-1;i++){const a=R.pts[i],b=R.pts[i+1],ha=labH(a[3]),hb=labH(b[3]),dh=hb-ha||1,cuts=[ha,...SB.filter(x=>x>ha+1e-6&&x<hb-1e-6),hb];
+  for(let j=0;j<cuts.length-1;j++){const f0=(cuts[j]-ha)/dh,f1=(cuts[j+1]-ha)/dh,lv=sigAt(R,cuts[j]+1e-3,SQ);
+   s.appendChild(el("line",{x1:X(a[0]+(b[0]-a[0])*f0),y1:Y(a[1]+(b[1]-a[1])*f0),x2:X(a[0]+(b[0]-a[0])*f1),y2:Y(a[1]+(b[1]-a[1])*f1),stroke:SIGC[lv],"stroke-width":3.8,"stroke-linecap":"round"}))}}
+ s.appendChild(el("circle",{cx:hx,cy:hy,r:6,fill:"#f2c200",stroke:"#333","stroke-width":1.2}));
+ {const t=el("text",{x:hx+9,y:hy+4,fill:"#111","font-size":12,"font-weight":600,stroke:"#fff","stroke-width":3,"paint-order":"stroke"}); t.textContent="Hong Kong"; s.appendChild(t)}
+ let lx=-1e9, ly=-1e9; const hit=(a,b)=>a[0]<b[2]&&b[0]<a[2]&&a[1]<b[3]&&b[1]<a[3], HKB=[hx+6,hy-13,hx+90,hy+8];
+ R.pts.forEach(p=>{if(!/ 00$/.test(String(p[3]).replace("/"," ")))return; const x=X(p[0]), y=Y(p[1]); if(x<0||x>W||y<0||y>H)return;
+  s.appendChild(el("circle",{cx:x,cy:y,r:4,fill:"#fff",stroke:"#222","stroke-width":1.5}));
+  if(Math.hypot(x-lx,y-ly)<40)return;
+  const at=[[x+7,y-8,"start"],[x+7,y+19,"start"],[x-7,y-8,"end"]].find(([ax,ay,an])=>{const x0=an==="end"?ax-48:ax; return !hit([x0,ay-13,x0+48,ay+3],HKB)}); if(!at)return; lx=x; ly=y;
+  const d=new Date(T0()+labH(p[3])*36e5+8*36e5), t=el("text",{x:at[0],y:at[1],"text-anchor":at[2],fill:"#111","font-size":12,"font-weight":600,stroke:"#fff","stroke-width":3,"paint-order":"stroke"});
+  t.textContent=`${d.getUTCDate()} ${MON[d.getUTCMonth()]}`; s.appendChild(t)})}
 const dist=(lo,la)=>Math.hypot((lo-114.174)*Math.cos(22.302*Math.PI/180)*111.32,(la-22.302)*110.57);
 const T0=()=>Date.UTC(+cyc.slice(0,4),+cyc.slice(4,6)-1,+cyc.slice(6,8),+cyc.slice(8,10));
 const labH=lab=>{const [d,h]=String(lab).replace("/"," ").split(" ").map(Number),a=new Date(T0());
@@ -768,7 +819,7 @@ function load(){
   const none=100-Math.max(...LV.map(([sg])=>pc(sg)));
   return `<div class="bcard"><div class="bh" style="color:${topL?topL[3]:"var(--ink)"}">${topL?`Signal ${topL[1]} likely (${pc(topL[0])}%)`:`Most likely no signal (${none}%)`}</div>${issuedDiv(d,cyc)}`
    +LV.map(([sg,lab,L,col])=>`<div class="bbar"><b>${lab}</b><div class="tr"><div class="fl" style="width:${pc(sg)}%;background:${col}"></div></div><span class="pc">${pc(sg)}%</span></div>`).join("")
-   +(x?`<div class="bv">Expected from <b>${hk(x.start[1])}</b> to <b>${hk(x.end[1])}</b> (Hong Kong time)</div>`:"")+`<div class="bv" id="bclose"></div></div>`
+   +(x?`<div class="bv">Expected from <b>${hk(x.start[1])}</b> to <b>${hk(x.end[1])}</b> (Hong Kong time)</div>`:"")+`<div class="bv" id="bclose"></div></div><div class="bmapc" id="bmapbox" data-top="${topL?topL[2]:0}"></div>`
    +`<div class="tlcard"><div class="k">How the chance changed with each new forecast</div><div class="r2rlg"><span><b style="color:var(--no3)">—</b> No. 3</span><span><b style="color:var(--no8)">—</b> No. 8</span><span><b style="color:var(--no10)">—</b> No. 10</span><span>- - 50%</span>${casesOf(cyc).some(c=>HKOEV[c]&&HKOEV[c].L3)?`<span><b style="opacity:.35">█</b> HKO No. 3 or higher up</span>`:""}</div><div id="r2r"></div><p class="note" style="margin:2px 0 0">Each dot is one forecast; click a dot to open it.</p></div>`};
  $("#status").innerHTML=BASIC?basicCard():tb||`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">none</div>${issuedDiv(d,cyc)}<div class="note">${pass}</div></div>`;
  drawTL({E,one,members:d.members||0,MJ,hcases,init:Date.UTC(+cyc.slice(0,4),+cyc.slice(4,6)-1,+cyc.slice(6,8),+cyc.slice(8,10))});
@@ -1086,10 +1137,10 @@ function drawQuiet(s){const {X,Y,hx,hy}=mapBase(s); $("#selbar").style.display="
  if(VB[1]-VB[0]>=5){s.appendChild(el("circle",{cx:hx,cy:hy,r:6,fill:"#f2c200",stroke:"#333","stroke-width":1.2}));
   const t=el("text",{x:hx+9,y:hy+4,fill:"#111","font-size":12,"font-weight":600,"text-anchor":"start"});t.textContent="Hong Kong";s.appendChild(t)}
  $("#maphint").innerHTML=QHINT(); syncPlayer(); AXY=null}
-function mapBase(s){
+function mapBase(s,V){
  const dw=s.getBoundingClientRect().width||(s.parentNode&&s.parentNode.clientWidth)||1200, K=dw>=700?1.2:1.1;
- const W=Math.max(300,Math.round(dw/K)),[lo0,lo1,la0,la1]=VB; MAPW=dw;
- s.style.touchAction="none"; s.style.cursor=moved?"grabbing":"grab";
+ const W=Math.max(300,Math.round(dw/K)),[lo0,lo1,la0,la1]=V||VB; if(!V)MAPW=dw;
+ s.style.touchAction=V?"auto":"none"; s.style.cursor=V?"default":moved?"grabbing":"grab";
  const H=Math.round(W*(la1-la0)*110.57/((lo1-lo0)*111.32*Math.cos((la0+la1)/2*Math.PI/180)));
  s.setAttribute("viewBox",`0 0 ${W} ${H}`);
  const X=l=>(l-lo0)/(lo1-lo0)*W, Y=b=>H-(b-la0)/(la1-la0)*H, hx=X(114.174), hy=Y(22.302);
@@ -1099,7 +1150,7 @@ function mapBase(s){
  [100,200,400,800].forEach(r=>{const ry=r/110.57*(H/(la1-la0));
    s.appendChild(el("ellipse",{cx:hx,cy:hy,rx:r/(111.32*Math.cos(.389))*(W/(lo1-lo0)),ry,fill:"none",stroke:"#666","stroke-dasharray":"4 4","stroke-width":.8}));
    if(!s._rl)s._rl=[]; s._rl.push([r,ry])});
- {let last=1e9; (s._rl||[]).sort((a,b)=>b[1]-a[1]).forEach(([r,ry])=>{if(last-ry<15||ry<12)return; last=ry;
+ {let last=1e9; (s._rl||[]).sort((a,b)=>b[1]-a[1]).forEach(([r,ry])=>{if(last-ry<15||ry<12||hy-ry-3<13)return; last=ry;
    const tx=el("text",{x:hx,y:hy-ry-3,fill:"#555","font-size":11.5,"text-anchor":"middle"}); tx.textContent=r+" km"; s.appendChild(tx)}); s._rl=null}
  return {W,H,X,Y,hx,hy,lo0,lo1,la0,la1}}
 function drawMap(){
