@@ -94,7 +94,7 @@ body.basic.bsel #chead.adv,body.basic.bsel.tab-wi .cbox.adv,body.basic.bsel #cno
 .bbar{display:grid;grid-template-columns:64px 1fr 52px;gap:10px;align-items:center;margin:7px 0}.bbar b{font-weight:700}
 .bbar .tr{height:14px;border-radius:7px;background:var(--soft);overflow:hidden}.bbar .fl{height:100%;border-radius:7px;min-width:2px}
 .bbar .pc{font:700 18px var(--disp);text-align:right;font-variant-numeric:tabular-nums}
-.bcard .bv{margin:10px 0 0;font-size:15.5px}.bmapc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px 10px;margin:0 0 12px}.bmapc:empty{display:none}
+.bcard .bv{margin:10px 0 0;font-size:15.5px}#stamp .sl{display:block}@media (max-width:600px){#stamp .sx{display:none}#stamp:not(:has(.sl:not(.sx))){display:none}}.bmapc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px 10px;margin:0 0 12px}.bmapc:empty{display:none}
 .bmapc .bmh{font-weight:700;font-size:17px;margin:0 0 8px}.bmapc svg{display:block;width:100%;height:auto;border-radius:10px}.bmapc .note{margin:6px 0 0}.iss{margin:4px 0 10px;font-size:13.5px;color:var(--mut)}
 .tlcard .k{margin-bottom:8px}
 .sech{font:700 13px/1 var(--disp);letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:24px 0 10px}#status>.sech:first-child{margin-top:6px}
@@ -726,9 +726,10 @@ function load(){
 ;}
  else $("#stamp").textContent="";
  if(BASIC&&d&&d.generated){const t=new Date(Date.parse(d.generated.replace(" ","T")+":00Z")+8*36e5), z=n=>String(n).padStart(2,"0");
-  $("#stamp").innerHTML=`Updated ${t.getUTCDate()} ${MON[t.getUTCMonth()]} ${z(t.getUTCHours())}:${z(t.getUTCMinutes())} (Hong Kong time)`+(pastOf(cyc)?`<br>Past storm: ${pastOf(cyc)}`:"")+`<br><span>Forecast: ${FCN[ens]||ens}</span>`+(ens==="deepmind"?DMCITE(d):"")
-  +(ens==="ifsens"&&/^(06|18)$/.test(cyc.slice(8,10))?"<br>This update looks 6 days ahead.":"")
-  +((NR=>NR?`<br>Next update expected about ${hktS(NR.t)} (Hong Kong time)`:"")(RECENT(cyc)&&cyc===cycles.find(c=>(HK[c]||{})[ens])?nextRun(ens):null))}
+  $("#stamp").innerHTML=`<span class="sl sx">Updated ${t.getUTCDate()} ${MON[t.getUTCMonth()]} ${z(t.getUTCHours())}:${z(t.getUTCMinutes())} (Hong Kong time)</span>`+(pastOf(cyc)?`<span class="sl sx">Past storm: ${pastOf(cyc)}</span>`:"")
+  +`<span class="sl${ens==="deepmind"?"":" sx"}"><span>Forecast: ${FCN[ens]||ens}</span>`+(ens==="deepmind"?DMCITE(d):"")+`</span>`
+  +(ens==="ifsens"&&/^(06|18)$/.test(cyc.slice(8,10))?`<span class="sl sx">This update looks 6 days ahead.</span>`:"")
+  +((NR=>NR?`<span class="sl sx">Next update expected about ${hktS(NR.t)} (Hong Kong time)</span>`:"")(RECENT(cyc)&&cyc===cycles.find(c=>(HK[c]||{})[ens])?nextRun(ens):null))}
  if(!d){
   const hh=cyc.slice(8,10), last=cycles.find(c=>(HK[c]||{})[ens]), near=cycles.filter(c=>(HK[c]||{})[ens]).sort((a,b)=>Math.abs(tUcy(a)-tUcy(cyc))-Math.abs(tUcy(b)-tUcy(cyc)))[0];
   const eta=last&&cyc>last&&LIVEF.includes(ens)?etaOf(ens,cyc):null;
