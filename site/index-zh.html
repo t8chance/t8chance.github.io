@@ -350,6 +350,7 @@ if(BASIC){document.body.classList.add("basic");
   $("#chart")&&$("#chart").closest(".scrollx"),$("#stationchart"),$("#cnote")].forEach(e=>e&&e.classList.add("adv"));
  const ds=$(".mast .disc"); if(ds) ds.textContent="Chances of tropical cyclone warning signals for Hong Kong, from computer forecasts. Research output — the Hong Kong Observatory is the only authority for actual signals.";
  $("#maphint").textContent="Each line is one possible path; its colour shows the signal expected along it. Click a line to see how windy Hong Kong gets along it."; const sa=$("#showAll"); if(sa) sa.textContent="← All paths"; const cb=$("#chart")&&$("#chart").closest(".scrollx"); if(cb) cb.classList.add("cbox"); const kh=$("#mapkey .kh"); if(kh) kh.textContent="Signal expected along each path"; const kn=$("#mapkey .kn"); if(kn) kn.classList.add("adv"); const ap=$("#allPlay"); if(ap) ap.textContent="▶ play"}
+window._defHint=$("#maphint").innerHTML;
 if(!/[?&]demo=/.test(location.search)){const nv=$(".mast nav"); if(nv){const sw=document.createElement("span"); sw.className="modesw";
  sw.innerHTML=`<a href="#" data-m="easy" class="${EASY?"on":""}">Basic</a><a href="#" data-m="basic" class="${BASIC&&!EASY?"on":""}">Advanced</a><a href="#" data-m="advanced" class="${BASIC?"":"on"}">Expert</a>`; nv.appendChild(sw);
  sw.querySelectorAll("a").forEach(a=>a.onclick=e=>{e.preventDefault(); try{localStorage.setItem("hk_mode",a.dataset.m)}catch(x){}
@@ -796,7 +797,7 @@ function load(){
   const ans=`<div class="ans"><div class="k">${one?"This run gives":"Expected signal"}</div>`
    +`<div class="bh" style="color:${topL?topL[3]:"var(--ink)"}">${one?(topL?`Signal ${topL[1]}`:"No signal"):topL?`Signal ${topL[1]} likely (${pcA(topL[0])}%)`:`Most likely no signal (${noneA}%)`}</div>${issuedDiv(d,cyc)}`
    +(one?"":LV.map(([sg,lab,L,col])=>`<div class="bbar"><b>${lab}</b><div class="tr"><div class="fl" style="width:${pcA(sg)}%;background:${col}"></div></div><span class="pc">${pcA(sg)}%</span></div>`).join(""))
-   +(topL?`<div class="v">${one?"":`from <b>${nOf(topL[0])}</b> of ${d.members} members`}${x?`${one?"":" · "}${x.groups?`<b>${MAING(x).n}</b> of them `:""}${hk(x.start[1])} → ${hk(x.end[1])} HKT · <b>${x.hours[1]}&nbsp;h</b>`:""}</div>`:"")
+   +(topL?`<div class="v">${one?"":`from <b>${nOf(topL[0])}</b> of ${d.members} members`}${x?`${one?"":" · "}${x.groups?`<b>${MAING(x).n}</b> of them `:""}${""}${hk(x.start[1])}${""} → ${hk(x.end[1])} HKT · <b>${x.hours[1]}&nbsp;h</b>`:""}</div>`:"")
    +(x&&x.groups?`<div class="note">other periods: ${x.groups.filter(g=>g!==MAING(x)).map(g=>`${g.n} member${g.n>1?"s":""} ${hk(g.start[1])} → ${hkS(g.end[1])}`).join(" · ")}</div>`:"")
    +`<div class="note" style="margin-top:8px" id="passn">${pass}</div></div>%%WIND%%<div class="ans"><div class="k">Wind at Hong Kong's reference stations</div><div class="v gs" id="galeF"></div>`
    +`<details class="what"><summary>What do these numbers mean?</summary>`
@@ -834,7 +835,7 @@ function load(){
   const none=100-Math.max(...LV.map(([sg])=>pc(sg)));
   return `<div class="bcard"><div class="bh" style="color:${topL?topL[3]:"var(--ink)"}">${topL?`Signal ${topL[1]} likely (${pc(topL[0])}%)`:`Most likely no signal (${none}%)`}</div>${issuedDiv(d,cyc)}`
    +LV.map(([sg,lab,L,col])=>`<div class="bbar"><b>${lab}</b><div class="tr"><div class="fl" style="width:${pc(sg)}%;background:${col}"></div></div><span class="pc">${pc(sg)}%</span></div>`).join("")
-   +(x?`<div class="bv">Expected from <b>${hk(x.start[1])}</b> to <b>${hk(x.end[1])}</b> (Hong Kong time)</div>`:"")+`<div class="bv" id="bclose"></div></div><div class="bmapc" id="bmapbox" data-top="${topL?topL[2]:0}"></div>`
+   +(x?`<div class="bv">Expected ${"from"} <b>${hk(x.start[1])}</b>${""} ${"to"} <b>${hk(x.end[1])}</b> (Hong Kong time)</div>`:"")+`<div class="bv" id="bclose"></div></div><div class="bmapc" id="bmapbox" data-top="${topL?topL[2]:0}"></div>`
    +r2rCardB()};
  $("#status").innerHTML=BASIC?basicCard():tb||`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">none</div>${issuedDiv(d,cyc)}<div class="note">${pass}</div></div>`;
  drawTL({E,one,members:d.members||0,MJ,hcases,init:Date.UTC(+cyc.slice(0,4),+cyc.slice(4,6)-1,+cyc.slice(6,8),+cyc.slice(8,10))});
@@ -909,7 +910,7 @@ function drawTL(a){if(a)TLA=a;a=TLA;const box=document.getElementById("tl");if(!
   let xl=Infinity, xr=-Infinity;
   const LB=[];
   GS(x).forEach(g=>{const a0=X(tU(g.start[0])),a1=X(tU(g.start[1])),b1=X(tU(g.end[1])),b2=X(tU(g.end[2])), og=one||g.n>=MJ?1:.45;
-   const tip=`${lab} forecast: ${one?"":`${g.n} of ${members} members · `}start ${hl(tU(g.start[1]),1)}${one?"":` (10–90% ${hl(tU(g.start[0]))} – ${hl(tU(g.start[2]))})`} · end ${hl(tU(g.end[1]),1)}${one?"":` (${hl(tU(g.end[0]))} – ${hl(tU(g.end[2]))})`} · ${g.hours[1]} h${one?"":` (${g.hours[0]}–${g.hours[2]})`}, HKT`;
+   const tip=`${lab} forecast: ${one?"":`${g.n} of ${members} members · `}start ${""}${hl(tU(g.start[1]),1)}${""}${one?"":` (10–90% ${hl(tU(g.start[0]))} – ${hl(tU(g.start[2]))})`} · end ${hl(tU(g.end[1]),1)}${one?"":` (${hl(tU(g.end[0]))} – ${hl(tU(g.end[2]))})`} · ${g.hours[1]} h${one?"":` (${g.hours[0]}–${g.hours[2]})`}, HKT`;
    if(!one)rect(a0,b2,y0+2,14,`fill:${col};opacity:${(.25*og).toFixed(2)}`,tip);
    rect(a1,b1,y0+2,14,`fill:${col};opacity:${og}`,tip); LB.push([Math.min(a0,a1),Math.max(b1,b2),g]); xl=Math.min(xl,a0,a1); xr=Math.max(xr,b1,b2)});
   if(x&&x.det){const d0=X(tU(x.det[0])),d1=X(tU(x.det[1]));
@@ -920,6 +921,7 @@ function drawTL(a){if(a)TLA=a;a=TLA;const box=document.getElementById("tl");if(!
   else txt(LW+4,y0+13,!E?"no timing in this run's data":x&&x.det?"deterministic run only":(one?"not reached":"no member"));
   y+=30});
  const B=y-4; let foot="";
+
  [[init,"run"],[Date.now(),"now"]].forEach(([t,lab])=>{if(t<=lo||t>=hi)return; const xx=X(t).toFixed(1);
   grid+=`<line x1="${xx}" x2="${xx}" y1="${AX-1}" y2="${B}" style="stroke:var(--ink);stroke-dasharray:3 3;opacity:.55"/>`;
   foot+=`<text x="${xx}" y="${B+13}" font-size="${fz-1}" text-anchor="middle" style="fill:var(--mut)">${lab} ${hl(t)}</text>`});
