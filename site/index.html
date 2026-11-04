@@ -154,6 +154,9 @@ h2{font:700 25px/1.1 var(--disp);letter-spacing:.005em;margin:36px 0 10px;text-w
 #tabs button:hover{color:var(--ink)}
 #tabs button.on{background:none;color:var(--ink);border-bottom-color:var(--ink)}
 #tabs label{font-size:13px;color:var(--mut)}
+/* the wind-index views (2026-11-04, user: 'no one even sees it now'): a switch on its own row, the chosen view dark */
+#wisw{margin:-4px 0 14px;gap:8px 10px} #wisw .lbl{width:auto;margin-right:2px} #wisw .seg{border:1px solid var(--line)}
+#wisw .seg button{padding:8px 15px;font-weight:600;color:var(--ink)} #wisw .seg button.on{background:var(--ink);color:var(--card);box-shadow:none}
 .kv{display:inline-block;padding:3px 10px;margin:3px 6px 3px 0;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:13px;line-height:1.5}
 table.tl{border-collapse:collapse;font-size:13px;margin:6px 0 2px;width:100%} table.tl th,table.tl td{border-bottom:1px solid var(--line);padding:5px 7px;text-align:center}
 table.tl tr[data-c]{cursor:pointer} table.tl tr.on td{font-weight:700;background:var(--card)}
@@ -217,6 +220,7 @@ footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin
  <h2 class="sech adv mch">Member charts</h2>
  <h2 id="chead">Most threatening member</h2>
  <div class="bar" id="tabs"></div>
+ <div class="bar" id="wisw" style="display:none" role="group" aria-label="wind index view"></div>
  <div class="scrollx"><svg id="chart" viewBox="0 0 1000 320"></svg></div>
  <div id="stationchart" style="display:none"></div>
  <p class="note" id="cnote"></p>
@@ -554,11 +558,13 @@ function drawTabs(){
  $("#tabs").innerHTML=[["signal","Expected signal"],["wi","Wind index"],["sg","Estimated wind"],["rk","Storm ranking"]].filter(([k])=>(k!=="wi"||(TR&&TR.tracks.some(x=>x.wix&&x.wix.length)))&&(!WH()||k==="wi"||k==="rk")&&(!BASIC||k==="wi"||k==="sg"||k==="rk"))
    .map(([k,l])=>`<button data-t="${k}" class="${k===tab?"on":""}">${l}</button>`).join(" ")
 
-  +(tab==="wi"&&!BASIC&&TR&&TR.tracks.some(x=>x.wix&&x.wix.length)?` <label class="note" style="margin:0 0 0 6px" title="the wind index averaged over all ensemble members, hour by hour"><input type="checkbox" id="wimean"${showWIMean?" checked":""}> ensemble-mean wind index</label> <label class="note" style="margin:0 0 0 6px" title="each member's highest wind index, member by member"><input type="checkbox" id="widist"${showWIDist?" checked":""}> peaks of all members</label>`:"");
+  +"";
  $("#tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{tab=b.dataset.t; if(BIN){BIN=null;drawMap()} drawTabs();chart()});
 
- const wm=$("#wimean"); if(wm) wm.onchange=e=>{if(BIN){BIN=null;drawMap()} showWIMean=e.target.checked; if(showWIMean){showWIDist=false; if(tab!=="wi")tab="wi"; drawTabs()} chart()};
- const wd=$("#widist"); if(wd) wd.onchange=e=>{if(BIN){BIN=null;drawMap()} showWIDist=e.target.checked; if(showWIDist){showWIMean=false; if(tab!=="wi")tab="wi"; drawTabs()} chart()};
+ {const w=$("#wisw"), on=tab==="wi"&&!BASIC&&TR&&TR.tracks.some(x=>x.wix&&x.wix.length), v=showWIDist?"dist":showWIMean?"mean":"one";
+  w.style.display=on?"":"none";
+  w.innerHTML=on?`<span class="lbl">Show</span><span class="seg">${[["one","One member","one member's wind index through time"],["mean","Ensemble mean","the wind index averaged over all ensemble members, hour by hour"],["dist","Peaks of all members","each member's highest wind index, member by member"]].map(([k,l,t])=>`<button type="button" data-w="${k}" class="${k===v?"on":""}" title="${t}">${l}</button>`).join("")}</span>`:"";
+  w.querySelectorAll("button").forEach(b=>b.onclick=()=>{if(BIN){BIN=null;drawMap()} showWIMean=b.dataset.w==="mean"; showWIDist=b.dataset.w==="dist"; drawTabs(); chart()})}
 }
 function head(){
  const mine=cycles.filter(c=>ORDER.some(e=>(HK[c]||{})[e])), rec=mine.filter(RECENT), past=mine.filter(c=>!RECENT(c));
@@ -1118,11 +1124,15 @@ function openPath(m){if(!PATHS||MIX)return; const pd=(HK[PATHC]||{}).ifsens;
  drawTabs(); drawMap(); chart()}
 function closePath(){if(!MIX)return; ({ens,cyc,TR,GA,tab,showWIMean,showWIDist}=MIX); MIX=null; sel=null; selH=null; BIN=null; drawTabs(); drawMap(); chart(); $("#maphint").textContent=PHINT()}
 var QP=null, QVB=null;
+const QDEDUP=P=>{if(P._dd)return; P._dd=1; const K=P.tracks.map(t=>new Set(t[2].map(p=>p[0]+","+p[1]+","+p[3])));
+ P.tracks=P.tracks.filter((t,i)=>!P.tracks.some((u,j)=>j!==i&&u[0]===t[0]&&K[i].size<=K[j].size&&[...K[i]].every(x=>K[j].has(x))
+  &&(K[i].size<K[j].size||QDES(u[1])&&!QDES(t[1])||QDES(u[1])===QDES(t[1])&&j<i)))};
+
 const QREF=()=>ens==="aifsens"?51:52, QPK=t=>Math.max(...t[2].map(p=>p[2]||0)), QCA=t=>Math.min(...t[2].map(p=>dist(p[0],p[1])));
 const QOK=t=>t[2].length>1&&(t[2][0][2]==null||QPK(t)>=22-0.5), QT=()=>QP.tracks.filter(QOK), QDES=sid=>+String(sid).slice(0,2)<70, QCOL="#3f6d8f";
 function quietPaths(){QP=null; TR=null; MC=null; MG=null; sel=null; selH=null; BIN=null; syncPlayer(); $("#selbar").style.display="none";
  if(!(ens==="ifsens"||ens==="aifsens"))return;
- const k=cyc+"_"+ens, fin=()=>{if(k!==cyc+"_"+ens||!((HK[cyc]||{})[ens]||{}).quiet)return; QP=(window.HKPATHS||{})[k]||null; if(!QP)return;
+ const k=cyc+"_"+ens, fin=()=>{if(k!==cyc+"_"+ens||!((HK[cyc]||{})[ens]||{}).quiet)return; QP=(window.HKPATHS||{})[k]||null; if(!QP)return; QDEDUP(QP);
   const L=QT().flatMap(t=>t[2]), q=(a,p)=>{const v=a.slice().sort((x,y)=>x-y); return v[Math.min(v.length-1,Math.max(0,Math.round(p*(v.length-1))))]};
   if(L.length){const lo=L.map(p=>p[0]), la=L.map(p=>p[1]); if(!QVB)QVB=VB.slice();
    VB=[Math.max(95,Math.min(103,q(lo,.05)-2)),Math.min(165,Math.max(143,q(lo,.95)+2)),Math.max(0,Math.min(6,q(la,.05)-2)),Math.min(42,Math.max(33,q(la,.95)+2))]}
@@ -1132,7 +1142,7 @@ function quietPaths(){QP=null; TR=null; MC=null; MG=null; sel=null; selH=null; B
  if(window.HKPATHS&&window.HKPATHS[k])fin(); else{const sc=document.createElement("script"); sc.src=`../data/paths_${k}.js`; sc.onload=fin; sc.onerror=()=>{}; document.head.appendChild(sc)}}
 const QHINT=()=>{const T=QT(), n=T.filter(t=>t[0]!==QREF()).length, D=[...new Set(T.map(t=>t[1]).filter(QDES))].sort(), U=new Set(T.map(t=>t[1]).filter(s=>!QDES(s))).size;
  return `No storm comes within 800 km of Hong Kong in this run, so no signals are worked out. Shown: every storm in it that enters the region and reaches a tropical depression — ${n} member paths`
-  +`${D.length?` of ${D.join(", ")}`:""}${U?`${D.length?" and":" of"} systems not yet named (ECMWF's numbers 70 and up, each member's own)`:""}${""} · black dashed = the ${QREF()===51?"control":"deterministic"} run`};
+  +`${D.length?` of ${D.join(", ")}`:""}${U?`${D.length?" and":" of"} systems not yet named (ECMWF's numbers 70 and up, each member's own)`:""}${""} · black dashed = the ${QREF()===51?"control":"deterministic"} run${""}`};
 function drawQuiet(s){const {X,Y,hx,hy}=mapBase(s); $("#selbar").style.display="none"; syncNav();
  const dP=P=>P.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join(" "), T=QT();
  const hov=(path,txt)=>{path.onmouseenter=()=>$("#maphint").innerHTML=txt; path.onmouseleave=()=>$("#maphint").innerHTML=QHINT()};
