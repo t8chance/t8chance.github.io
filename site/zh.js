@@ -214,7 +214,10 @@ const RX=[
  [/^(.+?) — storm ranking$/,(m,a)=>`${who(a)}：熱帶氣旋排名`],
  [/^(.+?) — estimated wind$/,(m,a)=>`${who(a)}：估計風力`],
  [/^(.+?) \(median wind index\)$/,(m,a)=>`${who(a)}（風力指數中位數）`],
- [/^Member (\d+)$/,(m,a)=>`成員 ${a}`],
+ [/^[Mm]ember (\d+)$/,(m,a)=>`成員 ${a}`],
+ [/^(?:— (most threatening|median wind index))?: closest (\d+) km at (.+?), (no signal|signal No\. (\d+)|signal near No\. 10)\. Click to see it below\.$/,
+  (m,tag,km,t,sig,n)=>`${tag==="most threatening"?"（對香港影響最大）":tag?"（風力指數中位數）":""}：最接近香港時相距 ${km} 公里（${zt(t)}），`
+   +`${sig==="no signal"?"無需發出信號":n?`可能需要發出${NO[n]}信號`:"預測接近十號信號水平"}。按下可在下面查看。`],
  [/^: closest (\d+) km at (.+?), peak No\. 8 ([\d.]+)\. Click to see it below\.$/,(m,a,b,c)=>`：最接近 ${a} 公里（${zt(b)}），八號信號機會率最高 ${c}。按下可在下面查看。`],
  [/^— most threatening: closest (\d+) km at (.+?), peak No\. 8 ([\d.]+)\. Click to see it below\.$/,(m,a,b,c)=>`（對香港影響最大）：最接近 ${a} 公里（${zt(b)}），八號信號機會率最高 ${c}。按下可在下面查看。`],
  [/^: click anywhere on its line, drag the time bar or press play to see the storm at any moment \(the charts below follow\)\.$/,()=>`：按路徑上任何位置、拖動時間軸或按播放，即可看到熱帶氣旋任何時刻的位置，下面的圖表會同步更新。`],
