@@ -6,8 +6,6 @@
 <title>Open the forecasts</title>
 <meta name="description" content="Choose today's forecast or a past storm.">
 
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
 <style>
 /* Layout: one question, two equal choices side by side (stacked on a phone), left-aligned under the masthead. */
 :root{
@@ -40,8 +38,37 @@ a{color:var(--link)}
 .fine{margin:28px 0 0;color:var(--mut);font-size:14px}
 @media (max-width:700px){.choices{grid-template-columns:1fr}.ask{padding-top:28px}}
 @media (prefers-reduced-motion:reduce){.choice{transition:none}.choice:hover{transform:none}}
+
+/* look of 2026-11-10: a flat page. White ground, ink text, hairline rules, square corners, no boxes or shadows, the device's own typeface,
+   one ink title band. These rules come last, so they win over the ones above. */
+:root{--bg:#fff;--card:#fff;--soft:#eff0f1;--ink:#14171a;--mut:#5a6168;--line:#d8dbde;--link:#0a55a3;--raise:#fff;--shadow:none;--band:#14171a;--bandink:#fff;
+ --body:-apple-system,BlinkMacSystemFont,"Helvetica Neue","PingFang HK","Segoe UI","Noto Sans HK","Noto Sans TC","Microsoft JhengHei",Roboto,Arial,sans-serif;
+ --disp:-apple-system,BlinkMacSystemFont,"Helvetica Neue","PingFang HK","Segoe UI","Noto Sans HK","Noto Sans TC","Microsoft JhengHei",Roboto,Arial,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1012;--card:#0e1012;--soft:#1b1e21;--ink:#eceef0;--mut:#9aa1a8;--line:#2c3136;--link:#7db4ff;--raise:#2c3136;--shadow:none;--band:#000;--bandink:#fff}}
+:root[data-theme="dark"]{--bg:#0e1012;--card:#0e1012;--soft:#1b1e21;--ink:#eceef0;--mut:#9aa1a8;--line:#2c3136;--link:#7db4ff;--raise:#2c3136;--shadow:none;--band:#000;--bandink:#fff}
+b,strong{font-weight:600}
+.mast{padding:0 0 10px;gap:8px 24px}
+.mast .name{flex-basis:100%;display:block;margin:0;padding:13px 0 12px;font:700 18px/1.3 var(--body);letter-spacing:0;color:var(--bandink);background:var(--band);
+ box-shadow:0 0 0 100vmax var(--band);clip-path:inset(0 -100vmax)}
+.mast nav{flex:1 1 auto;gap:8px 20px;font-size:14.5px;padding-top:2px}
+.mast nav a:hover{color:var(--link)}
+.mast nav a[aria-current]{color:var(--ink);font-weight:600;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
+@media (max-width:760px){.mast .name{padding:12px 0 11px;font-size:17px}}
+h1{font:700 clamp(27px,4.2vw,38px)/1.12 var(--body);letter-spacing:-.015em}
+h2{font:700 clamp(20px,2.4vw,24px)/1.2 var(--body);letter-spacing:-.01em}
+h3{font:700 17px/1.25 var(--body)}
+.kicker{letter-spacing:0;text-transform:none;font:600 13.5px/1.2 var(--body)}
+.seg{padding:0;gap:6px;background:none;border-radius:0}
+.seg button{border:1px solid var(--line);border-radius:3px;color:var(--mut);background:var(--bg)}
+.seg button.on{background:var(--bg);border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);color:var(--ink);font-weight:600}
+.ask{padding:28px 0 60px}
+.ask h1{margin:0 0 20px;font:700 clamp(27px,4.6vw,40px)/1.1 var(--body)}
+.choices{gap:0 44px}
+.choice{padding:16px 0 22px;background:none;border:0;border-top:2px solid var(--ink);border-radius:0;box-shadow:none}
+.choice:hover{transform:none;border-color:var(--ink)} .choice:hover .go{text-decoration:underline}
+.choice .t{font:700 22px/1.2 var(--body)}
 </style>
-<style>.langsw{position:absolute;top:10px;right:12px;z-index:60;font:600 14px/1 system-ui,-apple-system,sans-serif;padding:8px 13px;border-radius:999px;background:#fff;color:#13202b;border:1px solid #c9d2db;text-decoration:none;box-shadow:0 1px 4px rgba(0,0,0,.12)}@media (prefers-color-scheme:dark){.langsw{background:#1d2731;color:#e8eef3;border-color:#3a4652}} html.demo .langsw{display:none}@media (max-width:760px){.mast h1,.mast>.name{padding-right:100px}} @media (min-width:761px) and (max-width:1440px){.mast{padding-right:104px}}</style></head>
+<style>.langsw{position:absolute;top:10px;right:12px;z-index:60;font:600 13px/1 system-ui,-apple-system,sans-serif;padding:6px 10px;border-radius:3px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,.5);text-decoration:none} html.demo .langsw{display:none}.mast h1,.mast>.name{padding-right:96px}</style></head>
 <body>
 <div class="wrap">
 <header class="mast"><a class="name" href="index.html">Hong Kong typhoon signal forecasts</a>
@@ -73,7 +100,8 @@ function show(L){
  if(!L||!L.cycle)return; const by=L.by||{}, op=by.deepmind&&!(L.quiet||[]).includes("deepmind")?"deepmind":by.ifsens?"ifsens":null;
  const c=op?by[op]:L.cycle, t=Date.UTC(+c.slice(0,4),+c.slice(4,6)-1,+c.slice(6,8),+c.slice(8,10)), d=new Date(t);
  const f=op?FCN[op]:(L.ens||[]).map(e=>FCN[e]||e).join(" and "), tn=Date.UTC(+L.cycle.slice(0,4),+L.cycle.slice(4,6)-1,+L.cycle.slice(6,8),+L.cycle.slice(8,10));
- document.getElementById("todayInfo").textContent=`Newest run: ${DAY[d.getUTCDay()]} ${d.getUTCDate()} ${MON[d.getUTCMonth()]}, ${c.slice(8,10)}Z${f?` (${f})`:""}.`;
+ {const k=new Date(t+288e5);
+  document.getElementById("todayInfo").textContent=`Newest forecast started ${DAY[k.getUTCDay()]} ${k.getUTCDate()} ${MON[k.getUTCMonth()]}, ${String(k.getUTCHours()).padStart(2,"0")}:00 Hong Kong time${f?` (${f})`:""}.`}
  const h=(Date.now()-tn)/36e5;
  if(h>30){const s=document.getElementById("stale"); s.textContent=`Not updating right now: this run is ${h>=48?Math.floor(h/24)+" days":Math.round(h)+" hours"} old.`; s.hidden=false}
 }

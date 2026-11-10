@@ -6,8 +6,8 @@
 (function () {
   if (document.documentElement.classList.contains("demo")) return;                  // not inside the tour's frames
   var zh = /^zh/.test(document.documentElement.lang || "");
-  var css = ".credits{max-width:1060px;margin:28px auto 36px;padding:16px 16px 0;border-top:1px solid var(--line,#d3dbe2);font-size:13px;line-height:1.55;color:var(--mut,#55636f)}"
-    + ".credits h2{margin:0 0 6px;font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}.credits p{margin:0 0 8px;max-width:none}.credits a{color:inherit}";
+  var css = ".credits{max-width:1060px;margin:28px auto 36px;padding:14px 16px 0;border-top:2px solid var(--ink,#14171a);font-size:12.5px;line-height:1.5;color:var(--mut,#5a6168)}"
+    + ".credits h2{margin:0 0 8px;font-size:15px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--ink,#14171a)}.credits p{margin:0 0 8px;max-width:none}.credits a{color:inherit}";
   var st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
   var A = function (u, t) { return '<a href="' + u + '" target="_blank" rel="noopener">' + t + "</a>"; };
   var cc = A("https://creativecommons.org/licenses/by/4.0/", "CC BY 4.0");
@@ -18,12 +18,16 @@
     "<b>Google DeepMind</b> Weather Lab cyclone forecasts: past forecasts under " + cc + "; live ones under Google's "
       + A("https://storage.googleapis.com/weathernext-public/terms-of-use.pdf", "experimental-data terms") + " (shown as signal chances only). Modified here as above. Google is not involved in this site.",
     "<b>Pangu-Weather</b> re-forecasts (via WeatherBench 2), started from ERA5: contains modified Copernicus Climate Change Service information.",
+    "<b>ERA5</b> (past storms before 2008): contains modified Copernicus Climate Change Service information (2026). Neither the European Commission nor ECMWF is responsible for any use that may be made of the Copernicus information or data it contains.",
+    "<b>NOAA</b> Global Ensemble Forecast System (GEFS) Re-forecast, accessed in 2026 from " + A("https://registry.opendata.aws/noaa-gefs-reforecast", "registry.opendata.aws/noaa-gefs-reforecast") + ". Modified here as above. NOAA is not involved in this site.",
+    "<b>Wikipedia</b>: station winds for some storms before 2008, from the tables in Chinese Wikipedia's articles (" + A("https://zh.wikipedia.org", "zh.wikipedia.org") + "), by Wikipedia's contributors, under " + A("https://creativecommons.org/licenses/by-sa/4.0/", "CC BY-SA 4.0") + ".",
     "<b>Hong Kong Observatory</b>: best tracks, tropical cyclone warning signals and station winds used to check and set up the forecasts. The Hong Kong Observatory is the only authority for actual signals; this site is research output and is not endorsed by any of the organisations above."
   ];
   var zhs = "本網站使用以下機構提供的預報數據，推算香港天文台發出各號熱帶氣旋警告信號的機會，並製作相關圖表。這些機構均未參與本網站的製作，亦不代表認可本網站。所有熱帶氣旋警告信號均以香港天文台的正式公布為準。";   // 2026-11-01 reviewer wording
   var f = document.createElement("footer"); f.className = "credits"; f.setAttribute("aria-label", "Data and credits");
   f.innerHTML = "<h2>" + (zh ? "資料來源及鳴謝" : "Data and credits") + "</h2>" + (zh ? "<p>" + zhs + "</p>" : "")
     + en.map(function (s) { return '<p lang="en" translate="no" class="cr">' + s + "</p>"; }).join("");
-  var go = function () { document.body.appendChild(f); };
+  var go = function () { var w = document.querySelector(".wrap"), mw = w ? getComputedStyle(w).maxWidth : "";   // as wide as the page's own column (2026-11-10)
+    if (/px$/.test(mw)) f.style.maxWidth = mw; document.body.appendChild(f); };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go();
 })();

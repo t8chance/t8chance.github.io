@@ -6,8 +6,6 @@
 <title>How to read the forecasts</title>
 <meta name="description" content="How to read the Hong Kong typhoon signal forecasts, on the newest forecast with a storm near Hong Kong.">
 
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap">
 <style>
 /* Layout: left-aligned teaching sheet. Hero = the real result beside the real answer card; then numbered steps (they follow the
    forecast page from top to bottom) on the left and one sticky picture on the right, with a row naming the part of the page.
@@ -124,8 +122,45 @@ html:not(.full) .step .f{display:none}
 /* one tour per view (2026-11-01): html.te = Basic (#estory), html.tb = Advanced (#bstory), neither = Expert (#story) */
 html.tb #story,html.te #story{display:none} html:not(.tb) #bstory{display:none} html:not(.te) #estory{display:none}
 #bstory,#estory{max-width:780px;margin:0 auto;padding:8px 16px 28px}#bstory ol,#estory ol{list-style:none;margin:0;padding:0;display:grid;gap:38px}#bstory h2,#estory h2{margin:0 0 8px;text-wrap:balance}#bstory p,#estory p{max-width:65ch}#bstory figure,#estory figure{margin:12px 0 14px}
+
+/* look of 2026-11-10: a flat page. White ground, ink text, hairline rules, square corners, no boxes or shadows, the device's own typeface,
+   one ink title band. These rules come last, so they win over the ones above. */
+:root{--bg:#fff;--card:#fff;--soft:#eff0f1;--ink:#14171a;--mut:#5a6168;--line:#d8dbde;--link:#0a55a3;--raise:#fff;--shadow:none;--band:#14171a;--bandink:#fff;
+ --body:-apple-system,BlinkMacSystemFont,"Helvetica Neue","PingFang HK","Segoe UI","Noto Sans HK","Noto Sans TC","Microsoft JhengHei",Roboto,Arial,sans-serif;
+ --disp:-apple-system,BlinkMacSystemFont,"Helvetica Neue","PingFang HK","Segoe UI","Noto Sans HK","Noto Sans TC","Microsoft JhengHei",Roboto,Arial,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1012;--card:#0e1012;--soft:#1b1e21;--ink:#eceef0;--mut:#9aa1a8;--line:#2c3136;--link:#7db4ff;--raise:#2c3136;--shadow:none;--band:#000;--bandink:#fff}}
+:root[data-theme="dark"]{--bg:#0e1012;--card:#0e1012;--soft:#1b1e21;--ink:#eceef0;--mut:#9aa1a8;--line:#2c3136;--link:#7db4ff;--raise:#2c3136;--shadow:none;--band:#000;--bandink:#fff}
+b,strong{font-weight:600}
+.mast{padding:0 0 10px;gap:8px 24px}
+.mast .name{flex-basis:100%;display:block;margin:0;padding:13px 0 12px;font:700 18px/1.3 var(--body);letter-spacing:0;color:var(--bandink);background:var(--band);
+ box-shadow:0 0 0 100vmax var(--band);clip-path:inset(0 -100vmax)}
+.mast nav{flex:1 1 auto;gap:8px 20px;font-size:14.5px;padding-top:2px}
+.mast nav a:hover{color:var(--link)}
+.mast nav a[aria-current]{color:var(--ink);font-weight:600;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
+@media (max-width:760px){.mast .name{padding:12px 0 11px;font-size:17px}}
+h1{font:700 clamp(27px,4.2vw,38px)/1.12 var(--body);letter-spacing:-.015em}
+h2{font:700 clamp(20px,2.4vw,24px)/1.2 var(--body);letter-spacing:-.01em}
+h3{font:700 17px/1.25 var(--body)}
+.kicker{letter-spacing:0;text-transform:none;font:600 13.5px/1.2 var(--body)}
+.seg{padding:0;gap:6px;background:none;border-radius:0}
+.seg button{border:1px solid var(--line);border-radius:3px;color:var(--mut);background:var(--bg)}
+.seg button.on{background:var(--bg);border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);color:var(--ink);font-weight:600}
+.hero h1{font:700 clamp(30px,4.4vw,46px)/1.08 var(--body);letter-spacing:-.02em}
+.btn{border-radius:3px;font-size:16px}
+figure.tile img{border-radius:0;box-shadow:none;border:1px solid var(--line)}
+.num{font:700 44px/.9 var(--body)}
+.step h2{font:700 clamp(22px,2.6vw,28px)/1.15 var(--body)}
+.mwtiles .t{border-radius:0;border-width:2px 0 0;border-color:var(--ink);background:none;padding:10px 0}
+.mwtiles b{font:700 34px/1 var(--body)}
+.live,.frames{border-radius:0;box-shadow:none;border:1px solid var(--line)}
+.frames .pp,#lb .x,.where button{border-radius:3px}
+.modebar{background:var(--bg);border:1px solid var(--line);border-radius:3px}
+.modebar button{border-radius:2px}
+.modebar button[aria-pressed=true]{background:var(--ink);color:var(--bg);box-shadow:none}
+.end h2{font:700 clamp(24px,3.2vw,32px)/1.12 var(--body)}
+#lb img{border-radius:0}
 </style>
-<script src="zh.js"></script><style>.langsw{position:absolute;top:10px;right:12px;z-index:60;font:600 14px/1 system-ui,-apple-system,sans-serif;padding:8px 13px;border-radius:999px;background:#fff;color:#13202b;border:1px solid #c9d2db;text-decoration:none;box-shadow:0 1px 4px rgba(0,0,0,.12)}@media (prefers-color-scheme:dark){.langsw{background:#1d2731;color:#e8eef3;border-color:#3a4652}} html.demo .langsw{display:none}@media (max-width:760px){.mast h1,.mast>.name{padding-right:100px}} @media (min-width:761px) and (max-width:1440px){.mast{padding-right:104px}}</style></head>
+<script src="zh.js"></script><style>.langsw{position:absolute;top:10px;right:12px;z-index:60;font:600 13px/1 system-ui,-apple-system,sans-serif;padding:6px 10px;border-radius:3px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,.5);text-decoration:none} html.demo .langsw{display:none}.mast h1,.mast>.name{padding-right:96px}</style></head>
 <body>
 <div class="wrap">
 <header class="mast"><a class="name" href="index-zh.html">Hong Kong typhoon signal forecasts</a>
@@ -319,7 +354,7 @@ function liveCue(box,on){const f=box&&box.querySelector(".live iframe"); if(!f)r
 const MONS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 addEventListener("message",e=>{const r=e.data&&e.data.hkTourRun; if(!r||window.HK_TOURRUN)return; window.HK_TOURRUN=r; const c=r.cyc;
  const lab=document.getElementById("tourrun"), ea=document.getElementById("ex-answer"), es=document.getElementById("ex-stations");
- if(lab)lab.innerHTML=`The examples below use the newest ECMWF forecast with a storm near Hong Kong, which started at <b>${+c.slice(6,8)} ${MONS[+c.slice(4,6)-1]} ${c.slice(0,4)}, ${c.slice(8,10)} UTC</b>${r.past?` (${r.past})`:""}.`;
+ if(lab)lab.innerHTML=`The examples below use the newest ECMWF forecast with a storm near Hong Kong, which started at <b>${(k=>`${k.getUTCDate()} ${MONS[k.getUTCMonth()]} ${k.getUTCFullYear()}, ${String(k.getUTCHours()).padStart(2,"0")}:00 Hong Kong time`)(new Date(Date.UTC(+c.slice(0,4),+c.slice(4,6)-1,+c.slice(6,8),+c.slice(8,10))+288e5))}</b>${r.past?` (${r.past})`:""}.`;
  if(ea)ea.innerHTML=r.top?`In this example, ${r.n} of the ${r.M} members ${r.n===1?"gives":"give"} <span class="c${r.top}">No.&nbsp;${r.top}</span>`+(r.h!=null?`, lasting about ${r.h}&nbsp;hours.`:"."):r.n?`In this example only ${r.n} of the ${r.M} members ${r.n===1?"gives":"give"} No.&nbsp;3 or higher, which is fewer than half.`:`In this example no member gives No.&nbsp;3.`;
  if(es)es.textContent=!r.st?"":r.st[1]==="≤F7"?"In this run no station goes above F7.":`In this run ${r.st[0]} reaches ${r.st[1]}.`});
 addEventListener("message",e=>{if(!e.data||!e.data.hkDemoH)return;
