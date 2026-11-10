@@ -92,7 +92,7 @@ body.basic.bsel #chead.adv,body.basic.bsel.tab-wi .cbox.adv,body.basic.bsel #cno
 .bbar{display:grid;grid-template-columns:64px 1fr 52px;gap:10px;align-items:center;margin:7px 0}.bbar b{font-weight:700}
 .bbar .tr{height:14px;border-radius:7px;background:var(--soft);overflow:hidden}.bbar .fl{height:100%;border-radius:7px;min-width:2px}
 .bbar .pc{font:700 18px var(--disp);text-align:right;font-variant-numeric:tabular-nums}
-.bcard .bv{margin:10px 0 0;font-size:15.5px}#stamp .sl{display:block}@media (max-width:600px){#stamp .sx{display:none}body.basic #stamp:not(:has(.sl:not(.sx))){display:none}}.bmapc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px 10px;margin:0 0 12px}.bmapc:empty{display:none}
+.bcard .bv{margin:10px 0 0;font-size:15.5px}.obs{margin-top:10px!important;font-size:14.5px!important}.selhide{display:none!important}#stamp .sl{display:block}@media (max-width:600px){#stamp .sx{display:none}body.basic #stamp:not(:has(.sl:not(.sx))){display:none}}.bmapc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px 10px;margin:0 0 12px}.bmapc:empty{display:none}
 .bmapc .bmh{font-weight:700;font-size:17px;margin:0 0 8px}.bmapc svg{display:block;width:100%;height:auto;border-radius:10px}.bmapc .note{margin:6px 0 0}.iss{margin:4px 0 10px;font-size:13.5px;color:var(--mut)}
 .tlcard .k{margin-bottom:8px}
 .sech{font:700 13px/1 var(--disp);letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:24px 0 10px}#status>.sech:first-child{margin-top:6px}
@@ -572,7 +572,7 @@ if(BASIC){document.body.classList.add("basic");
  if(EASY){document.body.classList.add("easy"); const st=$("#status"); if(st){const m=document.createElement("p"); m.id="easymore";
   m.innerHTML=`<a href="#" class="easygo">See the details →</a>`; st.after(m); m.querySelector("a").onclick=e=>{e.preventDefault(); try{localStorage.setItem("hk_mode","basic")}catch(x){}
    const q=new URLSearchParams(location.search); q.set("mode","basic"); location.search=q.toString()}}}
-  [$("#ensbtns")&&$("#ensbtns").closest(".grp"),$("#checks"),$("#detBtn"),$("#only150")&&$("#only150").closest("label"),$("#mapexp"),$("#chead"),$("#tabs"),
+  [$("#ensbtns")&&$("#ensbtns").closest(".grp"),$("#checks"),$("#only150")&&$("#only150").closest("label"),$("#mapexp"),$("#chead"),$("#tabs"),
   $("#chart")&&$("#chart").closest(".scrollx"),$("#stationchart"),$("#cnote")].forEach(e=>e&&e.classList.add("adv"));
  {const rl=$("#runlbl"), cy=$("#cyc"); if(rl) rl.textContent="Forecast from"; if(cy) cy.title="3. when the forecast started (Hong Kong time)"}
  const ds=$(".mast .disc"); if(ds) ds.textContent="Chances of tropical cyclone warning signals for Hong Kong, from computer forecasts. Research output — the Hong Kong Observatory is the only authority for actual signals.";
@@ -608,16 +608,20 @@ function drawBasicMap(bx,T,R,k){
  let L0=114.174,L1=L0,B0=22.302,B1=B0;
  R.pts.forEach((p,i)=>{if(dist(p[0],p[1])>1500)return; const r=Math.min(sh[i]||0,300), dy=r/110.57, dx=r/(111.32*Math.cos(p[1]*Math.PI/180));
   L0=Math.min(L0,p[0]-dx); L1=Math.max(L1,p[0]+dx); B0=Math.min(B0,p[1]-dy); B1=Math.max(B1,p[1]+dy)});
+ {const o=obsAt(0); if(o&&!o.none&&dist(o.lon,o.lat)<=1500){const r=Math.min(o.gale>0?o.gale:0,400), dy=r/110.57, dx=r/(111.32*Math.cos(o.lat*Math.PI/180));
+  L0=Math.min(L0,o.lon-dx); L1=Math.max(L1,o.lon+dx); B0=Math.min(B0,o.lat-dy); B1=Math.max(B1,o.lat+dy)}}
  const cx=(L0+L1)/2, cy=(B0+B1)/2, kx=Math.cos(cy*Math.PI/180), nar=(bx.parentNode.clientWidth||innerWidth)<600, A0=nar?.72:.55, A1=nar?.85:.68;
  let w=Math.max(L1-L0+2,10), h=Math.max(B1-B0+2,7);
  if(h*110.57>A1*w*111.32*kx) w=h*110.57/(A1*111.32*kx); else if(h*110.57<A0*w*111.32*kx) h=A0*w*111.32*kx/110.57;
  const SQ=sqOf(R), LVS=[...new Set(R.pts.slice(0,-1).flatMap((p,i)=>{const a=labH(p[3]),b=labH(R.pts[i+1][3]);return [sigAt(R,a+1e-3,SQ),...SQ.map(x=>labH(x[0])).filter(x=>x>a&&x<b).map(x=>sigAt(R,x+1e-3,SQ))]}))].sort((a,b)=>a-b);
- const ai=k.endsWith("_aifsens"), S=[ens==="deepmind"?"The line and the shaded area come from ECMWF's physics model, because Google DeepMind does not make a main forecast."
+ const OB=obsAt(0), ai=k.endsWith("_aifsens"), S=[ens==="deepmind"?"The line and the shaded area come from ECMWF's physics model, because Google DeepMind does not make a main forecast."
    :ai?"The line is the control run of ECMWF's AI model.":ens==="pangu"?"The line is this forecast's path of the storm.":"The line is ECMWF's main forecast of the storm's path.",
   "Its colour shows the signal expected in Hong Kong as the storm passes.", "The dots mark the centre at 08:00 Hong Kong time each day.",
-  ...(sh.some(x=>x!=null)?[ai?"The shaded area is where seven of every ten of the AI model's computer forecasts put the centre of the storm.":"The shaded area is where seven of every ten of ECMWF's computer forecasts put the centre of the storm."]:[])];
+  ...(sh.some(x=>x!=null)?[ai?"The shaded area is where seven of every ten of the AI model's computer forecasts put the centre of the storm.":"The shaded area is where seven of every ten of ECMWF's computer forecasts put the centre of the storm."]:[]),
+  ...(OB&&!OB.none?[OB.gale>0?"The white dot marks the storm on HKO's best track when this forecast started, and the circles show how far its gale (green), storm (orange) and hurricane (red) winds reached."
+   :"The white dot marks the storm on HKO's best track when this forecast started."]:[])];
  bx.innerHTML=`<div class="bmh">Expected path of the storm</div><svg></svg><div class="mapkey">${LVS.map(l=>`<span><i style="background:${SIGC[l]}"></i>${l?SIGN[l]:"no signal"}</span>`).join("")}</div><p class="note">${S.join(" ")}</p>`;
- const s=bx.querySelector("svg"), {W,H,X,Y,hx,hy,la0,la1}=mapBase(s,[cx-w/2,cx+w/2,cy-h/2,cy+h/2]), pr=r=>r/110.57*(H/(la1-la0));
+ const s=bx.querySelector("svg"), {W,H,X,Y,hx,hy,lo0,lo1,la0,la1}=mapBase(s,[cx-w/2,cx+w/2,cy-h/2,cy+h/2]), pr=r=>r/110.57*(H/(la1-la0));
  const g=el("g",{opacity:.2,fill:"#2f5d8a"});
  R.pts.forEach((p,i)=>{if(sh[i]==null)return; const x0=X(p[0]),y0=Y(p[1]),r0=pr(sh[i]); g.appendChild(el("circle",{cx:x0,cy:y0,r:r0}));
   const q=R.pts[i+1]; if(!q||sh[i+1]==null)return; const x1=X(q[0]),y1=Y(q[1]),r1=pr(sh[i+1]),L=Math.hypot(x1-x0,y1-y0)||1,nx=-(y1-y0)/L,ny=(x1-x0)/L;
@@ -628,6 +632,7 @@ function drawBasicMap(bx,T,R,k){
  for(let i=0;i<R.pts.length-1;i++){const a=R.pts[i],b=R.pts[i+1],ha=labH(a[3]),hb=labH(b[3]),dh=hb-ha||1,cuts=[ha,...SB.filter(x=>x>ha+1e-6&&x<hb-1e-6),hb];
   for(let j=0;j<cuts.length-1;j++){const f0=(cuts[j]-ha)/dh,f1=(cuts[j+1]-ha)/dh,lv=sigAt(R,cuts[j]+1e-3,SQ);
    s.appendChild(el("line",{x1:X(a[0]+(b[0]-a[0])*f0),y1:Y(a[1]+(b[1]-a[1])*f0),x2:X(a[0]+(b[0]-a[0])*f1),y2:Y(a[1]+(b[1]-a[1])*f1),stroke:SIGC[lv],"stroke-width":3.8,"stroke-linecap":"round"}))}}
+ if(OB&&!OB.none) obsDraw(e=>s.appendChild(e),X,Y,r=>r/(111.32*Math.cos(.389))*(W/(lo1-lo0)),pr,OB,false);
  s.appendChild(el("circle",{cx:hx,cy:hy,r:6,fill:"#f2c200",stroke:"#333","stroke-width":1.2}));
  {const t=el("text",{x:hx+9,y:hy+4,fill:"#111","font-size":12,"font-weight":600,stroke:"#fff","stroke-width":3,"paint-order":"stroke"}); t.textContent="Hong Kong"; s.appendChild(t)}
  const PL=[]; const hit=(a,b)=>a[0]<b[2]&&b[0]<a[2]&&a[1]<b[3]&&b[1]<a[3], HKB=[hx+6,hy-13,hx+90,hy+8]; PL.push(HKB);
@@ -726,14 +731,15 @@ function momentState(t){
  return {h:labH(P[3]),lon:P[0],lat:P[1],v:P[2],strong:t.rad22?t.rad22[mi]||0:0,gale:t.rad[mi]||0,storm:t.rad50?t.rad50[mi]||0:0,hur:t.rad64?t.rad64[mi]||0:0}}
 function drawMoment(){
  if(!MC||!MG) return; while(MG.firstChild) MG.removeChild(MG.firstChild);
- const {t,X,Y,W,H}=MC, S=momentState(t), add=e=>MG.appendChild(e), cx=X(S.lon), cy=Y(S.lat), dk=dist(S.lon,S.lat), sgx=sigAt(t,S.h);
+ const {t,X,Y,RX,RY,W,H}=MC, S=momentState(t), add=e=>MG.appendChild(e), cx=X(S.lon), cy=Y(S.lat), dk=dist(S.lon,S.lat), sgx=sigAt(t,S.h);
  const lines=[[`${fmtH(S.h)}${selH===null?" (closest)":""}: ${Math.round(dk)} km from HK`,null]];
  if(sgx>=1) lines.push([`expected signal: ${SIGN[sgx]}`,SIGC[sgx]]);
  const wiv=wiAt(t,S.h); if(wiv!==null) lines.push([`wind index at HK: about ${Math.round(wiv)} km/h`,null]);
  const TRU=truthNow(), A=TRU?truthAt(TRU,S.h):null;
- if(A){add(el("circle",{cx:X(A.lon),cy:Y(A.lat),r:6,fill:"#fff",stroke:"#000","stroke-width":2.2}));
-  const sg=sigIn(TRU,S.h,S.h+1e-6); lines.push([`actual: ${Math.round(dist(A.lon,A.lat))} km from HK${sg?`, HKO No. ${sg} up`:", no HKO signal"}`,null])}
- const bw=A?300:262,bh=16*lines.length+10,bx=W-bw-8,by=H-bh-8;
+ if(A){obsDraw(add,X,Y,RX,RY,A,false);
+  const sg=sigIn(TRU,S.h,S.h+1e-6); lines.push([`actual: ${Math.round(dist(A.lon,A.lat))} km from HK${sg?`, HKO No. ${sg} up`:", no HKO signal"}`,null]);
+  lines.push([`HKO best track: ${OBSC[clsOf(A.v)]}, about ${obsK(A.v)} km/h`,null])}
+ const bw=Math.min(W-16,Math.max(A?300:262,...lines.map(([x,c])=>6.6*x.length+(c?40:16)))),bh=16*lines.length+10,bx=W-bw-8,by=H-bh-8;
  add(el("rect",{x:bx,y:by,width:bw,height:bh,rx:6,fill:"#fff",opacity:.92,stroke:"#999","stroke-width":.7}));
  lines.forEach(([txt,col],k)=>{const yy=by+18+16*k;
   if(col)add(el("line",{x1:bx+8,x2:bx+24,y1:yy-4,y2:yy-4,stroke:col,"stroke-width":4}));
@@ -745,6 +751,7 @@ function drawMoment(){
  $("#ptime").textContent=`${fmtH(S.h)}${selH===null?" (closest approach)":""} · ${Math.round(dk)} km from Hong Kong${sgx>=1?` · expected ${SIGN[sgx]}`:""}${wiv!==null?` · wind index ${Math.round(wiv)}`:""}`;
  if(t.wf) $("#slider").value=S.h}
 function syncPlayer(){const t=MC&&MC.t, pl=$("#player");
+ {const ap=$("#allPlay"); if(ap) ap.classList.toggle("selhide",!!(t&&t.wf))}
  if(!t||!t.wf){pl.style.display="none"; if(playing) stopPlay(); return}
  if(playing&&t.m!==playM) stopPlay();
  pl.style.display=""; const sl=$("#slider"); sl.min=t.wf[0][0]; sl.max=t.wf[t.wf.length-1][0]; sl.value=momentH(t)}
@@ -761,7 +768,7 @@ $("#play").onclick=()=>{if(playing){stopPlay();chart();return}
 $("#slider").oninput=e=>{selH=+e.target.value; drawMoment(); chart()};
 function refM(){if(!TR)return null; const has=m=>TR.tracks.some(t=>t.m===m); return (ens==="ifsens"||ens==="tigge")&&has(52)?52:ens==="aifsens"&&has(51)?51:null}
 let allH=null, allPlaying=false, allTs=0, allStart=0, allEnd=0, AG=null, AXY=null; const ALLSPD=BASIC?48:24;
-function drawAll(){if(!AG||!AXY)return; while(AG.firstChild)AG.removeChild(AG.firstChild); if(allH===null||!TR)return;
+function drawAll(){drawObs(); if(!AG||!AXY)return; while(AG.firstChild)AG.removeChild(AG.firstChild); if(allH===null||!TR)return;
  const {X,Y,W,H,only}=AXY, byI=false, det=t=>t.m===52&&(ens==="ifsens"||ens==="tigge");
  TR.tracks.filter(t=>t.wf&&t.pts&&t.wf.length===t.pts.length&&t.wf.length>1&&(!only||t.ca[0]<150)).sort((a,b)=>det(a)-det(b)).forEach(t=>{const w=t.wf;
   if(allH<w[0][0]-1e-6||allH>w[w.length-1][0]+1e-6)return;
@@ -1045,8 +1052,8 @@ function load(){
    +`<p><b>Storm and hurricane force</b> count the same 8 stations, at 88 and 118 km/h (10-minute average wind). Each station's own chance and expected wind are in <b>Stations</b> just above, for the ${ens==="aifsens"?"control":"deterministic"} run, and in the Estimated wind tab under the map, which shows the same run until you click another track.</p>`
    +`<p><b>8-station average.</b> The average over the 8 reference stations of each station's highest 10-minute mean wind in the storm. Past storms are ranked by it: ${R8N} storms since 2007 that brought No. 3 or higher, from the same station records the station numbers are built on. For a forecast it is shown for each member, as a reference only, under the table in the Estimated wind tab, from that member's wind guide at the 8 stations; below ${R8MIN} km/h the guide cannot tell storms apart, so no rank is given.</p></details></div>`;
   const hko=hcases.length&&!window.HK_DEMO?`<div class="ans"><div class="k">HKO actually issued</div><div class="badge" style="color:${colL[clsL(hkoTop)]}">No. ${hkoTop}</div>`
-   +hcases.map(c=>{const t=HKOEV[c].top, y=HKOEV[c]["L"+clsL(t)];return `<div class="v">${c}: No. ${t}${y?` · ${hkS(y[0])} → ${hkS(y[1])} HKT · <b>${Math.round(y[2])}&nbsp;h</b>`:""}</div>%%HW%%${HKOGALE[c]!=null?`<div class="gh" style="margin-top:12px">Reference stations, recorded by HKO</div><div class="v gs"><span class="gl">Gale force</span> ${gdots(HKOGALE[c],HKOGALE[c])} <b class="gn">${HKOGALE[c]}</b> of 8</div>`:""}${HKOSH[c]?[["Storm force",0],["Hurricane force",1]].map(([l,i])=>`<div class="v gs"><span class="gl" title="from HKO's reported maximum hourly mean winds (80 / 107 km/h); the station table uses the highest 10-minute mean">${l}</span> ${gdots(HKOSH[c][i],HKOSH[c][i])} <b class="gn">${HKOSH[c][i]}</b> of 8</div>`).join(""):""}${(HKOGALE[c]==null&&HKOOLD[c]?oldObs(c):"")||""}${rank8Obs(c)}%%HE%%`}).join("")+`</div>`
-   :(()=>{const ns=casesOf(cyc).filter(c=>!HKOEV[c]); return ns.length&&!window.HK_DEMO?`<div class="ans"><div class="k">HKO actually issued</div><div class="badge" style="color:var(--mut)">No signal</div>${ns.map(c=>`<div class="v">${c}</div>`).join("")}</div>`:""})();
+   +hcases.map(c=>{const t=HKOEV[c].top, y=HKOEV[c]["L"+clsL(t)];return `<div class="v">${c}: No. ${t}${y?` · ${hkS(y[0])} → ${hkS(y[1])} HKT · <b>${Math.round(y[2])}&nbsp;h</b>`:""}</div>%%HW%%${HKOGALE[c]!=null?`<div class="gh" style="margin-top:12px">Reference stations, recorded by HKO</div><div class="v gs"><span class="gl">Gale force</span> ${gdots(HKOGALE[c],HKOGALE[c])} <b class="gn">${HKOGALE[c]}</b> of 8</div>`:""}${HKOSH[c]?[["Storm force",0],["Hurricane force",1]].map(([l,i])=>`<div class="v gs"><span class="gl" title="from HKO's reported maximum hourly mean winds (80 / 107 km/h); the station table uses the highest 10-minute mean">${l}</span> ${gdots(HKOSH[c][i],HKOSH[c][i])} <b class="gn">${HKOSH[c][i]}</b> of 8</div>`).join(""):""}${(HKOGALE[c]==null&&HKOOLD[c]?oldObs(c):"")||""}${rank8Obs(c)}%%HE%%`}).join("")+obsHTML("v")+`</div>`
+   :(()=>{const ns=casesOf(cyc).filter(c=>!HKOEV[c]); return ns.length&&!window.HK_DEMO?`<div class="ans"><div class="k">HKO actually issued</div><div class="badge" style="color:var(--mut)">No signal</div>${ns.map(c=>`<div class="v">${c}</div>`).join("")}${obsHTML("v")}</div>`:""})();
   const [ansS,ansW]=ans.split("%%WIND%%"), hkW=[...hko.matchAll(/%%HW%%([\s\S]*?)%%HE%%/g)].map(m=>m[1]).join("");
   const hkoS=hko.replace(/%%HW%%[\s\S]*?%%HE%%/g,""), hkoW=hko&&hkW.replace(/<[^>]*>/g,"").trim()?`<div class="ans"><div class="k">HKO recorded</div>${hkW}</div>`:"";
   const card=([sg,lab,L,col])=>{const x_=E&&E[sg], a=d[sg]&&d[sg].any, n=nOf(sg);
@@ -1070,7 +1077,7 @@ function load(){
   const none=100-Math.max(...LV.map(([sg])=>pc(sg)));
   return `<div class="bcard"><div class="bh" style="color:${topL?topL[3]:"var(--ink)"}">${topL?`Signal ${topL[1]} likely (${pc(topL[0])}%)`:`Most likely no signal (${none}%)`}</div>${issuedDiv(d,cyc)}`
    +LV.map(([sg,lab,L,col])=>`<div class="bbar"><b>${lab}</b><div class="tr"><div class="fl" style="width:${pc(sg)}%;background:${col}"></div></div><span class="pc">${pc(sg)}%</span></div>`).join("")
-   +(x?`<div class="bv">Expected ${GCL(x.start[1])?"by":"from"} <b>${hk(x.start[1])}</b>${GCL(x.start[1])?" (where the data begins)":""} ${GCL(x.start[1])?"until":"to"} <b>${hk(x.end[1])}</b> (Hong Kong time)</div>`:"")+`<div class="bv" id="bclose"></div></div><div class="bmapc" id="bmapbox" data-top="${topL?topL[2]:0}"></div>`
+   +(x?`<div class="bv">Expected ${GCL(x.start[1])?"by":"from"} <b>${hk(x.start[1])}</b>${GCL(x.start[1])?" (where the data begins)":""} ${GCL(x.start[1])?"until":"to"} <b>${hk(x.end[1])}</b> (Hong Kong time)</div>`:"")+`<div class="bv" id="bclose"></div>${obsHTML("bv")}</div><div class="bmapc" id="bmapbox" data-top="${topL?topL[2]:0}"></div>`
    +r2rCardB()};
  $("#status").innerHTML=BASIC?basicCard():tb||`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">none</div>${issuedDiv(d,cyc)}<div class="note">${pass}</div></div>`;
  drawTL({E,one,members:d.members||0,MJ,hcases,init:Date.UTC(+cyc.slice(0,4),+cyc.slice(4,6)-1,+cyc.slice(6,8),+cyc.slice(8,10))});
@@ -1414,6 +1421,26 @@ function mapBase(s,V){
  {let last=1e9; (s._rl||[]).sort((a,b)=>b[1]-a[1]).forEach(([r,ry])=>{if(last-ry<15||ry<12||hy-ry-3<13)return; last=ry;
    const tx=el("text",{x:hx,y:hy-ry-3,fill:"#555","font-size":11.5,"text-anchor":"middle"}); tx.textContent=r+" km"; s.appendChild(tx)}); s._rl=null}
  return {W,H,X,Y,hx,hy,lo0,lo1,la0,la1}}
+const OBSC=["area of low pressure","Tropical Depression","Tropical Storm","Severe Tropical Storm","Typhoon","Severe Typhoon","Super Typhoon"];
+const obsK=v=>Math.round(v*1.852/5)*5, obs10=r=>Math.round(r/10)*10;
+function obsAt(h){const TRU=truthNow(); if(!TRU||!TRU.track||!TRU.track.length) return null; const A=truthAt(TRU,h);
+ return A?Object.assign(A,{cls:OBSC[clsOf(A.v)]}):{none:true,before:h<isoH(TRU.track[0][3]),first:TRU.track[0][3]}}
+function obsLine(){const o=obsAt(0); if(!o) return "";
+ if(o.none) return o.before?`When this forecast started, the storm was not yet on HKO's best track, which begins on <b>${hktS(Date.parse(o.first+":00Z"))}</b>.`
+  :"When this forecast started, HKO's best track for this storm had already ended.";
+ return `When this forecast started, the storm was ${o.cls[0]==="a"?"an":"a"} ${o.cls} on HKO's best track, with sustained winds of about <b>${obsK(o.v)} km/h</b> near its centre`
+  +(o.gale>0?` and gale winds out to about <b>${obs10(o.gale)} km</b>`:"")+"."}
+const obsHTML=c=>{const t=obsLine(); return t?`<div class="${c} obs">${t}</div>`:""};
+function obsDraw(add,X,Y,RX,RY,A,lab){const ax=X(A.lon), ay=Y(A.lat); let last=-1e9;
+ [[A.gale,"63 km/h",1.6,.08,"#2f9e44","#237a35"],[A.storm,"88 km/h",1.8,0,"#f08c00","#b85f00"],[A.hur,"118 km/h",2.2,0,"#e03131","#b42020"]].forEach(([r,w,sw,fo,col,tc])=>{if(!(r>0))return;
+  add(el("ellipse",{cx:ax,cy:ay,rx:RX(r),ry:RY(r),fill:col,"fill-opacity":fo,stroke:col,"stroke-width":sw,opacity:.95,"pointer-events":"none"}));
+  const ty=ay-RY(r)-3; if(lab&&Math.abs(ty-last)>=12){last=ty; const t=el("text",{x:ax,y:ty,fill:tc,"font-size":10.5,"font-weight":700,"text-anchor":"middle",
+   stroke:"#fff","stroke-width":3,"paint-order":"stroke","pointer-events":"none"}); t.textContent=w; add(t)}});
+ add(el("circle",{cx:ax,cy:ay,r:6,fill:"#fff",stroke:"#000","stroke-width":2.2,"pointer-events":"none"}))}
+let OG=null, OXY=null;
+function drawObs(){if(!OG||!OXY)return; while(OG.firstChild)OG.removeChild(OG.firstChild); if(sel!==null)return;
+ const A=obsAt(allH===null?0:allH); if(A&&!A.none) obsDraw(e=>OG.appendChild(e),OXY.X,OXY.Y,OXY.RX,OXY.RY,A,true)}
+
 function drawMap(){
  if(window.HK_PZ)return;
  const s=$("#map");s.innerHTML="";MC=null;MG=null;
@@ -1454,7 +1481,7 @@ function drawMap(){
  $("#maphint").innerHTML=window._defHint;
  {const r=refM(); $("#detBtn").style.display=r!==null?"":"none"; $("#detBtn").classList.toggle("on",r!==null&&sel===r);
   $("#detBtn").textContent=r===51?"control run":"deterministic run";
-  {const kd=$("#kdet"); if(kd){kd.textContent=r===51?"control run":"deterministic run"; kd.parentNode.style.display=r!==null&&!BASIC?"":"none"}}
+  {const kd=$("#kdet"); if(kd){kd.textContent=r===51?"control run":"deterministic run"; kd.parentNode.style.display=r!==null?"":"none"}}
   $("#mapexp").innerHTML=`<b>Lines:</b> ${TR.tracks.filter(x=>x.m!==52).length>1?`${(HK[cyc]||{})[ens]&&(HK[cyc]||{})[ens].members||50} possible paths`:"the possible paths"}, each started from slightly different conditions.`
    +(r===52?` <b>Deterministic run:</b> ECMWF's main forecast, made once in finer detail.`:r===51?` <b>Control run:</b> the one path started without any change.`:"");
   $("#detBtn").title=r===51?"the AI ensemble's unperturbed member (51) on its own -- the site has no separate deterministic AI run":"ECMWF's main forecast, made once in finer detail than the members, shown on its own: track, time bar, charts"}
@@ -1523,7 +1550,11 @@ if(false&&!byI&&W>=820){const lx=W-222, items=[[1,"No. 1"],[3,"No. 3"],[8,"No. 8
   TRU.track.forEach(p=>s.appendChild(el("circle",{cx:X(p[0]),cy:Y(p[1]),r:2.4,fill:"#000","pointer-events":"none"})));
   const lg=el("rect",{x:8,y:sel!==null?60:8,width:330,height:22,rx:5,fill:"#fff",opacity:.9,stroke:"#999","stroke-width":.6});s.appendChild(lg);
   const lt=el("text",{x:16,y:sel!==null?75:23,fill:"#000","font-size":11.5,"font-weight":600});lt.textContent=`— — actual track: ${TRU.source.split(" (")[0]}`;s.appendChild(lt);
-  try{lg.setAttribute("width",Math.min(W-16,lt.getComputedTextLength()+18))}catch(e){}}
+  const hasC=TRU.track.some(p=>p[5]>0), lc=hasC?el("text",{x:16,y:(sel!==null?75:23)+16,fill:"#000","font-size":11.5}):null;
+  if(lc){lc.textContent="Circles show HKO's gale (green), storm (orange) and hurricane (red) winds"; s.appendChild(lc); lg.setAttribute("height",38)}
+  try{lg.setAttribute("width",Math.min(W-16,Math.max(lt.getComputedTextLength(),lc?lc.getComputedTextLength():0)+18))}catch(e){}
+  OXY={X:X,Y:Y,RX:r=>r/(111.32*Math.cos(.389))*(W/(lo1-lo0)),RY:r=>r/110.57*(H/(la1-la0))}; OG=el("g",{"pointer-events":"none"}); s.appendChild(OG); drawObs()}
+ else{OG=null; OXY=null}
  stationDots(s,X,Y,lo1-lo0);
  if(lo1-lo0>=5){
   s.appendChild(el("circle",{cx:hx,cy:hy,r:6,fill:"#f2c200",stroke:"#333","stroke-width":1.2}));
