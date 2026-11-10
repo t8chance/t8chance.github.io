@@ -328,6 +328,7 @@ const BX=[
 [/^(Forecast started|From ERA5,) (\w{3}) (\d{1,2}) (\w{3}) (\d{4}), (\d\d:\d\d) \(Hong Kong time\)(?:, chances worked out in (\d{4}))?$/,(m,a,w,d,M,y,hm,g)=>`${a==='From ERA5,'?'根據 ERA5 推算，':'預報起報時間：'}${y}年${MON[M]}月${d}日（${DOW[w]}）${hm}（香港時間）`+(g?`，機會率於 ${g} 年推算`:"")],
  [/^In (ECMWF's main forecast|the control run of ECMWF's AI model|this forecast), the storm comes closest to Hong Kong on <b>(.+?)<\/b>, about <b>([\d,]+) km<\/b> away\.( Google DeepMind does not make a main forecast\.)?$/,
   (m,w,d,n,g)=>`根據${{"ECMWF's main forecast":" ECMWF 高解像度預報","the control run of ECMWF's AI model":" ECMWF 人工智能模式的控制預報","this forecast":"這次預報"}[w]}，熱帶氣旋預料於<b>${G(d)}</b>最接近香港，屆時距離約 <b>${n} 公里</b>。`+(g?"Google DeepMind 沒有高解像度預報。":"")],
+ [/^On HKO's best track, the storm came closest to Hong Kong on <b>(.+?)<\/b>, about <b>([\d,]+) km<\/b> away\.$/,(m,d,n)=>`根據天文台最佳路徑，熱帶氣旋於<b>${G(d)}</b>最接近香港，當時距離約 <b>${n} 公里</b>。`],
  [/^Expected closest distance to Hong Kong: <b>about (\d+) km<\/b>$/,(m,n)=>`預計最接近香港的距離：<b>約 ${n} 公里</b>`],
  [/^Closest to Hong Kong: <b>(\d+) km<\/b>\. Click the line to see how windy Hong Kong gets along it\.$/,(m,n)=>`最接近香港：<b>${n} 公里</b>。點選路徑，即可查看香港的預測風力。`],
  [/^Peak <b>(\d+) km\/h<\/b>(?: \((.+?)\))?, around (.+?) \(Hong Kong time\)(?: · ((?:close to|below|above|between) .+?))?( · dashed line: what Hong Kong really had)?$/,(m,v,b,t,c,o)=>`最高 <b>每小時 ${v} 公里</b>`+(b?`（${wib(b)}）`:"")+`，約於${G(t)}（香港時間）`+(c?`，${tt(c)||c}`:"")+(o?" · 虛線為香港實際錄得":"")],
