@@ -826,7 +826,7 @@ function head(){
   st.hidden=!(h>30); if(h>30) st.textContent=`Not updating right now: the newest run is ${h>=48?Math.floor(h/24)+" days":Math.round(h)+" hours"} old.`}
  $("#yearSel").innerHTML=years.map(y=>{const n=stormsIn(y).length; return `<option value="${y}"${y===curY?" selected":""}>${y==="other"?"Other runs":y==="0"?"No signal":y==="8"?"No. 8 and 9":"No. "+y} (${n} storm${n>1?"s":""}${y==="8"?"; * = No. 9":""})</option>`}).join("")+(curY===null||today?`<option value="" selected disabled>signal</option>`:"");
  $("#stormSel").innerHTML=today?""
-  :curY?stormsIn(curY).map(k=>`<option value="${k}"${k===curS?" selected":""}>${(curY==="8"&&/ — HKO No\. 9 on /.test(LAB[k]||"")?"*":"")+(LAB[k]||k).replace(/ — HKO No\. (\d+) on /,(m,g)=>g===curY||(curY==="8"&&g==="9")?" — ":m).replace(/ — no HKO signal$/,"")}</option>`).join(""):"";
+  :curY?stormsIn(curY).map(k=>`<option value="${k}"${k===curS?" selected":""}>${(curY==="8"&&/ — HKO No\. 9 on /.test(LAB[k]||"")?"*":"")+k}</option>`).join(""):"";
  const runs=curS==="__recent"?rec:curS?ST[curS]:[];
  $("#cyc").innerHTML=runs.map(c=>`<option value="${c}"${c===cyc?" selected":""}>${fmtc(c)}</option>`).join("");
  const go=c=>{if(!c)return; cyc=c;NOSAME=null;PICKED=false;sel=null;selH=null; chooseEns(c); head();load()};
