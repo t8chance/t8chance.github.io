@@ -92,7 +92,7 @@ body.basic.bsel #chead.adv,body.basic.bsel.tab-wi .cbox.adv,body.basic.bsel #cno
 .bbar{display:grid;grid-template-columns:64px 1fr 52px;gap:10px;align-items:center;margin:7px 0}.bbar b{font-weight:700}
 .bbar .tr{height:14px;border-radius:7px;background:var(--soft);overflow:hidden}.bbar .fl{height:100%;border-radius:7px;min-width:2px}
 .bbar .pc{font:700 18px var(--disp);text-align:right;font-variant-numeric:tabular-nums}
-.bcard .bv{margin:10px 0 0;font-size:15.5px}.obs{margin-top:10px!important;font-size:14.5px!important}.selhide{display:none!important}#stamp .sl{display:block}@media (max-width:600px){#stamp .sx{display:none}body.basic #stamp:not(:has(.sl:not(.sx))){display:none}}.bmapc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px 10px;margin:0 0 12px}.bmapc:empty{display:none}
+.bcard .bv{margin:10px 0 0;font-size:15.5px}.obs{margin-top:10px!important;font-size:14.5px!important}.selhide{display:none!important}#play{display:none!important}body.btsel #chead.adv,body.btsel .cbox.adv,body.btsel #cnote.adv{display:block!important}body.btsel #tabs,body.btsel #wisw,body.btsel #stationchart,body.btsel .mch,body.btsel #bwx{display:none!important}#stamp .sl{display:block}@media (max-width:600px){#stamp .sx{display:none}body.basic #stamp:not(:has(.sl:not(.sx))){display:none}}.bmapc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px 10px;margin:0 0 12px}.bmapc:empty{display:none}
 .bmapc .bmh{font-weight:700;font-size:17px;margin:0 0 8px}.bmapc svg{display:block;width:100%;height:auto;border-radius:10px}.bmapc .note{margin:6px 0 0}.iss{margin:4px 0 10px;font-size:13.5px;color:var(--mut)}
 .tlcard .k{margin-bottom:8px}
 .sech{font:700 13px/1 var(--disp);letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:24px 0 10px}#status>.sech:first-child{margin-top:6px}
@@ -321,6 +321,7 @@ footer{font-size:12.5px;margin-top:40px}
  <div class="mapbar"><button id="zoomBtn">zoom to Hong Kong</button>
 
    <button id="detBtn" style="display:none" title="ECMWF's main forecast, made once in finer detail than the members, shown on its own: track, time bar, charts">deterministic run</button>
+   <button id="btBtn" style="display:none" title="HKO's best track on its own: the storm's real path, wind and circles through time, with the signals HKO had up">HKO best track</button>
    <button id="allPlay" title="every member's storm together through time">▶ all members</button>
    <label class="note"><input type="checkbox" id="only150"> within 150 km only</label>
    <label class="note" id="othL" title="every other storm in this forecast that enters the region and reaches a tropical depression (ECMWF's track file), thin grey"><input type="checkbox" id="othSt"> other storms</label></div>
@@ -751,11 +752,12 @@ function drawMoment(){
  $("#ptime").textContent=`${fmtH(S.h)}${selH===null?" (closest approach)":""} · ${Math.round(dk)} km from Hong Kong${sgx>=1?` · expected ${SIGN[sgx]}`:""}${wiv!==null?` · wind index ${Math.round(wiv)}`:""}`;
  if(t.wf) $("#slider").value=S.h}
 function syncPlayer(){const t=MC&&MC.t, pl=$("#player");
- {const ap=$("#allPlay"); if(ap) ap.classList.toggle("selhide",!!(t&&t.wf))}
+ if(BT){btSync(); return}
+ playLabel();
  if(!t||!t.wf){pl.style.display="none"; if(playing) stopPlay(); return}
  if(playing&&t.m!==playM) stopPlay();
  pl.style.display=""; const sl=$("#slider"); sl.min=t.wf[0][0]; sl.max=t.wf[t.wf.length-1][0]; sl.value=momentH(t)}
-function stopPlay(){playing=false; $("#play").textContent="▶ play"}
+function stopPlay(){playing=false; $("#play").textContent="▶ play"; playLabel()}
 function step(){if(!playing) return; const t=MC&&MC.t; if(!t||!t.wf||t.m!==playM){stopPlay();return}
  const b=t.wf[t.wf.length-1][0], ts=performance.now();
  if(lastTs) selH=Math.min(b,selH+(+$("#speed").value)*(ts-lastTs)/1000); lastTs=ts;
@@ -764,7 +766,7 @@ function step(){if(!playing) return; const t=MC&&MC.t; if(!t||!t.wf||t.m!==playM
 $("#play").onclick=()=>{if(playing){stopPlay();chart();return}
  const t=MC&&MC.t; if(!t||!t.wf) return; const a=t.wf[0][0], b=t.wf[t.wf.length-1][0];
  if(selH===null||selH>=b-1e-6) selH=a;
- playing=true; playM=t.m; lastTs=0; lastChart=0; $("#play").textContent="❚❚ pause"; step()};
+ playing=true; playM=t.m; lastTs=0; lastChart=0; $("#play").textContent="❚❚ pause"; playLabel(); step()};
 $("#slider").oninput=e=>{selH=+e.target.value; drawMoment(); chart()};
 function refM(){if(!TR)return null; const has=m=>TR.tracks.some(t=>t.m===m); return (ens==="ifsens"||ens==="tigge")&&has(52)?52:ens==="aifsens"&&has(51)?51:null}
 let allH=null, allPlaying=false, allTs=0, allStart=0, allEnd=0, AG=null, AXY=null; const ALLSPD=BASIC?48:24;
@@ -779,7 +781,7 @@ function drawAll(){drawObs(); if(!AG||!AXY)return; while(AG.firstChild)AG.remove
  const txt=`all members · ${fmtH(allH)} (+${Math.round(allH)} h)`, bw=8.2*txt.length+16;
  AG.appendChild(el("rect",{x:W/2-bw/2,y:H-32,width:bw,height:24,rx:6,fill:"#fff",opacity:.92,stroke:"#999","stroke-width":.7}));
  const tx=el("text",{x:W/2,y:H-15,fill:"#111","font-size":13,"font-weight":700,"text-anchor":"middle"}); tx.textContent=txt; AG.appendChild(tx)}
-function allStop(){allPlaying=false; const b=$("#allPlay"); if(b)b.textContent=BASIC?"▶ play":"▶ all members"}
+function allStop(){allPlaying=false; playLabel()}
 function allStep(){if(!allPlaying)return; const ts=performance.now();
  if(allTs) allH=Math.min(allEnd,allH+ALLSPD*(ts-allTs)/1000); allTs=ts; drawAll();
  if(allH>=allEnd-1e-6){allStop();return} setTimeout(allStep,40)}
@@ -850,7 +852,7 @@ function head(){
  $("#ensbtns").querySelectorAll("button").forEach(b=>b.onclick=()=>{if(MIX){cyc=MIX.cyc;MIX=null} ens=b.dataset.e; mode=modeOf(ens)||mode; PICKED=true; CHOSEN=true; sel=null;selH=null;head();load()});
  $("#zoomBtn").onclick=e=>{view=view==="region"?"hk":"region";VB=BASIC&&view==="hk"?[113.55,114.75,21.95,22.75]:VIEWS[view].slice();
  HOME=VB.slice();e.target.textContent=view==="region"?"zoom to Hong Kong":"zoom out";drawMap()};
- $("#showAll").onclick=()=>{if(MIX){closePath();return} sel=null;selH=null;BIN=null;drawMap();chart()};
+ $("#showAll").onclick=()=>{if(MIX){closePath();return} btOff();sel=null;selH=null;BIN=null;drawMap();chart()};
  $("#only150").onchange=drawMap;
  {const o=$("#othSt"); if(o)o.onchange=()=>{const k=cyc+"_"+ens; if(!o.checked||(window.HKPATHS||{})[k])return drawMap();
   const sc=document.createElement("script"); sc.src=`../data/paths_${k}.js`; sc.onload=()=>{if(k===cyc+"_"+ens)drawMap()}; sc.onerror=()=>{$("#maphint").textContent="no file of other storms for this run (IFS and AIFS runs from 16 Oct 2026 on)"}; document.head.appendChild(sc)}}
@@ -960,7 +962,7 @@ function load(){
  if(BASIC){const ph=c=>!!DEFE(c);
   if(!ph(cyc)){const c2=cycles.find(c=>c<=cyc&&ph(c))||cycles.find(ph); if(c2&&c2!==cyc){cyc=c2; head()}}
   const av=HK[cyc]||{}; if(!CHOSEN||!av[ens]) ens=DEFE(cyc)||"ifsens"; mode=modeOf(ens)||mode}
- allH=null; if(allPlaying)allStop();
+ allH=null; if(allPlaying)allStop(); btOff(); {const b=$("#btBtn"); if(b)b.style.display="none"}
  if(NOSAME){unavailable();return}
  $("#map").style.display=""; $("#chart").style.display="";
  if(!BASIC&&!CHOSEN){const e1=DEFE(cyc); if(e1&&e1!==ens){ens=e1; mode=modeOf(ens)||mode; head()}}
@@ -1439,7 +1441,69 @@ function obsDraw(add,X,Y,RX,RY,A,lab){const ax=X(A.lon), ay=Y(A.lat); let last=-
  add(el("circle",{cx:ax,cy:ay,r:6,fill:"#fff",stroke:"#000","stroke-width":2.2,"pointer-events":"none"}))}
 let OG=null, OXY=null;
 function drawObs(){if(!OG||!OXY)return; while(OG.firstChild)OG.removeChild(OG.firstChild); if(sel!==null)return;
- const A=obsAt(allH===null?0:allH); if(A&&!A.none) obsDraw(e=>OG.appendChild(e),OXY.X,OXY.Y,OXY.RX,OXY.RY,A,true)}
+ const h=BT?BTH:(allH===null?0:allH), A=obsAt(h); if(!A||A.none)return; const add=e=>OG.appendChild(e); obsDraw(add,OXY.X,OXY.Y,OXY.RX,OXY.RY,A,true);
+ if(!BT)return;
+ const TRb=truthNow(), sg=sigIn(TRb,h,h+1e-6), dk=Math.round(dist(A.lon,A.lat)), W=OXY.W, H=OXY.H;
+ const lines=[fmtH(h),`HKO best track: ${A.cls}, about ${obsK(A.v)} km/h`,`actual: ${dk} km from HK${sg?`, HKO No. ${sg} up`:", no HKO signal"}`];
+ const bw=Math.min(W-16,Math.max(260,...lines.map(x=>6.6*x.length+16))), bh=16*lines.length+10, bx=W-bw-8, by=H-bh-8;
+ add(el("rect",{x:bx,y:by,width:bw,height:bh,rx:4,fill:"#fff",opacity:.94,stroke:"#999","stroke-width":.7}));
+ lines.forEach((x,i)=>{const t=el("text",{x:bx+8,y:by+18+16*i,fill:"#111","font-size":11.5,"font-weight":i?400:600}); t.textContent=x; add(t)});
+ $("#ptime").textContent=`${fmtH(h)} · ${dk} km from Hong Kong`}
+let BT=false, BTH=null, btPlaying=false, btTs=0, btChartTs=0;
+const btSpan=()=>{const T_=truthNow(); if(!T_||!T_.track||T_.track.length<2)return null; const k=T_.track; return [isoH(k[0][3]),isoH(k[k.length-1][3])]};
+function btOff(){if(!BT)return; BT=false; if(btPlaying){btPlaying=false; $("#play").textContent="▶ play"} document.body.classList.remove("btsel"); playLabel()}
+function btSync(){const pl=$("#player"), sp=btSpan(); playLabel();
+ if(!sp){pl.style.display="none";return} pl.style.display=""; const sl=$("#slider"); sl.min=sp[0]; sl.max=sp[1]; sl.value=BTH}
+function btStep(){if(!btPlaying||!BT)return; const sp=btSpan(); if(!sp){btPlaying=false;return} const ts=performance.now();
+ if(btTs) BTH=Math.min(sp[1],BTH+(+$("#speed").value)*(ts-btTs)/1000); btTs=ts; drawObs(); $("#slider").value=BTH;
+ if(ts-btChartTs>150){chart(); btChartTs=ts}
+ if(BTH>=sp[1]-1e-6){btPlaying=false; $("#play").textContent="▶ play"; playLabel(); chart(); return} setTimeout(btStep,40)}
+$("#btBtn").onclick=()=>{if(BT){btOff(); drawMap(); chart(); syncPlayer(); return}
+ const sp=btSpan(); if(!sp)return; if(allPlaying)allStop(); allH=null; if(playing)stopPlay(); sel=null; selH=null; BIN=null;
+ BTH=Math.min(Math.max(0,sp[0]),sp[1]); BT=true; document.body.classList.remove("bsel"); document.body.classList.add("btsel"); drawMap(); chart(); syncPlayer();
+ setTimeout(()=>{try{$("#map").scrollIntoView({behavior:"smooth",block:"nearest"})}catch(e){}},60)};
+{const p0=$("#play").onclick; $("#play").onclick=()=>{if(!BT){p0();return} const sp=btSpan(); if(!sp)return;
+  if(btPlaying){btPlaying=false; $("#play").textContent="▶ play"; playLabel(); chart(); return}
+  if(BTH===null||BTH>=sp[1]-1e-6) BTH=sp[0]; btPlaying=true; btTs=0; btChartTs=0; $("#play").textContent="❚❚ pause"; playLabel(); btStep()}}
+{const s0=$("#slider").oninput; $("#slider").oninput=e=>{if(!BT){s0(e);return} BTH=+e.target.value; drawObs(); chart()}}
+function playLabel(){const b=$("#allPlay"); if(!b)return; const one=BT||(sel!==null&&MC&&MC.t&&MC.t.wf);
+ b.textContent=allPlaying||playing||btPlaying?"❚❚ pause":one||BASIC?"▶ play":"▶ all members"}
+{const a0=$("#allPlay").onclick; $("#allPlay").onclick=()=>{const t=MC&&MC.t;
+  if(!allPlaying&&(BT||(sel!==null&&t&&t.wf))){$("#play").onclick(); playLabel(); return} a0(); playLabel()}}
+function btChart(){const s=$("#chart"), sg=$("#stationchart"), TRb=truthNow(); s.innerHTML=""; if(sg){sg.innerHTML=""; sg.style.display="none"} s.style.display="";
+ document.body.classList.remove("bsel"); $("#chead").textContent="HKO best track: what really happened";
+ if(!TRb||!TRb.track||TRb.track.length<2){$("#cnote").textContent="";return}
+ const ZH=/^zh/.test(document.documentElement.lang||""), k=TRb.track, hs=k.map(p=>isoH(p[3])), kh=k.map(p=>p[2]*1.852);
+ const sigs=(TRb.signals||[]).map(([a,b,g])=>[isoH(a),isoH(b),g]).filter(z=>z[2]>=1);
+ const x0=Math.min(hs[0],...sigs.map(z=>z[0])), x1=Math.max(hs[hs.length-1],...sigs.map(z=>z[1]));
+ const PW=Math.round((s.parentNode&&s.parentNode.clientWidth)||1000), NAR=PW<700, W=NAR?Math.max(320,PW):1000, H=NAR?300:330, L=NAR?40:50, R=NAR?(ZH?70:52):126, T=26, SH=16, B=SH+40;
+ s.setAttribute("viewBox",`0 0 ${W} ${H}`);
+ const top=Math.max(200,Math.ceil(Math.max(...kh)/50)*50), X=h=>L+(W-L-R)*(h-x0)/Math.max(x1-x0,1), Y=v=>T+(H-B-T)*(1-v/top);
+ const BANDS=[[41,63,"Tropical Depression","TD","熱帶低氣壓"],[63,88,"Tropical Storm","TS","熱帶風暴"],[88,118,"Severe Tropical Storm","STS","強烈熱帶風暴"],
+  [118,150,"Typhoon","T","颱風"],[150,185,"Severe Typhoon","ST","強颱風"],[185,top,"Super Typhoon","SuperT","超強颱風"]];
+ BANDS.forEach(([a,b,e,ab,z],i)=>{if(a>=top)return; const y0=Y(Math.min(b,top)), y1=Y(a);
+  s.appendChild(el("rect",{x:L,y:y0,width:W-L-R,height:y1-y0,fill:CLSC[i+1],opacity:.07}));
+  s.appendChild(el("line",{x1:L,x2:W-R,y1:y1,y2:y1,stroke:"var(--line)"}));
+  const t=el("text",{x:W-R+6,y:(y0+y1)/2+4,fill:"var(--mut)","font-size":NAR?9.5:10.5}); t.textContent=ZH?z:NAR?ab:e; s.appendChild(t);
+  const n=el("text",{x:L-5,y:y1+4,fill:"var(--mut)","font-size":10.5,"text-anchor":"end"}); n.textContent=a; s.appendChild(n)});
+ {const u=el("text",{x:4,y:T-12,fill:"var(--mut)","font-size":10.5}); u.textContent=ZH?"公里/小時":"km/h"; s.appendChild(u)}
+ const t0=T0(), d0=new Date(t0+x0*36e5+288e5), days=[]; for(let u=Date.UTC(d0.getUTCFullYear(),d0.getUTCMonth(),d0.getUTCDate()+1)-288e5;u<=t0+x1*36e5;u+=864e5)days.push(u);
+ const stp=Math.max(1,Math.ceil(days.length/(NAR?4:9)));
+ days.forEach((u,i)=>{const xx=X((u-t0)/36e5); s.appendChild(el("line",{x1:xx,x2:xx,y1:T,y2:H-B+12+SH,stroke:"var(--line)",opacity:.6}));
+  if(i%stp)return; const dd=new Date(u+288e5), t=el("text",{x:xx+3,y:H-8,fill:"var(--mut)","font-size":10.5}); t.textContent=ZH?`${dd.getUTCMonth()+1}月${dd.getUTCDate()}日`:`${dd.getUTCDate()} ${MON[dd.getUTCMonth()]}`; s.appendChild(t)});
+ s.appendChild(el("path",{fill:"none",stroke:"var(--ink)","stroke-width":2.2,d:hs.map((h,i)=>(i?"L":"M")+X(h).toFixed(1)+" "+Y(kh[i]).toFixed(1)).join(" ")}));
+ hs.forEach((h,i)=>s.appendChild(el("circle",{cx:X(h),cy:Y(kh[i]),r:2.6,fill:CLSC[clsOf(k[i][2])],stroke:"var(--card)","stroke-width":1})));
+ const sy=H-B+12; s.appendChild(el("rect",{x:L,y:sy,width:W-L-R,height:SH,fill:"var(--soft)"}));
+ sigs.forEach(([a,b,g])=>{const xa=X(a), xb=X(b); s.appendChild(el("rect",{x:xa,y:sy,width:Math.max(1,xb-xa),height:SH,fill:SIGC[g]||SIGC[1]}));
+  if(xb-xa>16){const t=el("text",{x:(xa+xb)/2,y:sy+12,fill:"#fff","font-size":10,"font-weight":700,"text-anchor":"middle"}); t.textContent=g; s.appendChild(t)}});
+ {const t=el("text",{x:L-5,y:sy+12,fill:"var(--mut)","font-size":10,"text-anchor":"end"}); t.textContent=ZH?"信號":"HKO"; s.appendChild(t)}
+ if(BTH!==null){const xx=X(BTH), A=truthAt(TRb,BTH); s.appendChild(el("line",{x1:xx,x2:xx,y1:T,y2:sy+SH,stroke:"var(--ink)","stroke-dasharray":"4 3","stroke-width":1.4}));
+  if(A){const t=el("text",{x:Math.min(Math.max(xx,L+70),W-R-70),y:T-12,fill:"var(--ink)","font-size":11,"font-weight":600,"text-anchor":"middle"}); t.textContent=`${fmtH(BTH)}: ${obsK(A.v)} km/h`; s.appendChild(t)}}
+ let pk=0; kh.forEach((v,i)=>{if(v>kh[pk])pk=i});
+ let cb=null, cd=1e9; for(let h=hs[0];h<=hs[hs.length-1]+1e-6;h+=0.5){const A=truthAt(TRb,h); if(A){const d=dist(A.lon,A.lat); if(d<cd){cd=d;cb=h}}}
+ const cls=OBSC[clsOf(k[pk][2])];
+ $("#cnote").innerHTML=`On HKO's best track the storm peaked as ${cls[0]==="a"?"an":"a"} ${cls} of about <b>${obsK(k[pk][2])} km/h</b> on <b>${fmtH(hs[pk])}</b>`
+  +(cb!==null?`, and came closest to Hong Kong, about <b>${KM10(cd)} km</b> away, on <b>${fmtH(cb)}</b>`:"")+"."}
 
 function drawMap(){
  if(window.HK_PZ)return;
@@ -1447,7 +1511,9 @@ function drawMap(){
  if(!TR&&QP&&!WH()){drawQuiet(s);return}
  if(WH()?!PATHS:!TR){syncPlayer();return}
  const {W,H,X,Y,hx,hy,lo0,lo1,la0,la1}=mapBase(s);
- $("#selbar").style.display=sel!==null||BIN?"":"none"; syncNav();
+ if(sel!==null&&BT)btOff();
+ $("#selbar").style.display=sel!==null||BIN||BT?"":"none"; syncNav();
+ {const b=$("#btBtn"), T_=truthNow(); if(b){b.style.display=T_&&T_.track&&T_.track.length>1&&!WH()?"":"none"; b.classList.toggle("on",BT)}}
  if(WH()){
   $("#selbar").style.display="none"; $("#detBtn").style.display="none"; $("#mapexp").innerHTML="";
   {const k=$("#mapkey"); if(k)k.querySelectorAll("i[data-lv]").forEach(i=>i.style.background=SIGC[i.dataset.lv])} {const kd=$("#kdet"); if(kd)kd.parentNode.style.display="none"}
@@ -1545,16 +1611,20 @@ if(false&&!byI&&W>=820){const lx=W-222, items=[[1,"No. 1"],[3,"No. 3"],[8,"No. 8
    const tx=el("text",{x:lx+34,y:yy,fill:"#111","font-size":11,"pointer-events":"none"});tx.textContent=lab;s.appendChild(tx)})}
  const TRU=truthNow();
  if(TRU&&TRU.track&&TRU.track.length){const dd=TRU.track.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join(" ");
-  s.appendChild(el("path",{fill:"none",stroke:"#fff","stroke-width":5,d:dd,opacity:.8,"pointer-events":"none"}));
-  s.appendChild(el("path",{fill:"none",stroke:"#000","stroke-width":2.4,"stroke-dasharray":"7 4",d:dd,"pointer-events":"none"}));
+  if(BT) s.appendChild(el("rect",{x:0,y:0,width:W,height:H,fill:"#fff",opacity:.62,"pointer-events":"none"}));
+  s.appendChild(el("path",{fill:"none",stroke:"#fff","stroke-width":BT?7:5,d:dd,opacity:.8,"pointer-events":"none"}));
+  if(!BT) s.appendChild(el("path",{fill:"none",stroke:"#000","stroke-width":2.4,"stroke-dasharray":"7 4",d:dd,"pointer-events":"none"}));
+  else TRU.track.slice(0,-1).forEach((p,i)=>{const q=TRU.track[i+1], g=sigIn(TRU,isoH(p[3]),isoH(q[3]));
+   s.appendChild(el("line",{x1:X(p[0]),y1:Y(p[1]),x2:X(q[0]),y2:Y(q[1]),stroke:SIGC[g]||SIGC[0],"stroke-width":4,"stroke-linecap":"round","pointer-events":"none"}))});
   TRU.track.forEach(p=>s.appendChild(el("circle",{cx:X(p[0]),cy:Y(p[1]),r:2.4,fill:"#000","pointer-events":"none"})));
-  const lg=el("rect",{x:8,y:sel!==null?60:8,width:330,height:22,rx:5,fill:"#fff",opacity:.9,stroke:"#999","stroke-width":.6});s.appendChild(lg);
-  const lt=el("text",{x:16,y:sel!==null?75:23,fill:"#000","font-size":11.5,"font-weight":600});lt.textContent=`— — actual track: ${TRU.source.split(" (")[0]}`;s.appendChild(lt);
-  const hasC=TRU.track.some(p=>p[5]>0), lc=hasC?el("text",{x:16,y:(sel!==null?75:23)+16,fill:"#000","font-size":11.5}):null;
-  if(lc){lc.textContent="Circles show HKO's gale (green), storm (orange) and hurricane (red) winds"; s.appendChild(lc); lg.setAttribute("height",38)}
+  const lg=el("rect",{x:8,y:sel!==null||BT?60:8,width:330,height:22,rx:5,fill:"#fff",opacity:.9,stroke:"#999","stroke-width":.6});s.appendChild(lg);
+  const lt=el("text",{x:16,y:sel!==null||BT?75:23,fill:"#000","font-size":11.5,"font-weight":600});lt.textContent=BT?"HKO best track, coloured by the signal HKO had up":`— — actual track: ${TRU.source.split(" (")[0]}`;s.appendChild(lt);
+  const hasC=TRU.track.some(p=>p[5]>0), lc=hasC?el("text",{x:16,y:(sel!==null||BT?75:23)+16,fill:"#000","font-size":W<500?10.5:11.5}):null;
+  if(lc){lc.textContent="Circles: gale (green), storm (orange), hurricane (red)"; s.appendChild(lc); lg.setAttribute("height",38)}
   try{lg.setAttribute("width",Math.min(W-16,Math.max(lt.getComputedTextLength(),lc?lc.getComputedTextLength():0)+18))}catch(e){}
-  OXY={X:X,Y:Y,RX:r=>r/(111.32*Math.cos(.389))*(W/(lo1-lo0)),RY:r=>r/110.57*(H/(la1-la0))}; OG=el("g",{"pointer-events":"none"}); s.appendChild(OG); drawObs()}
+  OXY={X:X,Y:Y,W:W,H:H,RX:r=>r/(111.32*Math.cos(.389))*(W/(lo1-lo0)),RY:r=>r/110.57*(H/(la1-la0))}; OG=el("g",{"pointer-events":"none"}); s.appendChild(OG); drawObs()}
  else{OG=null; OXY=null}
+ if(BT)$("#maphint").textContent="Press ▶ play to follow the storm along HKO's best track. Click any path to go back to the forecast.";
  stationDots(s,X,Y,lo1-lo0);
  if(lo1-lo0>=5){
   s.appendChild(el("circle",{cx:hx,cy:hy,r:6,fill:"#f2c200",stroke:"#333","stroke-width":1.2}));
@@ -1638,6 +1708,7 @@ function wiDist(s){
 }
 function chart(){
  const s=$("#chart"), sg=$("#stationchart");s.innerHTML="";sg.innerHTML="";
+ if(BT){btChart();return}
  if(BASIC){if(!["wi","sg","rk"].includes(tab)){tab="wi"; drawTabs(); tab="wi"} document.body.classList.toggle("bsel",sel!==null); document.body.classList.toggle("tab-wi",tab==="wi");
   if(sel===null){window._bsel=null; return}
   if(window._bsel!==sel){window._bsel=sel; setTimeout(()=>{try{$("#chead").scrollIntoView({behavior:"smooth",block:"nearest"})}catch(e){}},60)}}
