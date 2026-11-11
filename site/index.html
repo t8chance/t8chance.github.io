@@ -1100,13 +1100,13 @@ function load(){
  if(d.tracks_withheld){TR=null; sel=null; selH=null; MC=null; BIN=null; syncPlayer(); $("#selbar").style.display="none"; $("#map").innerHTML=""; $("#map").style.display=PATHC?"":"none"; $("#chart").innerHTML=""; $("#cnote").textContent="";
   if(window._defHint===undefined)window._defHint=$("#maphint").innerHTML;
   $("#maphint").textContent=PATHC?PHINT():"Tracks are not shown for live Google DeepMind forecasts: while a forecast is live, Google's terms let this site publish only results worked out from it, such as the signal chances and the winds at Hong Kong. The tracks appear here once the storm has passed.";
-  if(PATHC){const pc=PATHC, k2=pc+"_ifsens", fin=()=>{if(PATHC!==pc)return; PATHS=RC((window.HKT||{})[k2]||null); if(PATHS)drawMap()};
+  if(PATHC){const pc=PATHC, k2=pc+"_ifsens", fin=()=>{if(PATHC!==pc)return; PATHS=(window.HKT||{})[k2]||null; if(PATHS)drawMap()};
    if(window.HKT&&window.HKT[k2])fin(); else{const s2=document.createElement("script"); s2.src=`../data/tracks_${k2}.js`; s2.onload=fin; document.head.appendChild(s2)}}
   tab="wi"; if(!showWIDist) showWIMean=true}
  else $("#map").style.display="";
- if(window.HKT&&window.HKT[key]){TR=window.HKT[key];RC(TR);wiC2();drawTabs();drawMap();chart();fillGale();fillBasic();fillDetCa();return}
+ if(window.HKT&&window.HKT[key]){TR=window.HKT[key];wiC2();drawTabs();drawMap();chart();fillGale();fillBasic();fillDetCa();return}
  const sc=document.createElement("script");sc.src=`../data/tracks_${key}.js`;
- sc.onload=()=>{TR=(window.HKT||{})[key];RC(TR);wiC2();drawTabs();drawMap();chart();fillGale();fillBasic();fillDetCa()};
+ sc.onload=()=>{TR=(window.HKT||{})[key];wiC2();drawTabs();drawMap();chart();fillGale();fillBasic();fillDetCa()};
  sc.onerror=()=>{TR=null;MC=null;syncPlayer();$("#map").innerHTML="";$("#chart").innerHTML="";$("#cnote").textContent="track file missing for this run"};
  document.head.appendChild(sc);
 }
@@ -1220,22 +1220,13 @@ function diffCell(fv,fb,hk){if(hk==null)return ""; hk=Math.round(hk); const sg=d
  if(!isFinite(lo)||!isFinite(hi)){const d=hk>hi?hi-hk:lo-hk; return `<span class="${c(d)}">${sg(d)} or more</span>`}
  const d=Math.round((lo+hi)/2-hk); return `<span class="${c(d)}">≈ ${sg(d)}</span>`}
 function stationTrack(){if(!TR)return null; const k=sel??DEFM(), ts=TR.tracks.filter(x=>x.m===k); return ts.filter(x=>x.gst).sort((a,b)=>(b.gale||0)-(a.gale||0))[0]||ts[0]||null}
-function stationWind(t,i){const r=(TR&&TR.wx_range)||[1,1], fmt=v=>`${Math.round(v)} (F${beaufort(v)})`;
+function stationWind(t,i){const r=TR.wx_range||[1,1], fmt=v=>`${Math.round(v)} (F${beaufort(v)})`;
  const g=t.gst&&t.gst[i]||0, s=t.sst&&t.sst[i]||0, h=t.hst&&t.hst[i]||0, x=ivs(g,s,h);
  const SH=[5,6,7].includes(i), w0=t.wx?ivw(SH?Math.max(s,...(t.sst||[]).map(v=>v||0)):s):0, w=SH&&w0>0&&x<=50&&x+w0*Math.max(t.wx[i]-x,0)<53?0:w0;
  let guide,range="",fv=null,fb=null,text;
  if(w>0&&t.wx){const b=x===999?118:x, up=q=>b+w*Math.max(q-b,0); fv=Math.round(up(t.wx[i])); guide=fmt(up(t.wx[i])); text=`${fv}`; range=` <span class="rng">(${Math.round(up(t.wx[i]*r[0]))}–${Math.round(up(t.wx[i]*r[1]))})</span>`}
  else {const v=ivt(x), BF={"<53":"<53 (F7 or less)","118+":"118+ (F12)","73–78":"73–78 (F8–9)","98–108":"98–108 (F10–11)"}; guide=typeof v==="number"?windLabel(v):(BF[v]||v); text=String(v); if(typeof v==="number")fv=Math.round(v); else fb={"<53":[-Infinity,52],"73–78":[73,78],"98–108":[98,108],"118+":[118,Infinity]}[v]||null}
  return {g,s,h,fv,fb,guide,range,text}}
-const GSIG={0:{n:54,counts:{1:28,3:23,8:3}},1:{n:24,counts:{3:13,8:8,1:3}},2:{n:14,counts:{8:12,3:2}},3:{n:12,counts:{8:7,9:4,3:1}},4:{n:5,counts:{8:3,10:2}},5:{n:1,counts:{10:1}},6:{n:1,counts:{10:1}}};
-const RC=T=>{if(!T||T._cs)return T; T._cs=1;
- (T.tracks||[]).forEach(t=>{if(!t.gst)return;
-  const lv=[0,1,2,3,4,5,6,7].map(i=>{const w=stationWind(t,i); return w.fv!=null?w.fv:(w.fb&&isFinite(w.fb[0])?w.fb[0]:0)});
-  [["gale","gale_lo","gale_hi",63],["storm_n","storm_lo","storm_hi",88],["hur_n","hur_lo","hur_hi",118]].forEach(([k,lo,hi,th])=>{if(t[k]==null)return;
-   const n=lv.filter(v=>v>=th).length, o=Math.round(t[k]);
-   if(t[lo]!=null)t[lo]=Math.max(0,n-(o-t[lo])); if(t[hi]!=null)t[hi]=Math.min(8,n+(t[hi]-o)); t[k]=n});
-  t.gsig=GSIG[t.gale]||null});
- return T};
 function stationDist(i,t0,Wp){const M=(GA&&GA.members)||50, best={}, hko=casesOf(cyc).map(c=>HKOWIND[c]).find(Boolean);
  TR.tracks.forEach(t=>{if(t.m===52&&M>1)return; const c=best[t.m]; if(!c||(t.gst&&(!c.gst||(t.gale||0)>(c.gale||0))))best[t.m]=t});
  const F=v=>Math.max(7,Math.min(12,beaufort(v)));
