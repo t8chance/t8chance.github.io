@@ -66,6 +66,10 @@ figure.tile img{border-radius:14px;box-shadow:var(--shadow)}   /* the check page
 .step figure .pair{display:flex;flex-direction:column;gap:12px}
 .live{border-radius:14px;overflow:hidden;box-shadow:var(--shadow);background:var(--card);width:100%}
 .live iframe{display:block;width:100%;height:640px;border:0;background:var(--card)}
+/* the picture frames take no taps or clicks (2026-11-11, user: 'sometimes you can do operations within the toolbar pictures, (like quitting
+   the page, clicking other buttons), which is bad!'); the map frames stay live ('You can try it here, because this is the real map') */
+.live iframe[data-src*="demo=toolbar"],.live iframe[data-src*="demo=answer"],.live iframe[data-bsrc*="demo=answer"],.live iframe[data-src*="demo=timeline"],
+.live iframe[data-bsrc*="demo=timeline"],.live iframe[data-src*="demo=stationtable"]{pointer-events:none}
 .frames{position:relative;aspect-ratio:1000/765;max-width:100%;border-radius:14px;box-shadow:var(--shadow);overflow:hidden;background:var(--card)}
 .frames picture{position:absolute;inset:0;opacity:0;transition:opacity .3s}
 .frames picture.on{opacity:1}
