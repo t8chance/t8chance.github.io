@@ -94,9 +94,9 @@ img{border-radius:0}
 <header class="mast"><a class="name" href="index.html">Hong Kong typhoon signal forecasts</a>
  <nav aria-label="pages"><a href="index.html">Forecasts</a><a href="guide.html">Tour</a><a href="verify.html" aria-current="page">How good is it?</a><a href="ranking.html">Storm ranking</a><a href="ideas.html">Ideas</a></nav></header>
 <h1>How good is it?</h1>
-<p class="note">Past cases only: each section compares the site with what the Hong Kong Observatory (HKO) recorded. Hover or tap a dot for details.
+<p class="note">Apart from “Every forecast”, each section uses past cases only and compares the site with what the Hong Kong Observatory (HKO) recorded. Hover or tap a dot for details.
 State of 1 Nov 2026.</p>
-<nav class="sec" aria-label="sections"><a href="#signals">Signals</a><a href="#stations">Gale stations</a><a href="#wind">Wind index</a></nav>
+<nav class="sec" aria-label="sections"><a href="#signals">Signals</a><a href="#record">Every forecast</a><a href="#stations">Gale stations</a><a href="#wind">Wind index</a></nav>
 
 
 <h2 id="signals">Signals: this site and MET WARN, storm by storm</h2>
@@ -415,6 +415,45 @@ signal records.</p>
 <script>(()=>{const b=[...document.querySelectorAll("#mwsig button")],fb=[...document.querySelectorAll("#mwfc button")],p=[...document.querySelectorAll(".mwp")];let V="all",F="site";
 const show=()=>{b.forEach(x=>x.classList.toggle("on",x.dataset.v===V));fb.forEach(x=>x.classList.toggle("on",x.dataset.f===F));p.forEach(x=>x.hidden=!(x.dataset.v===V&&x.dataset.f===F))};
 b.forEach(x=>x.onclick=()=>{V=x.dataset.v;show()});fb.forEach(x=>x.onclick=()=>{F=x.dataset.f;show()});show()})()</script>
+
+
+<style>/* inside the section: build_verify_metwarn.py rewrites the page CSS from .lede on */
+ .rct{border-collapse:collapse;font-size:14.5px;margin:6px 0 4px;font-variant-numeric:tabular-nums} .rct th{font-weight:600;color:var(--mut);font-size:13px;text-align:left}
+ .rct td,.rct th{padding:5px 22px 5px 0;border-bottom:1px solid var(--line);text-align:left} .rct td+td,.rct th+th{text-align:right}
+</style>
+<h2 id="record">Every forecast, storm or not</h2>
+<p class="lede">The section above follows the storms HKO signalled. This one counts every forecast the site has made, so it also shows the times a forecast called a signal and HKO issued none.</p>
+<div class="pick"><span class="lbl">Forecast</span><span class="seg" id="rcE"></span><span class="lbl">Signal</span><span class="seg" id="rcL"></span></div>
+<div class="score" id="rcS"></div>
+<h3>When the chance was …</h3>
+<table class="rct" id="rcT"></table>
+<div id="rcF"></div>
+<p class="foot" id="rcN"></p>
+<script src="../data/track_record.js"></script>
+<script>
+(function(){const R=window.HKTRACK, $=id=>document.getElementById(id); if(!R){$("rcS").outerHTML='<p class="note">Not available yet.</p>'; return}
+ const EN={ifsens:"ECMWF physics (IFS)",aifsens:"ECMWF AI (AIFS)",deepmind:"Google DeepMind (AI)"}, MO=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+ const day=c=>`${+c.slice(6,8)} ${MO[+c.slice(4,6)-1]} ${c.slice(0,4)}`, hkY=c=>{const t=new Date(Date.UTC(+c.slice(0,4),+c.slice(4,6)-1,+c.slice(6,8),+c.slice(8,10))+288e5); return `${t.getUTCDate()} ${MO[t.getUTCMonth()]} ${t.getUTCFullYear()} ${String(t.getUTCHours()).padStart(2,"0")}:00`}, hk=s=>{const t=new Date(Date.parse(s.replace(" ","T")+":00Z")+288e5); return `${t.getUTCDate()} ${MO[t.getUTCMonth()]} ${String(t.getUTCHours()).padStart(2,"0")}:${String(t.getUTCMinutes()).padStart(2,"0")}`};
+ const sh=(s,h)=>new Date(Date.parse(s.replace(" ","T")+":00Z")+h*36e5).toISOString().slice(0,16).replace("T"," ");
+ let E="ifsens", L="3";
+ const draw=()=>{const o=R.forecasts[E], v=o.lv[L];
+  $("rcE").innerHTML=Object.keys(EN).filter(e=>R.forecasts[e]&&R.forecasts[e].runs).map(e=>`<button data-e="${e}" class="${e===E?"on":""}">${EN[e]}</button>`).join("");
+  $("rcL").innerHTML=["3","8","10"].map(l=>`<button data-l="${l}" class="${l===L?"on":""}">No. ${l}</button>`).join("");
+  $("rcS").innerHTML=`<div><span class="n">${o.runs}</span>forecasts</div><div><span class="n">${v.calls}</span>called No. ${L} or higher</div>`
+   +`<div class="t-us"><span class="n">${v.hits}</span>came true</div><div class="t-mw"><span class="n">${v.fa}</span>false alarms</div>`;
+  const B=o.bands[L].filter(b=>b.n);
+  $("rcT").innerHTML=`<tr><th>Chance shown</th><th>Forecasts</th><th>HKO issued No. ${L} or higher</th></tr>`
+   +B.map(b=>`<tr><td>${b.lo===b.hi?b.lo+"%":b.lo+"–"+b.hi+"%"}</td><td>${b.n}</td><td>${b.hits} <span class="note">(${Math.round(100*b.hits/b.n)}%)</span></td></tr>`).join("");
+  const F=R.false_alarms.filter(f=>f.ens===E&&String(f.level)===L);
+  $("rcF").innerHTML=F.length?`<h3>False alarms</h3><table class="rct"><tr><th>Forecast from</th><th>Members</th><th>For</th></tr>`
+   +F.map(f=>`<tr><td><a href="index.html?run=${f.run}&f=${f.ens}">${hkY(f.run)}</a></td><td>${f.n} of ${f.members} members</td><td>${hk(sh(f.w0,12))} → ${hk(sh(f.w1,-12))}</td></tr>`).join("")+`</table>`:"";
+  const gp=(o.gaps||[]).map(g=>`${day(g[0])} – ${day(g[1])}`);
+  $("rcN").innerHTML=[o.rerun_span?`Re-run forecasts cover ${day(o.rerun_span[0])} – ${day(o.rerun_span[1])}.`:"", `The site's own forecasts start on ${day(o.rerun_span?R.live_from:o.first)}.`,
+   gp.length?`There are no forecasts for ${gp.join(", ")}.`:"", `HKO's record runs to ${hk(R.rec_end)}.`, "Forecasts of one storm are not independent of each other."].filter(x=>x).map(x=>`<span>${x}</span>`).join(" ");
+  document.querySelectorAll("#rcE button").forEach(b=>b.onclick=()=>{E=b.dataset.e; draw()});
+  document.querySelectorAll("#rcL button").forEach(b=>b.onclick=()=>{L=b.dataset.l; draw()})};
+ draw()})();
+</script>
 
 
 

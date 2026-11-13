@@ -6,13 +6,13 @@
    controls, and the charts. Neutrals are the map's cool sea-greys; HKO's signal colours are the only strong colour. */
 :root{
  --bg:#edf1f4;--card:#fff;--soft:#e3e9ee;--ink:#13202b;--mut:#55636f;--line:#d3dbe2;--link:#1a5ea8;
- --no1:#c3cad1;--no3:#d98c1a;--no8:#d7301f;--no9:#7f0000;--no10:#54278f;--wib:#e8590c;--wil:#0b7285;
+ --no1:#c3cad1;--no3:#d98c1a;--no8:#cc2255;--no9:#7f0000;--no10:#54278f;--wib:#e8590c;--wil:#0b7285;
  --good:#1a7f37;--bad:#c62828;--halo:#fff;--raise:#fff;--warn:#9a5b00;--shadow:0 1px 2px rgba(19,32,43,.06),0 10px 28px rgba(19,32,43,.07);
  --disp:"Barlow Condensed","Roboto Condensed","Arial Narrow",sans-serif;
  --body:"Barlow",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 @media (prefers-color-scheme:dark){:root{
  --bg:#0f1923;--card:#16222e;--soft:#1c2a37;--ink:#e2e9ef;--mut:#93a3b1;--line:#273746;--link:#8cbcff;
- --no1:#6f7a84;--no3:#f0a23a;--no8:#ef4a3c;--no9:#ffc6b8;--no10:#b08ae8;--wib:#ffa94d;--wil:#3bc9db;
+ --no1:#6f7a84;--no3:#f0a23a;--no8:#f05a82;--no9:#ffc6b8;--no10:#b08ae8;--wib:#ffa94d;--wil:#3bc9db;
  --good:#5cc97a;--bad:#ff7b72;--halo:#16222e;--raise:#33475a;--warn:#f0b35a;--shadow:0 1px 0 rgba(255,255,255,.03);color-scheme:dark}}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
@@ -92,6 +92,10 @@ body.basic.bsel #chead.adv,body.basic.bsel.tab-wi .cbox.adv,body.basic.bsel #cno
 .bbar{display:grid;grid-template-columns:64px 1fr 52px;gap:10px;align-items:center;margin:7px 0}.bbar b{font-weight:700}
 .bbar .tr{height:14px;border-radius:7px;background:var(--soft);overflow:hidden}.bbar .fl{height:100%;border-radius:7px;min-width:2px}
 .bbar .pc{font:700 18px var(--disp);text-align:right;font-variant-numeric:tabular-nums}
+.cmp{border-collapse:collapse;margin:10px 0 2px;font-size:13.5px;font-variant-numeric:tabular-nums}.cmp th{font-weight:600;color:var(--mut)}
+.cmp td,.cmp th{padding:3px 0 3px 18px;text-align:right;border-top:1px solid var(--line)}.cmp td:first-child,.cmp th:first-child{padding-left:0;text-align:left}
+.cmp tr:first-child th{border-top:0}.cmp tr.me td{font-weight:600}.cmp .note{font-size:12.5px;margin:0}
+.hkonow{margin:10px 0 4px;padding:6px 0 6px 12px;border-left:4px solid var(--no3);font-size:15px}
 .bcard .bv{margin:10px 0 0;font-size:15.5px}.obs{margin-top:10px!important;font-size:14.5px!important}.selhide{display:none!important}#play{display:none!important}body.btsel #chead.adv,body.btsel .cbox.adv,body.btsel #cnote.adv{display:block!important}body.btsel #tabs,body.btsel #wisw,body.btsel #stationchart,body.btsel .mch,body.btsel #bwx{display:none!important}#stamp .sl{display:block}@media (max-width:600px){#stamp .sx{display:none}body.basic #stamp:not(:has(.sl:not(.sx))){display:none}}.bmapc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px 10px;margin:0 0 12px}.bmapc:empty{display:none}
 .bmapc .bmh{font-weight:700;font-size:17px;margin:0 0 8px}.bmapc svg{display:block;width:100%;height:auto;border-radius:10px}.bmapc .note{margin:6px 0 0}.iss{margin:4px 0 10px;font-size:13.5px;color:var(--mut)}
 .tlcard .k{margin-bottom:8px}
@@ -309,7 +313,7 @@ html.demo .toolbar{border-top:0;border-bottom:0;padding:4px 0}
 .rksg{border-radius:2px}
 .sgdistbox:not(:empty){border:0;border-top:1px solid var(--line);border-radius:0;padding:10px 0}
 footer{font-size:12.5px;margin-top:40px}
-</style><script src="zh.js"></script><style>.langsw{position:absolute;top:10px;right:12px;z-index:60;font:600 13px/1 system-ui,-apple-system,sans-serif;padding:6px 10px;border-radius:3px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,.5);text-decoration:none} html.demo .langsw{display:none}.mast h1,.mast>.name{padding-right:96px}</style></head><body>
+</style><link rel="alternate" type="application/rss+xml" title="Hong Kong typhoon signal forecasts" href="../data/feed.xml" id="feedh"><script src="zh.js"></script><style>.langsw{position:absolute;top:10px;right:12px;z-index:60;font:600 13px/1 system-ui,-apple-system,sans-serif;padding:6px 10px;border-radius:3px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,.5);text-decoration:none} html.demo .langsw{display:none}.mast h1,.mast>.name{padding-right:96px}</style></head><body>
 <div class="wrap">
 <header class="mast"><h1>Hong Kong typhoon signal forecasts</h1>
 <nav aria-label="pages"><a class="tour" href="guide-zh.html">New here? Take the tour</a><a href="verify-zh.html">How good is it?</a><a href="ranking-zh.html">Storm ranking</a><a href="ideas-zh.html">Ideas</a></nav>
@@ -322,6 +326,7 @@ footer{font-size:12.5px;margin-top:40px}
   <p class="stale" id="stale" hidden></p>
   <div class="sub" id="stamp"></div>
  </div>
+ <div class="hkonow" id="hkonow" style="display:none" translate="no"></div>
  <div class="status" id="status"></div>
 
  <h2 class="sech" id="maph">Map</h2>
@@ -379,6 +384,35 @@ const issuedTxt=(d,c)=>{const H=36e5, p=n=>String(n).padStart(2,"0"), f=t=>{cons
  if(g>=t0&&g-t0<=48*H) return `Issued ${f(g)} (Hong Kong time)`;
  return `${ens==="era5"?"From ERA5,":"Forecast started"} ${f(t0)} (Hong Kong time)`+(isFinite(g)?`, chances worked out in ${new Date(g+8*H).getUTCFullYear()}`:"")};
 const issuedDiv=(d,c)=>`<div class="iss">${issuedTxt(d,c)}</div>`;
+const ZHPG=/^zh/.test(document.documentElement.lang||"");
+const pcOf=(dd,sg)=>{if(!dd||dd.quiet)return 0; const E=dd.event, n=E&&E[sg]?E[sg].n:(dd[sg]&&dd[sg].any?dd[sg].any[0]:0);
+ return (dd.members||0)<=1?(n?100:0):Math.round(100*n/(dd.members||50))};
+function cmpBlock(){if(!LIVEF.includes(ens)||window.HK_DEMO)return "";
+ const t0=tUcy(cyc), R=[], cls=c=>ens==="ifsens"?(+c.slice(8,10))%12:0;
+ const row=(c,e,lab,me)=>{const dd=(HK[c]||{})[e]; R.push(`<tr${me?' class="me"':""}><td>${me?lab:`<a href="#" data-c="${c}" data-e="${e}">${lab}</a> <span class="note">${fmtc(c)}</span>`}</td>`
+  +["No3","No8","No10"].map(sg=>`<td>${pcOf(dd,sg)}%</td>`).join("")+"</tr>")};
+ row(cyc,ens,"This run",true);
+ const pv=cycles.find(c=>c<cyc&&(HK[c]||{})[ens]&&cls(c)===cls(cyc)); if(pv)row(pv,ens,"Previous run");
+ LIVEF.filter(e=>e!==ens).forEach(e=>{const c=cycles.find(x=>(HK[x]||{})[e]&&tUcy(x)<=t0&&tUcy(x)>=t0-432e5); if(c)row(c,e,FCN[e])});
+ return R.length>1?`<table class="cmp"><tr><th></th><th>No. 3</th><th>No. 8</th><th>No. 10</th></tr>${R.join("")}</table>`:""}
+document.addEventListener("click",ev=>{const a=ev.target.closest&&ev.target.closest(".cmp a[data-c]"); if(!a)return; ev.preventDefault();
+ cyc=a.dataset.c; ens=a.dataset.e; mode=modeOf(ens)||mode; PICKED=true; CHOSEN=true; sel=null; selH=null; head(); load()});
+const HKOTC={TC1:[1,"Standby Signal No. 1","一號戒備信號"],TC3:[3,"Strong Wind Signal No. 3","三號強風信號"],
+ TC8NE:[8,"No. 8 Northeast Gale or Storm Signal","八號東北烈風或暴風信號"],TC8SE:[8,"No. 8 Southeast Gale or Storm Signal","八號東南烈風或暴風信號"],
+ TC8SW:[8,"No. 8 Southwest Gale or Storm Signal","八號西南烈風或暴風信號"],TC8NW:[8,"No. 8 Northwest Gale or Storm Signal","八號西北烈風或暴風信號"],
+ TC9:[9,"Increasing Gale or Storm Signal No. 9","九號烈風或暴風風力增強信號"],TC10:[10,"Hurricane Signal No. 10","十號颶風信號"]};
+function hkoNow(){const box=document.getElementById("hkonow"); if(!box||window.HK_DEMO)return;
+ fetch("https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=warnsum&lang=en",{cache:"no-store"}).then(r=>r.json()).then(j=>{
+  const w=j&&j.WTCSGNL, s=w&&w.actionCode!=="CANCEL"&&HKOTC[w.code];
+  if(!s){box.style.display="none"; box.innerHTML=""; return}
+  const t=w.issueTime?Date.parse(w.issueTime):NaN, x=isNaN(t)?null:new Date(t+288e5), p=n=>String(n).padStart(2,"0");
+  const hm=x?`${p(x.getUTCHours())}:${p(x.getUTCMinutes())}`:"";
+  box.style.borderLeftColor=SIGV[s[0]]||"var(--no3)";
+  box.innerHTML=ZHPG?`香港天文台的<b>${s[2]}</b>現正生效${x?`（${x.getUTCMonth()+1}月${x.getUTCDate()}日 ${hm} 發出）`:""}。 <a href="https://www.hko.gov.hk/tc/index-zh.html">香港天文台網頁</a>`
+   :`The Hong Kong Observatory has the <b>${s[1]}</b> in force${x?` (issued ${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][x.getUTCDay()]} ${x.getUTCDate()} ${MON[x.getUTCMonth()]} ${hm})`:""}. <a href="https://www.hko.gov.hk/en/index-zh.html">HKO website</a>`;
+  box.style.display=""}).catch(()=>{})}
+setTimeout(hkoNow,0); setInterval(hkoNow,6e5);
+{const fh=document.getElementById("feedh"); if(fh&&ZHPG){fh.href="../data/feed-zh.xml"; fh.title="香港熱帶氣旋警告信號預測"}}
 const hktS=t=>{const d=new Date(t+8*36e5), z=n=>String(n).padStart(2,"0"); return `${d.getUTCDate()} ${MON[d.getUTCMonth()]} ${z(d.getUTCHours())}:${z(d.getUTCMinutes())}`};
 function etaOf(e,c){const rs=cycles.filter(x=>(HK[x]||{})[e]&&HK[x][e].generated); if(!rs.length)return null;
  let D=rs.filter(x=>tUcy(rs[0])-tUcy(x)<=5*864e5).map(x=>[x.slice(8,10),(Date.parse(HK[x][e].generated.replace(" ","T")+":00Z")-tUcy(x))/36e5]).filter(x=>x[1]>0&&x[1]<48);
@@ -678,7 +712,7 @@ const medM=()=>{const pk={}; TR.tracks.forEach(t=>{const v=t.wix&&t.wix.length?M
 const DEFM=()=>{if(!TR)return null;const has=m=>TR.tracks.some(t=>t.m===m);return (ens==="ifsens"||ens==="tigge")&&has(52)?52:ens==="aifsens"&&has(51)?51:ens==="deepmind"?medM():TR.top};
 const defTag=m=>!TR?"":ens==="deepmind"?(m===DEFM()?" (median wind index)":""):(m===TR.top?" (most threatening)":"");
 const tierOf=t=>(t.p10||0)>=.4?[10,t.p10]:t.t9===9?[9,t.p10hi||t.p10||0]:(t.p8||0)>=.3?[8,t.p8]:(t.p3||0)>=.3?[3,t.p3]:[0,Math.max(t.p3||0,t.p8||0)];
-const TIERC={0:"#b9b9b9",3:"#d98c1a",8:"#d7301f",9:"#7f0000",10:"#54278f"};
+const TIERC={0:"#b9b9b9",3:"#d98c1a",8:"#cc2255",9:"#7f0000",10:"#54278f"};
 const truthNow=()=>{if(!window.HKTRUTH) return null; const cs=casesOf(cyc).filter(c=>window.HKTRUTH[c]); if(!cs.length) return null;
  const t=cs.length>1&&TR?TR.tracks.find(x=>x.m===(sel??DEFM())):null; if(!t) return window.HKTRUTH[cs[0]];
  let best=cs[0],bd=Infinity;
@@ -874,8 +908,8 @@ function unavailable(){const other=Object.keys(MODES).find(k=>k!==mode);
   +`<div class="v">no ${MODEN[mode]} run for ${NOSAME}</div><div class="note">pick a run in the menu above, or switch back to ${MODEN[other]}</div></div>`;
  TR=null; MC=null; allH=null; if(allPlaying)allStop(); $("#map").innerHTML=""; $("#chart").innerHTML=""; $("#cnote").textContent=""; $("#tabs").innerHTML=""; syncPlayer();
  $("#map").style.display="none"; $("#chart").style.display="none"}
-const noStorm=(d,txt)=>(BASIC?`<div class="bcard"><div class="bh">No storm near Hong Kong</div>${issuedDiv(d,cyc)}<div class="bv">${txt}</div></div>`
- :`<h2 class="sech">The forecast</h2><div class="ans"><div class="k">Expected signal</div><div class="badge" style="color:var(--mut)">No storm near Hong Kong</div>${issuedDiv(d,cyc)}<div class="v">${txt}</div><div class="note" id="qclose"></div></div>`)
+const noStorm=(d,txt)=>(BASIC?`<div class="bcard"><div class="bh">No storm near Hong Kong</div>${issuedDiv(d,cyc)}<div class="bv">${txt}</div>${EASY?"":cmpBlock()}</div>`
+ :`<h2 class="sech">The forecast</h2><div class="ans"><div class="k">Expected signal</div><div class="badge" style="color:var(--mut)">No storm near Hong Kong</div>${issuedDiv(d,cyc)}<div class="v">${txt}</div><div class="note" id="qclose"></div>${cmpBlock()}</div>`)
  +(window.HK_DEMO?"":BASIC?r2rCardB():r2rCard());
 const passOf=(d,one,km)=>one?`closest approach <b>about ${KM10(km)} km</b>`:`<b>${d.within_150km}</b> of ${d.members} members pass within 150 km · <b>${d.within_500km}</b> within 500 km${km!=null?` · deterministic run about ${KM10(km)} km`:""}`;
 function fillDetCa(){const n=document.getElementById("passn"), d=(HK[cyc]||{})[ens]; if(!n||!d||!TR)return; const one=(d.members||0)<=1;
@@ -980,7 +1014,7 @@ function load(){
  if(!/[?&]demo=/.test(location.search)) try{const q=new URLSearchParams(location.search), c0=OPEN(), dflt=c0===cyc&&(DEFE(c0)||ens)===ens;
   if(dflt){q.delete("run");q.delete("f")}else{q.set("run",cyc);q.set("f",ens)} q.set("mode",EASY?"easy":BASIC?"basic":"advanced");
   history.replaceState(null,"",location.pathname+"?"+q.toString()+location.hash)}catch(e){}
- $("#foot").innerHTML=(BASIC?`Times are Hong Kong time`:`Times are Hong Kong time · run names are UTC (12Z = 20:00 Hong Kong time)`);
+ $("#foot").innerHTML=(BASIC?`Times are Hong Kong time`:`Times are Hong Kong time · run names are UTC (12Z = 20:00 Hong Kong time)`)+` · <a href="../data/${ZHPG?"feed-zh":"feed"}.xml">Feed of changes (RSS)</a>`;
  if(d&&d.generated){const g=new Date(d.generated.replace(" ","T")+":00Z"), hrs=(Date.now()-g)/3.6e6;
   $("#stamp").innerHTML=`<b>${FCN[ens]||ens}</b>`+(d.experimental?` · <b>experimental</b>`:"")
    +(ens==="pangu"?" · re-forecast from ERA5, one run":"")+(ens==="gefs"?` · ${d.members} members, no main forecast`:"")+(ens==="era5"?" · From ERA5 and HKO's best track":"")
@@ -1048,7 +1082,7 @@ function load(){
   const pcA=sg=>one?(nOf(sg)?100:0):Math.round(100*nOf(sg)/(d.members||50)), noneA=100-Math.max(...LV.map(([sg])=>pcA(sg)));
   const ans=`<div class="ans"><div class="k">${one?"This run gives":"Expected signal"}</div>`
    +`<div class="bh" style="color:${topL?topL[3]:"var(--ink)"}">${one?(topL?`Signal ${topL[1]}`:"No signal"):topL?`Signal ${topL[1]} likely (${pcA(topL[0])}%)`:`Most likely no signal (${noneA}%)`}</div>${issuedDiv(d,cyc)}`
-   +(one?"":LV.map(([sg,lab,L,col])=>`<div class="bbar"><b>${lab}</b><div class="tr"><div class="fl" style="width:${pcA(sg)}%;background:${col}"></div></div><span class="pc">${pcA(sg)}%</span></div>`).join(""))
+   +(one?"":LV.map(([sg,lab,L,col])=>`<div class="bbar"><b>${lab}</b><div class="tr"><div class="fl" style="width:${pcA(sg)}%;background:${col}"></div></div><span class="pc">${pcA(sg)}%</span></div>`).join("")+cmpBlock())
    +(topL?`<div class="v">${one?"":`from <b>${nOf(topL[0])}</b> of ${d.members} members`}${x?`${one?"":" · "}${x.groups?`<b>${MAING(x).n}</b> of them `:""}${(GCL(x.start[1])?"by ":"")+""}${hk(x.start[1])}${(GCL(x.start[1])?" (where the data begins)":"")+""} → ${hk(x.end[1])} HKT · <b>${x.hours[1]}&nbsp;h</b>`:""}</div>`:"")
    +(x&&x.groups?`<div class="note">other periods: ${x.groups.filter(g=>g!==MAING(x)).map(g=>`${g.n} member${g.n>1?"s":""} ${hk(g.start[1])} → ${hkS(g.end[1])}`).join(" · ")}</div>`:"")
    +`<div class="note" style="margin-top:8px" id="passn">${pass}</div></div>%%WIND%%<div class="ans"><div class="k">Wind at Hong Kong's reference stations</div><div class="v gs" id="galeF"></div>`
@@ -1087,6 +1121,7 @@ function load(){
   const none=100-Math.max(...LV.map(([sg])=>pc(sg)));
   return `<div class="bcard"><div class="bh" style="color:${topL?topL[3]:"var(--ink)"}">${topL?`Signal ${topL[1]} likely (${pc(topL[0])}%)`:`Most likely no signal (${none}%)`}</div>${issuedDiv(d,cyc)}`
    +LV.map(([sg,lab,L,col])=>`<div class="bbar"><b>${lab}</b><div class="tr"><div class="fl" style="width:${pc(sg)}%;background:${col}"></div></div><span class="pc">${pc(sg)}%</span></div>`).join("")
+   +(EASY||one?"":cmpBlock())
    +(x?`<div class="bv">Expected ${GCL(x.start[1])?"by":"from"} <b>${hk(x.start[1])}</b>${GCL(x.start[1])?" (where the data begins)":""} ${GCL(x.start[1])?"until":"to"} <b>${hk(x.end[1])}</b> (Hong Kong time)</div>`:"")+`<div class="bv" id="bclose"></div>${obsHTML("bv")}</div><div class="bmapc" id="bmapbox" data-top="${topL?topL[2]:0}"></div>`
    +r2rCardB()};
  $("#status").innerHTML=BASIC?basicCard():tb||`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">none</div>${issuedDiv(d,cyc)}<div class="note">${pass}</div></div>`;
@@ -1644,8 +1679,8 @@ if(false&&!byI&&W>=820){const lx=W-222, items=[[1,"No. 1"],[3,"No. 3"],[8,"No. 8
 }
 
 const SIGLV=[0,1,3,8,9,10], SIGN={0:"none",1:"No. 1",3:"No. 3",8:"No. 8",9:"No. 9",10:"No. 10"},
-      SIGC={0:"#bbb",1:"#8c8c8c",3:"#d98c1a",8:"#d7301f",9:"#7f0000",10:"#54278f"},
-      SIGV={0:"#bbb",1:"#8c8c8c",3:"var(--no3)",8:"var(--no8)",9:"var(--no9)",10:"var(--no10)"};
+      SIGC={0:"#bbb",1:"#666",3:"#d98c1a",8:"#cc2255",9:"#7f0000",10:"#54278f"},
+      SIGV={0:"#bbb",1:"#666",3:"var(--no3)",8:"var(--no8)",9:"var(--no9)",10:"var(--no10)"};
 const SQC=new WeakMap(), sqOf=t=>{if(!SQC.has(t))SQC.set(t,memberSignal(t)); return SQC.get(t)};
 function sigAt(t,h,SQ){SQ=SQ||sqOf(t); if(!SQ.length) return 0; let v=0;
  for(const p of SQ){if(labH(p[0])<=h+1e-6) v=p[1]; else break} return v}
