@@ -151,6 +151,7 @@ const RX=[
  [/^other periods: (.+)$/,(m,a)=>`其他時段：${G(a.replace(/^(\d+) members? /,"$1 個成員 "))}`],
  [/^(\d+) possible paths, each started from slightly different conditions\.$/,(m,a)=>`每條代表一個集合成員，共 ${a} 條。`],
  [/^the possible paths, each started from slightly different conditions\.$/,()=>` 每條代表一個集合成員。`],
+ [/^(\d+) of them never reach(?:es)? a tropical depression and (?:is|are) not drawn\.$/,(m,a)=>`其中 ${a} 條始終未達熱帶低氣壓級別，不在地圖顯示。`],
  [/^ECMWF's main forecast, made once in finer detail\.$/,()=>`ECMWF 以較高解像度計算的單一預報。`],
  [/^the one path started without any change\.$/,()=>`初始條件沒有加入擾動的成員。`],
  [/^(.*?)( · black dashed = what HKO actually issued(?: · teal = wind index \(km\/h\))?| · teal = wind index \(km\/h\))$/,(m,a,t)=>`${seqT(a)}${/black dashed/.test(t)?" · 黑色虛線為天文台實際發出的信號":""}${/teal/.test(t)?" · 藍綠線為風力指數（公里每小時）":""}`],

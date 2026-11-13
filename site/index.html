@@ -600,7 +600,7 @@ const kmP=(a,b)=>Math.hypot((a[0]-b[0])*111.32*Math.cos((a[1]+b[1])/2*Math.PI/18
 const sameStorm=(R,t)=>{if(String(R.storm)===String(t.storm))return true; const m=new Map(t.pts.map(p=>[String(p[3]),p]));
  const d=R.pts.filter(p=>m.has(String(p[3]))).map(p=>kmP(p,m.get(String(p[3])))).sort((a,b)=>a-b); return d.length>=2&&d[Math.floor(d.length/2)]<400};
 function fillBasic(){const b=document.getElementById("bclose"); if(!b)return; const bx=document.getElementById("bmapbox"), k=REFK(); b.innerHTML=""; if(bx)bx.innerHTML="";
- if(!k)return; const go=()=>{if(REFK()!==k||document.getElementById("bclose")!==b)return; const T=(window.HKT||{})[k], R=refOf(T,k); if(!R)return;
+ if(!k)return; const go=()=>{if(REFK()!==k||document.getElementById("bclose")!==b)return; const T=wrapT((window.HKT||{})[k]), R=refOf(T,k); if(!R)return;
   const top=bx?+bx.dataset.top||0:0, sg=T.tracks.filter(t=>t!==R&&t.m!==52&&t.pts&&t.pts.length&&tierOf(t)[0]>=3);
   if(top&&sg.length>=3&&sg.filter(t=>sameStorm(R,t)).length<sg.length/2)return;
   const yr=+k.slice(0,4), [md,hm]=String(R.ca[1]).split(" "), [mo,dd]=md.split("-").map(Number), [hh,mi]=hm.split(":").map(Number);
@@ -652,6 +652,8 @@ function drawBasicMap(bx,T,R,k){
   const d=new Date(T0()+labH(p[3])*36e5+8*36e5), t=el("text",{x:at[0],y:at[1],"text-anchor":at[2],fill:"#111","font-size":12,"font-weight":600,stroke:"#fff","stroke-width":3,"paint-order":"stroke"});
   t.textContent=`${d.getUTCDate()} ${MON[d.getUTCMonth()]}`; s.appendChild(t)})}
 const dist=(lo,la)=>Math.hypot((lo-114.174)*Math.cos(22.302*Math.PI/180)*111.32,(la-22.302)*110.57);
+const wrapT=T=>{if(T&&!T._w){(T.tracks||[]).forEach(t=>[t.pts,...(t.others||[]).map(o=>o.pts)].forEach(P=>(P||[]).forEach(p=>{if(p[0]<0)p[0]+=360}))); T._w=1} return T};
+const weakT=t=>t.wk===1||(t.wk==null&&!!t.pts&&t.pts.length>0&&t.pts.every(p=>p[2]!=null&&p[2]<21.5));
 const T0=()=>Date.UTC(+cyc.slice(0,4),+cyc.slice(4,6)-1,+cyc.slice(6,8),+cyc.slice(8,10));
 const labH=lab=>{const [d,h]=String(lab).replace("/"," ").split(" ").map(Number),a=new Date(T0());
  let u=Date.UTC(a.getUTCFullYear(),a.getUTCMonth(),d,h); if(u<T0()-864e5) u=Date.UTC(a.getUTCFullYear(),a.getUTCMonth()+1,d,h); return (u-T0())/36e5};
@@ -780,7 +782,7 @@ function refM(){if(!TR)return null; const has=m=>TR.tracks.some(t=>t.m===m); ret
 let allH=null, allPlaying=false, allTs=0, allStart=0, allEnd=0, AG=null, AXY=null; const ALLSPD=BASIC?48:24;
 function drawAll(){drawObs(); if(!AG||!AXY)return; while(AG.firstChild)AG.removeChild(AG.firstChild); if(allH===null||!TR)return;
  const {X,Y,W,H,only}=AXY, byI=false, det=t=>t.m===52&&(ens==="ifsens"||ens==="tigge");
- TR.tracks.filter(t=>t.wf&&t.pts&&t.wf.length===t.pts.length&&t.wf.length>1&&(!only||t.ca[0]<150)).sort((a,b)=>det(a)-det(b)).forEach(t=>{const w=t.wf;
+ TR.tracks.filter(t=>t.wf&&t.pts&&t.wf.length===t.pts.length&&t.wf.length>1&&(!only||t.ca[0]<150)&&(det(t)||t.m===DEFM()||!weakT(t))).sort((a,b)=>det(a)-det(b)).forEach(t=>{const w=t.wf;
   if(allH<w[0][0]-1e-6||allH>w[w.length-1][0]+1e-6)return;
   let i=0; while(i<w.length-2&&w[i+1][0]<allH)i++;
   const f=w[i+1][0]>w[i][0]?Math.min(1,Math.max(0,(allH-w[i][0])/(w[i+1][0]-w[i][0]))):0, a=t.pts[i], b=t.pts[i+1];
@@ -1100,13 +1102,13 @@ function load(){
  if(d.tracks_withheld){TR=null; sel=null; selH=null; MC=null; BIN=null; syncPlayer(); $("#selbar").style.display="none"; $("#map").innerHTML=""; $("#map").style.display=PATHC?"":"none"; $("#chart").innerHTML=""; $("#cnote").textContent="";
   if(window._defHint===undefined)window._defHint=$("#maphint").innerHTML;
   $("#maphint").textContent=PATHC?PHINT():"Tracks are not shown for live Google DeepMind forecasts: while a forecast is live, Google's terms let this site publish only results worked out from it, such as the signal chances and the winds at Hong Kong. The tracks appear here once the storm has passed.";
-  if(PATHC){const pc=PATHC, k2=pc+"_ifsens", fin=()=>{if(PATHC!==pc)return; PATHS=(window.HKT||{})[k2]||null; if(PATHS)drawMap()};
+  if(PATHC){const pc=PATHC, k2=pc+"_ifsens", fin=()=>{if(PATHC!==pc)return; PATHS=wrapT((window.HKT||{})[k2])||null; if(PATHS)drawMap()};
    if(window.HKT&&window.HKT[k2])fin(); else{const s2=document.createElement("script"); s2.src=`../data/tracks_${k2}.js`; s2.onload=fin; document.head.appendChild(s2)}}
   tab="wi"; if(!showWIDist) showWIMean=true}
  else $("#map").style.display="";
- if(window.HKT&&window.HKT[key]){TR=window.HKT[key];wiC2();drawTabs();drawMap();chart();fillGale();fillBasic();fillDetCa();return}
+ if(window.HKT&&window.HKT[key]){TR=wrapT(window.HKT[key]);wiC2();drawTabs();drawMap();chart();fillGale();fillBasic();fillDetCa();return}
  const sc=document.createElement("script");sc.src=`../data/tracks_${key}.js`;
- sc.onload=()=>{TR=(window.HKT||{})[key];wiC2();drawTabs();drawMap();chart();fillGale();fillBasic();fillDetCa()};
+ sc.onload=()=>{TR=wrapT((window.HKT||{})[key]);wiC2();drawTabs();drawMap();chart();fillGale();fillBasic();fillDetCa()};
  sc.onerror=()=>{TR=null;MC=null;syncPlayer();$("#map").innerHTML="";$("#chart").innerHTML="";$("#cnote").textContent="track file missing for this run"};
  document.head.appendChild(sc);
 }
@@ -1523,7 +1525,7 @@ function drawMap(){
  if(WH()){
   $("#selbar").style.display="none"; $("#detBtn").style.display="none"; $("#mapexp").innerHTML="";
   {const k=$("#mapkey"); if(k)k.querySelectorAll("i[data-lv]").forEach(i=>i.style.background=SIGC[i.dataset.lv])} {const kd=$("#kdet"); if(kd)kd.parentNode.style.display="none"}
-  PATHS.tracks.filter(t=>t.m!==52&&t.pts&&t.pts.length>1).sort((a,b)=>{const A=tierOf(a),B=tierOf(b);return A[0]-B[0]||A[1]-B[1]}).forEach(t=>{const SQ=sqOf(t);
+  PATHS.tracks.filter(t=>t.m!==52&&t.pts&&t.pts.length>1&&!weakT(t)).sort((a,b)=>{const A=tierOf(a),B=tierOf(b);return A[0]-B[0]||A[1]-B[1]}).forEach(t=>{const SQ=sqOf(t);
    {const hit=el("path",{fill:"none",stroke:"#000","stroke-opacity":0,"stroke-width":9,"pointer-events":"stroke",d:t.pts.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join(" ")});
     hit.style.cursor="pointer"; hit.onclick=()=>{if(!moved)openPath(t.m)};
     hit.onmouseenter=()=>$("#maphint").textContent=`ECMWF member ${t.m}${t.ca?`: closest about ${Math.round(t.ca[0])} km from Hong Kong`:""}. Click to see this path on its own.`;
@@ -1555,10 +1557,11 @@ function drawMap(){
   $("#detBtn").textContent=r===51?"control run":"deterministic run";
   {const kd=$("#kdet"); if(kd){kd.textContent=r===51?"control run":"deterministic run"; kd.parentNode.style.display=r!==null?"":"none"}}
   $("#mapexp").innerHTML=`<b>Lines:</b> ${TR.tracks.filter(x=>x.m!==52).length>1?`${(HK[cyc]||{})[ens]&&(HK[cyc]||{})[ens].members||50} possible paths`:"the possible paths"}, each started from slightly different conditions.`
+   +(n=>n?` <span>${n} of them never ${n===1?"reaches":"reach"} a tropical depression and ${n===1?"is":"are"} not drawn.</span>`:"")(TR.tracks.filter(x=>!isDet(x)&&x.m!==DEFM()&&weakT(x)).length)
    +(r===52?` <b>Deterministic run:</b> ECMWF's main forecast, made once in finer detail.`:r===51?` <b>Control run:</b> the one path started without any change.`:"");
   $("#detBtn").title=r===51?"the AI ensemble's unperturbed member (51) on its own -- the site has no separate deterministic AI run":"ECMWF's main forecast, made once in finer detail than the members, shown on its own: track, time bar, charts"}
  if(sel!==null&&allH!==null){allH=null; if(allPlaying)allStop()}
- TR.tracks.filter(t=>(!only||t.ca[0]<150)&&(sel===null||t.m===sel)&&(!isDet(t)||sel===null||sel===t.m)&&(sel!==null||!BIN||BIN.ms.has(t.m))&&!(BASIC&&isDet(t))).sort((a,b)=>{if(byI)return (isDet(a)-isDet(b))||pk(a)-pk(b);const A=tierOf(a),B=tierOf(b);return (isDet(a)-isDet(b))||A[0]-B[0]||A[1]-B[1]}).forEach(t=>{
+ TR.tracks.filter(t=>(!only||t.ca[0]<150)&&(sel===null||t.m===sel)&&(!isDet(t)||sel===null||sel===t.m)&&(sel!==null||!BIN||BIN.ms.has(t.m))&&!(BASIC&&isDet(t))&&(isDet(t)||sel===t.m||!!BIN||t.m===DEFM()||!weakT(t))).sort((a,b)=>{if(byI)return (isDet(a)-isDet(b))||pk(a)-pk(b);const A=tierOf(a),B=tierOf(b);return (isDet(a)-isDet(b))||A[0]-B[0]||A[1]-B[1]}).forEach(t=>{
   const top=sel===null&&t.m===DEFM(), on=sel===t.m, d=t.pts.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join(" ");
   if(top||on)s.appendChild(el("path",{fill:"none",stroke:"#fff","stroke-width":(on?7:5.5),d:d,"stroke-linejoin":"round"}));
   const det=isDet(t), SQ=!byI&&(!det||on)?sqOf(t):null, sq=SQ&&SQ.length;
