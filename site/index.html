@@ -294,6 +294,8 @@ svg{border-radius:0}
 #map{box-shadow:none}
 .scrollx{border-radius:0}
 #showAll{border-radius:3px;box-shadow:none;background:var(--ink);color:var(--bg);font-size:15px;padding:10px 16px}
+#heatBtn{margin-left:8px;font:600 15px/1.2 var(--body);padding:9px 15px;border:1px solid var(--ink);border-radius:3px;background:var(--bg);color:var(--ink);cursor:pointer}
+#heatBtn.on{background:var(--ink);color:var(--bg)}
 .mapkey{font-size:14px} .mapkey i{box-shadow:none;border-radius:0;height:4px}
 #maphint{font-size:13.5px}
 @media (max-width:760px){
@@ -340,7 +342,7 @@ footer{font-size:12.5px;margin-top:40px}
    <label class="note" id="othL" title="every other storm in this forecast that enters the region and reaches a tropical depression (ECMWF's track file), thin grey"><input type="checkbox" id="othSt"> other storms</label></div>
  <p class="note mapexp" id="mapexp"></p>
  <div class="mapwrap"><div class="scrollx"><svg id="map" viewBox="0 0 1000 600" tabindex="0" aria-label="Forecast map"></svg></div>
-  <div id="selbar" style="display:none"><button id="showAll" title="back to every member of this run">← Back to all members</button></div></div>   
+  <div id="selbar" style="display:none"><button id="showAll" title="back to every member of this run">← Back to all members</button><button id="heatBtn" type="button" style="display:none" title="the signal this member would give if its centre passed up to 50 km from where it does">Where it passes</button></div></div>   
  <div class="mapnav" id="mapnav" role="group" aria-label="Move and zoom the map"><button type="button" data-nav="in" title="Zoom in" aria-label="Zoom in">+</button><button type="button" data-nav="out" title="Zoom out" aria-label="Zoom out">−</button><span class="gap"></span><button type="button" data-nav="w" title="Move west" aria-label="Move west">←</button><button type="button" data-nav="n" title="Move north" aria-label="Move north">↑</button><button type="button" data-nav="s" title="Move south" aria-label="Move south">↓</button><button type="button" data-nav="e" title="Move east" aria-label="Move east">→</button><span class="gap"></span><button type="button" data-nav="home" title="Back to the starting view" aria-label="Back to the starting view">↺</button></div>
  <div class="bar" id="player" style="display:none;margin:8px 0 0">
   <button id="play" title="play this member's storm through time">▶ play</button>
@@ -687,6 +689,18 @@ function drawBasicMap(bx,T,R,k){
   t.textContent=`${d.getUTCDate()} ${MON[d.getUTCMonth()]}`; s.appendChild(t)})}
 const dist=(lo,la)=>Math.hypot((lo-114.174)*Math.cos(22.302*Math.PI/180)*111.32,(la-22.302)*110.57);
 const wrapT=T=>{if(T&&!T._w){(T.tracks||[]).forEach(t=>[t.pts,...(t.others||[]).map(o=>o.pts)].forEach(P=>(P||[]).forEach(p=>{if(p[0]<0)p[0]+=360}))); T._w=1} return T};
+let HEAT=false; const HEATK=()=>cyc+"_"+ens, heatData=()=>((window.HKHEAT||{})[HEATK()])||null;
+function heatLoad(cb){const k=HEATK(); if((window.HKHEAT||{})[k]){cb(true);return}
+ const sc=document.createElement("script"); sc.src=`../data/heat_${k}.js`; sc.onload=()=>cb(!!(window.HKHEAT||{})[k]); sc.onerror=()=>cb(false); document.head.appendChild(sc)}
+function heatCPA(t){let b=[1e18,t.pts[0][0],t.pts[0][1]];
+ for(let i=0;i<t.pts.length-1;i++){const a=t.pts[i],c=t.pts[i+1]; for(let f=0;f<=1.0001;f+=.05){const lo=a[0]+f*(c[0]-a[0]),la=a[1]+f*(c[1]-a[1]),d=dist(lo,la); if(d<b[0])b=[d,lo,la]}}
+ return b}
+function heatAt(HD,m,sig,dx,dy){const v=HD.m[String(m)]; if(!v)return 0; const A=v[sig], i0=HD.shifts.indexOf(0), r=Math.hypot(dx,dy); if(r>50)return null;
+ let ang=Math.atan2(dy,dx)*180/Math.PI; if(ang<0)ang+=360;
+ const a=ang/30, k0=Math.floor(a)%12, k1=(k0+1)%12, fa=a-Math.floor(a), q=r/10, j0=Math.min(Math.floor(q),5), j1=Math.min(j0+1,5), fr=q-j0;
+ const val=(k,j)=>j===0?A[0][i0]:A[k%6][HD.shifts.indexOf(k<6?j*10:-j*10)];
+ return (1-fa)*(1-fr)*val(k0,j0)+fa*(1-fr)*val(k1,j0)+(1-fa)*fr*val(k0,j1)+fa*fr*val(k1,j1)}
+const heatLv=(p3,p8,p10)=>p10>=.4?10:p8>=.3?8:p3>=.3?3:0;
 const weakT=t=>t.wk===1||(t.wk==null&&!!t.pts&&t.pts.length>0&&t.pts.every(p=>p[2]!=null&&p[2]<21.5));
 const T0=()=>Date.UTC(+cyc.slice(0,4),+cyc.slice(4,6)-1,+cyc.slice(6,8),+cyc.slice(8,10));
 const labH=lab=>{const [d,h]=String(lab).replace("/"," ").split(" ").map(Number),a=new Date(T0());
@@ -894,7 +908,11 @@ function head(){
  $("#ensbtns").querySelectorAll("button").forEach(b=>b.onclick=()=>{if(MIX){cyc=MIX.cyc;MIX=null} ens=b.dataset.e; mode=modeOf(ens)||mode; PICKED=true; CHOSEN=true; sel=null;selH=null;head();load()});
  $("#zoomBtn").onclick=e=>{view=view==="region"?"hk":"region";VB=BASIC&&view==="hk"?[113.55,114.75,21.95,22.75]:VIEWS[view].slice();
  HOME=VB.slice();e.target.textContent=view==="region"?"zoom to Hong Kong":"zoom out";drawMap()};
- $("#showAll").onclick=()=>{if(MIX){closePath();return} btOff();sel=null;selH=null;BIN=null;drawMap();chart()};
+ $("#heatBtn").onclick=()=>{if(HEAT){HEAT=false; drawMap(); return}
+ heatLoad(ok=>{if(!ok){$("#maphint").textContent="There is no 'where it passes' map for this run yet."; return}
+  const t=TR&&TR.tracks.find(x=>x.m===sel); if(!t||!heatData().m[String(sel)]){$("#maphint").textContent="This member gives no signal anywhere within 50 km of its path."; return}
+  HEAT=true; const c=heatCPA(t), w=4.6, h=(VB[3]-VB[2])*w/(VB[1]-VB[0]); VB=[c[1]-w/2,c[1]+w/2,c[2]-h/2,c[2]+h/2]; drawMap()})};
+$("#showAll").onclick=()=>{if(MIX){closePath();return} btOff();sel=null;selH=null;BIN=null;drawMap();chart()};
  $("#only150").onchange=drawMap;
  {const o=$("#othSt"); if(o)o.onchange=()=>{const k=cyc+"_"+ens; if(!o.checked||(window.HKPATHS||{})[k])return drawMap();
   const sc=document.createElement("script"); sc.src=`../data/paths_${k}.js`; sc.onload=()=>{if(k===cyc+"_"+ens)drawMap()}; sc.onerror=()=>{$("#maphint").textContent="no file of other storms for this run (IFS and AIFS runs from 16 Oct 2026 on)"}; document.head.appendChild(sc)}}
@@ -1000,6 +1018,7 @@ const DMCITE=d=>d.tracks_withheld   // Google's citation (live) / CC BY credit (
       ?`<br><span class="dmcite">Google DeepMind Weather Lab. © 2024-6 Google LLC, whose machine learning models were used to create the experimental data made available under the following licence terms https://storage.googleapis.com/weathernext-public/terms-of-use.pdf. This data is intended for experimental modelling only and is not intended, validated, or approved for real world use.</span>`
       :` · data: <a href="https://deepmind.google.com/science/weatherlab" target="_blank" rel="noopener">Google DeepMind Weather Lab</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>) <span>turned into Hong Kong signal chances here; Google is not involved in this site</span>`;
 function load(){
+ HEAT=false;
  BIN=null; PATHC=null; PATHS=null; MIX=null; QP=null; if(QVB){VB=QVB; QVB=null}
  if(BASIC){const ph=c=>!!DEFE(c);
   if(!ph(cyc)){const c2=cycles.find(c=>c<=cyc&&ph(c))||cycles.find(ph); if(c2&&c2!==cyc){cyc=c2; head()}}
@@ -1556,6 +1575,7 @@ function drawMap(){
  const {W,H,X,Y,hx,hy,lo0,lo1,la0,la1}=mapBase(s);
  if(sel!==null&&BT)btOff();
  $("#selbar").style.display=sel!==null||BIN||BT?"":"none"; syncNav();
+ if(sel===null)HEAT=false; {const hb=$("#heatBtn"); if(hb){hb.style.display=sel!==null&&!BT&&!WH()&&!MIX&&(!PUB||((HK[cyc]||{})[ens]||{}).heat)?"":"none"; hb.classList.toggle("on",HEAT)}}
  {const b=$("#btBtn"), T_=truthNow(); if(b){b.style.display=T_&&T_.track&&T_.track.length>1&&!WH()?"":"none"; b.classList.toggle("on",BT)}}
  if(WH()){
   $("#selbar").style.display="none"; $("#detBtn").style.display="none"; $("#mapexp").innerHTML="";
@@ -1596,6 +1616,22 @@ function drawMap(){
    +(r===52?` <b>Deterministic run:</b> ECMWF's main forecast, made once in finer detail.`:r===51?` <b>Control run:</b> the one path started without any change.`:"");
   $("#detBtn").title=r===51?"the AI ensemble's unperturbed member (51) on its own -- the site has no separate deterministic AI run":"ECMWF's main forecast, made once in finer detail than the members, shown on its own: track, time bar, charts"}
  if(sel!==null&&allH!==null){allH=null; if(allPlaying)allStop()}
+ if(HEAT&&sel!==null){const HD=heatData(), t=TR.tracks.find(x=>x.m===sel);
+  if(HD&&t&&HD.m[String(sel)]){const [cd,lon0,lat0]=heatCPA(t), kx=1/(111.32*Math.cos(lat0*Math.PI/180)), ky=1/110.57, st=2.5, g=el("g",{"pointer-events":"none",opacity:.55,"shape-rendering":"crispEdges"});
+   for(let dx=-50+st/2;dx<50;dx+=st)for(let dy=-50+st/2;dy<50;dy+=st){if(Math.hypot(dx,dy)>50)continue;
+    const lv=heatLv(heatAt(HD,sel,"3",dx,dy),heatAt(HD,sel,"8",dx,dy),heatAt(HD,sel,"10",dx,dy));
+    const x0=X(lon0+(dx-st/2)*kx), x1=X(lon0+(dx+st/2)*kx), y0=Y(lat0+(dy+st/2)*ky), y1=Y(lat0+(dy-st/2)*ky);
+    g.appendChild(el("rect",{x:x0.toFixed(1),y:y0.toFixed(1),width:(x1-x0+.6).toFixed(1),height:(y1-y0+.6).toFixed(1),fill:lv?SIGC[lv]:"#d6dbe0"}))}
+   s.appendChild(g);
+   const rx=X(lon0+50*kx)-X(lon0), ry=Y(lat0-50*ky)-Y(lat0);
+   s.appendChild(el("ellipse",{cx:X(lon0),cy:Y(lat0),rx:rx,ry:ry,fill:"none",stroke:"#222","stroke-width":1.2,"stroke-dasharray":"5 4","pointer-events":"none"}));
+   const hov=el("ellipse",{cx:X(lon0),cy:Y(lat0),rx:rx,ry:ry,fill:"#000","fill-opacity":0,"pointer-events":"fill"});
+   hov.onmousemove=ev=>{const pt=s.createSVGPoint(); pt.x=ev.clientX; pt.y=ev.clientY; const q=pt.matrixTransform(s.getScreenCTM().inverse());
+    const lon=lo0+q.x/W*(lo1-lo0), lat=la0+(H-q.y)/H*(la1-la0), dx=(lon-lon0)/kx, dy=(lat-lat0)/ky, P=["3","8","10"].map(k=>heatAt(HD,sel,k,dx,dy));
+    if(P[0]==null)return; $("#maphint").textContent=`If the centre passed here, the chances would be No. 3 ${Math.round(100*P[0])}%, No. 8 ${Math.round(100*P[1])}% and No. 10 ${Math.round(100*P[2])}%.`};
+   hov.onmouseleave=()=>{$("#maphint").textContent="The shaded circle shows the signal this member would give if its centre passed there instead, up to 50 km from its closest approach. Hover over it to see the chances."};
+   s.appendChild(hov);
+   $("#maphint").textContent="The shaded circle shows the signal this member would give if its centre passed there instead, up to 50 km from its closest approach. Hover over it to see the chances."}}
  TR.tracks.filter(t=>(!only||t.ca[0]<150)&&(sel===null||t.m===sel)&&(!isDet(t)||sel===null||sel===t.m)&&(sel!==null||!BIN||BIN.ms.has(t.m))&&!(BASIC&&isDet(t))&&(isDet(t)||sel===t.m||!!BIN||t.m===DEFM()||!weakT(t))).sort((a,b)=>{if(byI)return (isDet(a)-isDet(b))||pk(a)-pk(b);const A=tierOf(a),B=tierOf(b);return (isDet(a)-isDet(b))||A[0]-B[0]||A[1]-B[1]}).forEach(t=>{
   const top=sel===null&&t.m===DEFM(), on=sel===t.m, d=t.pts.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join(" ");
   if(top||on)s.appendChild(el("path",{fill:"none",stroke:"#fff","stroke-width":(on?7:5.5),d:d,"stroke-linejoin":"round"}));
