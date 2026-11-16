@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Hong Kong typhoon signal forecasts</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%2314171a%27/%3E%3C/svg%3E">
 <style>
 /* Layout: a signal board -- masthead; one run strip; the answer as the loudest block; then the timeline, the map with its own
    controls, and the charts. Neutrals are the map's cool sea-greys; HKO's signal colours are the only strong colour. */
@@ -18,7 +19,7 @@
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 15.5px/1.55 var(--body);-webkit-font-smoothing:antialiased}
 a{color:var(--link);text-underline-offset:2px}
-b,strong{font-weight:650}
+b,strong{font-weight:700}
 :focus-visible{outline:2px solid var(--link);outline-offset:2px}
 .wrap{max-width:1120px;margin:0 auto;padding:0 16px 56px}
 html.demo .wrap{padding:6px 2px 4px} html.demo-answer .tlcard,html.demo-timeline .hero,html.demo-timeline .bcard{display:none} html.demo .toolbar,html.demo #status{margin:0} html.demo body{background:var(--bg)} html.demo .mapcard{margin:0}
@@ -26,23 +27,23 @@ html.demo .wrap{padding:6px 2px 4px} html.demo-answer .tlcard,html.demo-timeline
 /* masthead */
 .mast{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 28px;padding:24px 0 18px}
 .mast h1{margin:0;font:700 clamp(26px,3.3vw,35px)/1.05 var(--disp);letter-spacing:.005em;text-wrap:balance}
-.mast nav{display:flex;flex-wrap:wrap;gap:4px 20px;font-size:14.5px;font-weight:500}
+.mast nav{display:flex;flex-wrap:wrap;gap:4px 20px;font-size:15px;font-weight:400}
 .mast nav a{color:var(--ink);text-decoration:none}
 .mast nav a:hover{color:var(--link);text-decoration:underline}
-.mast nav a.tour{color:var(--link);font-weight:650}
+.mast nav a.tour{color:var(--link);font-weight:700}
 .disc{flex-basis:100%;margin:0;color:var(--mut);font-size:13px;max-width:72ch}
 
 /* the run strip */
 .toolbar{display:flex;flex-direction:column;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin:0 0 20px}
 .grp{display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-width:0}
-.lbl{flex:none;width:78px;font:600 15px/1 var(--disp);color:var(--mut)}
+.lbl{flex:none;width:78px;font:700 15px/1 var(--disp);color:var(--mut)}
 .sub{color:var(--mut);font-size:13px;margin:0}
 .toolbar .sub{padding-left:86px}
 .toolbar .sub b{color:var(--ink)}
-.stale{margin:0;padding-left:86px;color:var(--warn);font-weight:600;font-size:14.5px}
+.stale{margin:0;padding-left:86px;color:var(--warn);font-weight:700;font-size:15px}
 @media (max-width:760px){.stale{padding-left:0}}
-select,button{font:500 14.5px/1.2 var(--body);color:var(--ink);border:1px solid var(--line);border-radius:10px;background:var(--card);padding:8px 12px;cursor:pointer;max-width:100%}
-select{-webkit-appearance:none;appearance:none;background:var(--soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%237d8b97' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 11px center/10px 6px;border-color:transparent;padding-right:32px;font-weight:600}
+select,button{font:400 15px/1.2 var(--body);color:var(--ink);border:1px solid var(--line);border-radius:10px;background:var(--card);padding:8px 12px;cursor:pointer;max-width:100%}
+select{-webkit-appearance:none;appearance:none;background:var(--soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%237d8b97' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 11px center/10px 6px;border-color:transparent;padding-right:32px;font-weight:700}
 button:hover,select:hover{border-color:var(--mut)}
 button,select,label,input{touch-action:manipulation}   /* no double-tap zoom: quick taps on + / - each count (iOS) */
 button.on{background:var(--ink);border-color:var(--ink);color:var(--card)}
@@ -61,67 +62,67 @@ input[type=checkbox],input[type=range]{accent-color:var(--ink)}
 .ans.na{background:repeating-linear-gradient(45deg,var(--card) 0 8px,var(--soft) 8px 11px)}.ans.na .badge,.ans.na .v{color:var(--mut)}
 .ans{min-width:0;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px 16px;box-shadow:var(--shadow)}
 /* 2026-10-17: the HKO card in the same style as the forecast card */
-.ans .k,.tlcard .k{font:600 16px/1.2 var(--disp);color:var(--mut)}
-.badge{font:700 clamp(48px,7.4vw,80px)/.92 var(--disp);letter-spacing:-.005em;margin:8px 0 10px}
-.hero>.ans+.ans .badge{font-size:clamp(38px,4.8vw,54px);margin:8px 0 8px}
-.ans .v{font-size:15.5px;font-variant-numeric:tabular-nums}
+.ans .k,.tlcard .k{font:700 17px/1.2 var(--disp);color:var(--mut)}
+.badge{font:700 36px/.92 var(--disp);letter-spacing:0;margin:8px 0 10px}
+.hero>.ans+.ans .badge{font-size:36px;margin:8px 0 8px}
+.ans .v{font-size:15px;font-variant-numeric:tabular-nums}
 .ans{container-type:inline-size}
-.gs{margin:9px 0 0} .gl{display:block;margin:0 0 5px;font:600 15px/1 var(--disp);color:var(--mut)}
+.gs{margin:9px 0 0} .gl{display:block;margin:0 0 5px;font:700 15px/1 var(--disp);color:var(--mut)}
 .gd{display:inline-flex;gap:3px;vertical-align:-1px;margin-right:6px} .gd i{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--ink);opacity:.3}
 .gd i.f{background:var(--ink);opacity:1} .gd i.p{background:var(--mut);opacity:.6}
-.gn{font:700 24px/1 var(--disp)}
-.r8{margin:12px 0 0;font-size:14px;line-height:1.45} .r8 .r8s{color:var(--mut);font-size:13.5px;margin-top:3px}   /* the 8-station average and its rank */
-.gh{font:700 16px/1.25 var(--disp);color:var(--ink);letter-spacing:.01em;margin:12px 0 4px} #galeF>div:not(.gh){margin-top:9px}   /* "Forecast, at any time from this run onward" over the station counts; the rows spaced as in the HKO card */
+.gn{font:700 22px/1 var(--disp)}
+.r8{margin:12px 0 0;font-size:15px;line-height:1.45} .r8 .r8s{color:var(--mut);font-size:15px;margin-top:3px}   /* the 8-station average and its rank */
+.gh{font:700 17px/1.25 var(--disp);color:var(--ink);letter-spacing:0;margin:12px 0 4px} #galeF>div:not(.gh){margin-top:9px}   /* "Forecast, at any time from this run onward" over the station counts; the rows spaced as in the HKO card */
 @container (max-width:470px){.gl{display:block;min-width:0;margin:0 0 5px}}   /* a narrow card: the label above its dots, so '1 of 8' never splits (after .gl, so it wins) */
-.rng{color:var(--mut);font-size:12.5px}
+.rng{color:var(--mut);font-size:13px}
 .note{color:var(--mut);font-size:13px;margin:8px 0 0}
-.mapexp{margin:6px 0 4px;font-size:13.5px;max-width:none} .mapexp b{color:var(--ink)}
-.mexp{margin:6px 0 2px;font-size:14px;line-height:1.45;color:var(--mut);max-width:62ch} .mexp b{color:var(--ink)}
-.what{margin:12px 0 0;font-size:14px;color:var(--mut)} .what summary{cursor:pointer;color:var(--link);font-weight:600} .what p{margin:8px 0 0;max-width:64ch}
+.mapexp{margin:6px 0 4px;font-size:15px;max-width:none} .mapexp b{color:var(--ink)}
+.mexp{margin:6px 0 2px;font-size:15px;line-height:1.45;color:var(--mut);max-width:62ch} .mexp b{color:var(--ink)}
+.what{margin:12px 0 0;font-size:15px;color:var(--mut)} .what summary{cursor:pointer;color:var(--link);font-weight:700} .what p{margin:8px 0 0;max-width:64ch}
 .tlcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px 12px;margin:0 0 12px}
 /* BASIC mode (2026-10-17) */
 body.basic .adv{display:none!important}
-#easymore{display:none}body.easy .wrap>:not(.mast):not(.toolbar):not(#status):not(#easymore){display:none!important}
+#easymore{display:none}body.easy .wrap>:not(.mast):not(.ctx):not(.toolbar):not(.sheet):not(#stale):not(.hkonow):not(#easymore){display:none!important}body.easy #maph,body.easy .mapcard{display:none!important}
 body.easy .toolbar>:not(#stamp):not(.grp){display:none!important}/* Basic shows Today / Past storms and the run pickers too (2026-11-02, user: 'in easy mode, enable past storms also'); the forecast buttons stay hidden (.adv) */body.easy .toolbar .sub{padding-left:0}body.easy #status .tlcard,body.easy #status .sech{display:none!important}
 body.easy #easymore{display:block;text-align:center;margin:22px 0 8px}#easymore .easygo{display:inline-block;padding:12px 28px;border-radius:999px;border:1px solid var(--line,#ccc);font-weight:700;text-decoration:none}
 body.basic.bsel #chead.adv,body.basic.bsel.tab-wi .cbox.adv,body.basic.bsel #cnote.adv,body.basic.bsel:not(.tab-wi) #stationchart.adv{display:block!important} body.basic.bsel #tabs.adv{display:flex!important} .bwx{display:none} body.basic.bsel.tab-wi .bwx{display:block;max-width:70ch}
 .modesw{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;vertical-align:middle;margin-left:4px}.modesw a{padding:3px 11px;font-size:13px;text-decoration:none;color:var(--mut)}.modesw a.on{background:var(--ink);color:var(--card)}
 .bcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px 14px;margin:0 0 12px}
-.bcard .bh{font:700 clamp(24px,5vw,32px)/1.15 var(--disp);margin:0 0 12px;text-wrap:balance}
-.ans .bh{font:700 clamp(24px,3.6vw,32px)/1.15 var(--disp);margin:8px 0 10px;text-wrap:balance}
+.bcard .bh{font:700 36px/1.15 var(--disp);margin:0 0 12px;text-wrap:balance}
+.ans .bh{font:700 36px/1.15 var(--disp);margin:8px 0 10px;text-wrap:balance}
 .bbar{display:grid;grid-template-columns:64px 1fr 52px;gap:10px;align-items:center;margin:7px 0}.bbar b{font-weight:700}
 .bbar .tr{height:14px;border-radius:7px;background:var(--soft);overflow:hidden}.bbar .fl{height:100%;border-radius:7px;min-width:2px}
-.bbar .pc{font:700 18px var(--disp);text-align:right;font-variant-numeric:tabular-nums}
-.cmp{border-collapse:collapse;margin:10px 0 2px;font-size:13.5px;font-variant-numeric:tabular-nums}.cmp th{font-weight:600;color:var(--mut)}
+.bbar .pc{font:700 17px var(--disp);text-align:right;font-variant-numeric:tabular-nums}
+.cmp{border-collapse:collapse;margin:10px 0 2px;font-size:15px;font-variant-numeric:tabular-nums}.cmp th{font-weight:700;color:var(--mut)}
 .cmp td,.cmp th{padding:3px 0 3px 18px;text-align:right;border-top:1px solid var(--line)}.cmp td:first-child,.cmp th:first-child{padding-left:0;text-align:left}
-.cmp tr:first-child th{border-top:0}.cmp tr.me td{font-weight:600}.cmp .note{font-size:12.5px;margin:0}
+.cmp tr:first-child th{border-top:0}.cmp tr.me td{font-weight:700}.cmp .note{font-size:13px;margin:0}
 .hkonow{margin:10px 0 4px;padding:6px 0 6px 12px;border-left:4px solid var(--no3);font-size:15px}
-.bcard .bv{margin:10px 0 0;font-size:15.5px}.obs{margin-top:10px!important;font-size:14.5px!important}.selhide{display:none!important}#play{display:none!important}body.btsel #chead.adv,body.btsel .cbox.adv,body.btsel #cnote.adv{display:block!important}body.btsel #tabs,body.btsel #wisw,body.btsel #stationchart,body.btsel .mch,body.btsel #bwx{display:none!important}#stamp .sl{display:block}@media (max-width:600px){#stamp .sx{display:none}body.basic #stamp:not(:has(.sl:not(.sx))){display:none}}.bmapc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px 10px;margin:0 0 12px}.bmapc:empty{display:none}
-.bmapc .bmh{font-weight:700;font-size:17px;margin:0 0 8px}.bmapc svg{display:block;width:100%;height:auto;border-radius:10px}.bmapc .note{margin:6px 0 0}.iss{margin:4px 0 10px;font-size:13.5px;color:var(--mut)}
+.bcard .bv{margin:10px 0 0;font-size:15px}.obs{margin-top:10px!important;font-size:15px!important}.selhide{display:none!important}#play{display:none!important}body.btsel #chead.adv,body.btsel .cbox.adv,body.btsel #cnote.adv{display:block!important}body.btsel #tabs,body.btsel #wisw,body.btsel #stationchart,body.btsel .mch,body.btsel #bwx{display:none!important}#stamp .sl{display:block}@media (max-width:600px){#stamp .sx{display:none}body.basic #stamp:not(:has(.sl:not(.sx))){display:none}}.bmapc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px 10px;margin:0 0 12px}.bmapc:empty{display:none}
+.bmapc .bmh{font-weight:700;font-size:17px;margin:0 0 8px}.bmapc svg{display:block;width:100%;height:auto;border-radius:10px}.bmapc .note{margin:6px 0 0}.iss{margin:4px 0 10px;font-size:15px;color:var(--mut)}
 .tlcard .k{margin-bottom:8px}
 .sech{font:700 13px/1 var(--disp);letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:24px 0 10px}#status>.sech:first-child{margin-top:6px}
 html.demo .sech{display:none} #mapexp{display:none} .mapbar .mapnav{margin:0 0 0 auto}
 .r2rlg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--mut);margin:-2px 0 6px}.r2rlg b{font-weight:700}
-.r2rp{margin:0 0 4px}.r2rp .t{font:600 13px/1.3 var(--disp);color:var(--ink);margin:6px 0 0}#r2r svg{display:block;width:100%;height:auto;border:0;border-radius:0;background:none}#r2r circle,#r2r rect.na,#r2r .mk{cursor:pointer}
+.r2rp{margin:0 0 4px}.r2rp .t{font:700 13px/1.3 var(--disp);color:var(--ink);margin:6px 0 0}#r2r svg{display:block;width:100%;height:auto;border:0;border-radius:0;background:none}#r2r circle,#r2r rect.na,#r2r .mk{cursor:pointer}
 .r2rctl{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:0 0 8px}.r2rctl .seg button{padding:5px 11px;font-size:13px}
 .r2rall .r2rlg .sg{display:none}.r2rlgA{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--ink);margin:4px 0 0}.r2rlgA svg{vertical-align:middle;margin-right:4px}#r2r .r2rlgA svg{display:inline-block;width:38px;height:12px}
 .r2rallnote{margin:2px 0 0;font-size:13px;color:var(--mut)}
-.rkrough{font-size:11px;font-weight:600;color:var(--mut);border:1px solid var(--mut);border-radius:6px;padding:0 4px;margin-left:4px;vertical-align:1px}.rkold{margin-left:10px;border:2px solid var(--link);color:var(--link);background:transparent;border-radius:10px;padding:6px 13px;font-weight:600;cursor:pointer}.rkold.on{background:var(--link);color:#fff}.rk .rkfc{margin:0 0 10px;padding:10px 14px;border:1px solid var(--link);border-radius:12px;background:rgba(26,94,168,.08);font-size:14.5px}.rkctl{margin:0 0 8px}
-.rktw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}.rkt{border-collapse:collapse;width:100%;min-width:600px;font-variant-numeric:tabular-nums;font-size:14px}.rkt.nar{min-width:0}
-.rkt th,.rkt td{padding:6px 9px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}.rkt th{font-size:12.5px;color:var(--mut);background:var(--soft);white-space:normal;vertical-align:bottom}
+.rkrough{font-size:13px;font-weight:700;color:var(--mut);border:1px solid var(--mut);border-radius:6px;padding:0 4px;margin-left:4px;vertical-align:1px}.rkold{margin-left:10px;border:2px solid var(--link);color:var(--link);background:transparent;border-radius:10px;padding:6px 13px;font-weight:700;cursor:pointer}.rkold.on{background:var(--link);color:#fff}.rk .rkfc{margin:0 0 10px;padding:10px 14px;border:1px solid var(--link);border-radius:12px;background:rgba(26,94,168,.08);font-size:15px}.rkctl{margin:0 0 8px}
+.rktw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}.rkt{border-collapse:collapse;width:100%;min-width:600px;font-variant-numeric:tabular-nums;font-size:15px}.rkt.nar{min-width:0}
+.rkt th,.rkt td{padding:6px 9px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}.rkt th{font-size:13px;color:var(--mut);background:var(--soft);white-space:normal;vertical-align:bottom}
 .rkt td.l,.rkt th.l{text-align:left}.rkt.nar td.l{white-space:normal}.rkt tr.s10 td{background:rgba(229,115,135,.17)}.rkt tr.s9 td{background:rgba(240,190,60,.2)}.rkt tr.me td{font-weight:700}
 .rkt tr.fc td{background:rgba(26,94,168,.14);font-weight:700;border-top:2px solid var(--link);border-bottom:2px solid var(--link)}.rk .mut{color:var(--mut);font-weight:400}
-.rksg{display:inline-block;min-width:40px;padding:0 6px;border-radius:999px;font-size:11.5px;font-weight:600;line-height:1.7;color:#fff;margin-left:4px}.rksg3{background:var(--no3)}.rksg8{background:var(--no8)}.rksg9{background:var(--no9,#8e2a8a)}.rksg10{background:var(--no10)}.rksgf{background:var(--link)}
+.rksg{display:inline-block;min-width:40px;padding:0 6px;border-radius:999px;font-size:13px;font-weight:700;line-height:1.7;color:#fff;margin-left:4px}.rksg3{background:var(--no3)}.rksg8{background:var(--no8)}.rksg9{background:var(--no9,#8e2a8a)}.rksg10{background:var(--no10)}.rksgf{background:var(--link)}
 #r2r{position:relative}.r2rtip{position:absolute;z-index:6;pointer-events:none;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font-size:13px;line-height:1.5;box-shadow:var(--shadow);white-space:nowrap}
 .r2rtip b{display:block;font-weight:700;margin-bottom:2px}.r2rtip i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}.r2rtip .mu{color:var(--mut)}#r2r .r2rtip svg{display:inline-block;width:16px;height:10px}
 #tl svg{border:0;border-radius:0;background:transparent;box-shadow:none}
-.tlleg{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:12.5px;color:var(--mut);margin-top:8px}
+.tlleg{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:13px;color:var(--mut);margin-top:8px}
 .tlleg i{display:inline-block;width:22px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
-details.nums>summary{cursor:pointer;color:var(--link);font-weight:600;font-size:14px;margin:4px 0 12px}
+details.nums>summary{cursor:pointer;color:var(--link);font-weight:700;font-size:15px;margin:4px 0 12px}
 .lvgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .lv{min-width:0;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
-.lv h3{margin:0 0 8px;font:700 21px/1 var(--disp);color:var(--c)}
-.lv dl{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;margin:0;font-size:13.5px}
+.lv h3{margin:0 0 8px;font:700 22px/1 var(--disp);color:var(--c)}
+.lv dl{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;margin:0;font-size:15px}
 .lv dt{color:var(--mut)} .lv dd{margin:0;font-variant-numeric:tabular-nums}
 
 /* map */
@@ -136,29 +137,29 @@ details.nums>summary{cursor:pointer;color:var(--link);font-weight:600;font-size:
 .mapnav button{flex:0 1 44px;min-width:32px;height:40px;padding:0;font:600 19px/1 var(--body);display:inline-flex;align-items:center;justify-content:center}
 .mapnav [data-nav=in],.mapnav [data-nav=out]{font-size:25px;font-weight:500}
 .mapnav button:disabled{opacity:.38;cursor:default} .mapnav .gap{flex:0 0 6px}
-#showAll{font:600 16px/1.2 var(--body);padding:11px 18px;border:0;border-radius:12px;background:#13202b;color:#fff;box-shadow:0 2px 12px rgba(0,0,0,.28);cursor:pointer}
+#showAll{font:700 17px/1.2 var(--body);padding:11px 18px;border:0;border-radius:12px;background:#13202b;color:#fff;box-shadow:0 2px 12px rgba(0,0,0,.28);cursor:pointer}
 #showAll:hover{filter:brightness(1.18)} #showAll:focus-visible{outline:3px solid var(--link);outline-offset:2px}
 svg{width:100%;height:auto;display:block;background:var(--card);border:1px solid var(--line);border-radius:16px}
 #map{box-shadow:var(--shadow);display:block;width:100%}
 #map text{paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}   /* labels readable over the tracks (2026-10-11) */
 .mapkey{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;margin:10px 0 2px;font-size:15px;color:var(--ink)}
-.mapkey span{display:inline-flex;align-items:center;gap:7px;white-space:nowrap} .mapkey .kh{font-weight:600}
+.mapkey span{display:inline-flex;align-items:center;gap:7px;white-space:nowrap} .mapkey .kh{font-weight:700}
 .mapkey i{display:inline-block;width:26px;height:5px;border-radius:3px;box-shadow:0 0 0 2px #e8eff6}
 .mapkey .kdash{height:0;border-top:3px dashed #000;border-radius:0} .mapkey .kthin{height:0;border-top:2px dashed #999;border-radius:0}
-.mapkey b{font-weight:400} .mapkey .kn{color:var(--mut);font-size:13.5px;white-space:normal}
-#maphint{font-size:14.5px}
+.mapkey b{font-weight:400} .mapkey .kn{color:var(--mut);font-size:15px;white-space:normal}
+#maphint{font-size:15px}
 .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}
 
 /* charts */
-h2{font:700 25px/1.1 var(--disp);letter-spacing:.005em;margin:36px 0 10px;text-wrap:balance}
+h2{font:700 22px/1.1 var(--disp);letter-spacing:0;margin:36px 0 10px;text-wrap:balance}
 #tabs{gap:2px 20px;border-bottom:1px solid var(--line);margin:0 0 14px}
-#tabs button{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;padding:9px 1px;margin-bottom:-1px;color:var(--mut);font-weight:600}
+#tabs button{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;padding:9px 1px;margin-bottom:-1px;color:var(--mut);font-weight:700}
 #tabs button:hover{color:var(--ink)}
 #tabs button.on{background:none;color:var(--ink);border-bottom-color:var(--ink)}
 #tabs label{font-size:13px;color:var(--mut)}
 /* the wind-index views (2026-11-04, user: 'no one even sees it now'): a switch on its own row, the chosen view dark */
 #wisw{margin:-4px 0 14px;gap:8px 10px} #wisw .lbl{width:auto;margin-right:2px} #wisw .seg{border:1px solid var(--line)}
-#wisw .seg button{padding:8px 15px;font-weight:600;color:var(--ink)} #wisw .seg button.on{background:var(--ink);color:var(--card);box-shadow:none}
+#wisw .seg button{padding:8px 15px;font-weight:700;color:var(--ink)} #wisw .seg button.on{background:var(--ink);color:var(--card);box-shadow:none}
 .kv{display:inline-block;padding:3px 10px;margin:3px 6px 3px 0;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:13px;line-height:1.5}
 table.tl{border-collapse:collapse;font-size:13px;margin:6px 0 2px;width:100%} table.tl th,table.tl td{border-bottom:1px solid var(--line);padding:5px 7px;text-align:center}
 table.tl tr[data-c]{cursor:pointer} table.tl tr.on td{font-weight:700;background:var(--card)}
@@ -167,11 +168,11 @@ table.sg{border-collapse:collapse;font-size:13px;margin:4px 0} .sg th,.sg td{bor
 #stationchart{overflow-x:auto}
 .sgm tr.sgrow{cursor:pointer} .sgm tr.sgrow:hover td,.sgm tr.sgon td{background:var(--soft)}
 .sgdistbox:not(:empty){margin:10px 0 4px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
-.sgdist svg{display:block;max-width:100%;height:auto} .sgdh{margin:0 0 4px;font-size:14px;color:var(--mut)} .sgdh b{color:var(--ink)}
-.sghint{font-weight:600;color:var(--ink)} .sgm .dg{color:var(--good);font-weight:600} .sgm .dr{color:var(--bad);font-weight:600}
-table.sgm{border-collapse:collapse;font-size:13.5px;margin:4px 0;min-width:650px;font-variant-numeric:tabular-nums} .sgm th,.sgm td{border-bottom:1px solid var(--line);padding:6px 9px;text-align:right;white-space:nowrap} .sgm th{font-weight:600;color:var(--mut)} .sgm th:first-child,.sgm td:first-child{text-align:left}
+.sgdist svg{display:block;max-width:100%;height:auto} .sgdh{margin:0 0 4px;font-size:15px;color:var(--mut)} .sgdh b{color:var(--ink)}
+.sghint{font-weight:700;color:var(--ink)} .sgm .dg{color:var(--good);font-weight:700} .sgm .dr{color:var(--bad);font-weight:700}
+table.sgm{border-collapse:collapse;font-size:15px;margin:4px 0;min-width:650px;font-variant-numeric:tabular-nums} .sgm th,.sgm td{border-bottom:1px solid var(--line);padding:6px 9px;text-align:right;white-space:nowrap} .sgm th{font-weight:700;color:var(--mut)} .sgm th:first-child,.sgm td:first-child{text-align:left}
 .sgcounts{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
-footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin-top:36px;padding-top:14px}
+footer{color:var(--mut);font-size:13px;border-top:1px solid var(--line);margin-top:36px;padding-top:14px}
 
 @media (max-width:760px){
  .mast{padding-top:16px} .hero{grid-template-columns:1fr} .lvgrid{grid-template-columns:1fr}
@@ -179,7 +180,7 @@ footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin
  #chart{width:100%;height:auto}
  @media (max-width:731px){#chart text{paint-order:stroke;stroke:var(--card);stroke-width:3px;stroke-linejoin:round}}   /* 2026-10-17: a phone draws the chart at its own width (chart()), its labels haloed where they cross the bars; the MAP fits the screen and keeps its labels at size (2026-10-11) */
  .toolbar select{width:100%} .swipe{display:block}
- #tabs{gap:2px 14px} #tabs button{font-size:14px;padding:8px 1px}
+ #tabs{gap:2px 14px} #tabs button{font-size:15px;padding:8px 1px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
@@ -193,7 +194,7 @@ footer{color:var(--mut);font-size:12.5px;border-top:1px solid var(--line);margin
 @media (prefers-color-scheme:dark){:root{
  --bg:#0e1012;--card:#0e1012;--soft:#1b1e21;--ink:#eceef0;--mut:#9aa1a8;--line:#2c3136;--link:#7db4ff;
  --halo:#0e1012;--raise:#2c3136;--shadow:none;--band:#000;--bandink:#fff}}
-b,strong{font-weight:600}
+b,strong{font-weight:700}
 select,button{border-radius:3px}
 button{border-color:var(--line);background:var(--bg)}
 
@@ -201,29 +202,29 @@ button{border-color:var(--line);background:var(--bg)}
 .mast{padding:0 0 12px;gap:10px 24px}
 .mast h1{flex-basis:100%;margin:0;padding:13px 0 12px;font:700 18px/1.3 var(--body);letter-spacing:0;color:var(--bandink);background:var(--band);
  box-shadow:0 0 0 100vmax var(--band);clip-path:inset(0 -100vmax)}
-.mast nav{flex:1 1 auto;align-items:center;gap:8px 20px;font-size:14.5px;padding-top:2px}
-.mast nav a.tour{font-weight:600}
+.mast nav{flex:1 1 auto;align-items:center;gap:8px 20px;font-size:15px;padding-top:2px}
+.mast nav a.tour{font-weight:700}
 .modesw{margin-left:auto;border:1px solid var(--ink);border-radius:3px}
-.modesw a{padding:5px 13px;font-size:13.5px;color:var(--ink)}
+.modesw a{padding:5px 13px;font-size:15px;color:var(--ink)}
 .modesw a+a{border-left:1px solid var(--ink)}
 .modesw a.on{background:var(--ink);color:var(--bg)}
-.disc{font-size:12.5px;line-height:1.45;max-width:86ch}
+.disc{font-size:13px;line-height:1.45;max-width:86ch}
 @media (max-width:760px){
  .mast h1{padding:12px 0 11px;font:700 16px/21px var(--body)}   /* whole-pixel line: a fractional one left a hairline under the band; 16 px keeps the English title on one line at 390 px (Fable review 2026-11-11) */
  .mast nav{gap:0 18px} .mast nav>a{padding:5px 0}   /* taller tap targets for the links, same spacing (2026-11-11) */
  .modesw{display:flex;flex:1 0 100%;margin:0}
- .modesw a{flex:1;text-align:center;padding:8px 0;font-size:14px}
+ .modesw a{flex:1;text-align:center;padding:8px 0;font-size:15px}
 }
 
 /* the run strip: no box, two hairlines */
 .toolbar{background:none;border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:0;padding:12px 0;margin:0 0 6px;gap:8px}
-.lbl{width:100px;font:600 13px/1.2 var(--body)}
-.toolbar .sub{padding-left:108px;font-size:12.5px}
-.stale{padding-left:108px;font-size:13.5px}
-select{background-color:var(--bg);border-color:var(--line);font-weight:500}
+.lbl{width:100px;font:700 13px/1.2 var(--body)}
+.toolbar .sub{padding-left:108px;font-size:13px}
+.stale{padding-left:108px;font-size:15px}
+select{background-color:var(--bg);border-color:var(--line);font-weight:400}
 .seg{padding:0;gap:6px;background:none;border-radius:0}
 .seg button{border:1px solid var(--line);border-radius:3px;padding:7px 12px;color:var(--mut);background:var(--bg)}
-.seg button.on{background:var(--bg);border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);color:var(--ink);font-weight:600}
+.seg button.on{background:var(--bg);border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);color:var(--ink);font-weight:700}
 .lbl2{display:none}   /* the phone's labels for the signal and storm menus; a computer keeps its one 'Run' label */
 @media (max-width:760px){
  /* a phone (2026-11-11, user: '23-24 sept then 21 sept, very confusing for readers!' -> Fable's layout review -> 'Just do all fable
@@ -247,7 +248,7 @@ select{background-color:var(--bg);border-color:var(--line);font-weight:500}
 }
 
 /* section heads: a plain bold line under an ink rule */
-h2{font:700 21px/1.2 var(--body);letter-spacing:-.01em;margin:30px 0 10px}
+h2{font:700 22px/1.2 var(--body);letter-spacing:0;margin:30px 0 10px}
 .sech{font:700 17px/1.2 var(--body);letter-spacing:0;text-transform:none;color:var(--ink);margin:34px 0 0;padding:10px 0;border-top:2px solid var(--ink)}
 #status>.sech:first-child{margin-top:18px}
 
@@ -258,32 +259,32 @@ h2{font:700 21px/1.2 var(--body);letter-spacing:-.01em;margin:30px 0 10px}
 .ans{padding:14px 0 18px;border-top:1px solid var(--line)}
 .hero>.ans:first-child{border-top:0;padding-top:2px}
 @media (min-width:761px){.hero>.ans:nth-child(2){border-top:0;padding-top:2px}}
-.ans .k{font:600 13.5px/1.3 var(--body);color:var(--mut)}
+.ans .k{font:700 15px/1.3 var(--body);color:var(--mut)}
 .tlcard{padding:2px 0 10px;margin:0}
-.tlcard .k{font:600 15px/1.3 var(--body);color:var(--ink);margin-bottom:8px}
+.tlcard .k{font:700 15px/1.3 var(--body);color:var(--ink);margin-bottom:8px}
 .bcard{padding:18px 0 14px;margin:0}
 .bcard+.tlcard,.tlcard+.tlcard,.bmapc+.tlcard,.bcard+.bmapc{border-top:1px solid var(--line);padding-top:16px}
-.bcard .bh{font:700 clamp(27px,7.4vw,38px)/1.12 var(--body);letter-spacing:-.015em;margin:0 0 8px}
-.ans .bh{font:700 clamp(25px,3.2vw,33px)/1.12 var(--body);letter-spacing:-.015em;margin:6px 0 8px}
-.badge,.hero>.ans+.ans .badge{font:700 clamp(34px,4.4vw,46px)/1 var(--body);letter-spacing:-.015em;margin:6px 0 8px}
+.bcard .bh{font:700 36px/1.12 var(--body);letter-spacing:0;margin:0 0 8px}
+.ans .bh{font:700 36px/1.12 var(--body);letter-spacing:0;margin:6px 0 8px}
+.badge,.hero>.ans+.ans .badge{font:700 36px/1 var(--body);letter-spacing:0;margin:6px 0 8px}
 .iss{font-size:13px}
 .bbar{grid-template-columns:58px 1fr 52px;margin:8px 0}
 .bbar .tr{height:12px;border-radius:0} .bbar .fl{border-radius:0}
 .bbar .pc{font:700 17px/1 var(--body)}
-.gl{font:600 13.5px/1 var(--body)} .gn{font:700 21px/1 var(--body)} .gh{font:700 15px/1.3 var(--body);letter-spacing:0}
+.gl{font:700 15px/1 var(--body)} .gn{font:700 22px/1 var(--body)} .gh{font:700 15px/1.3 var(--body);letter-spacing:0}
 .gd i{border-radius:0;width:10px;height:10px}
 .lvgrid{gap:12px 28px}
 .lv{border-top:3px solid var(--c);padding:10px 0}
-.lv h3{font:700 18px/1 var(--body)}
+.lv h3{font:700 17px/1 var(--body)}
 .bmapc{padding:16px 0 8px;margin:0}
-.bmapc .bmh{font-size:15px;font-weight:600}
+.bmapc .bmh{font-size:15px;font-weight:700}
 .bmapc svg{border-radius:0}
 .kv{border-radius:3px;background:none}
 @media (max-width:760px){.kv{display:block;border:0;padding:0;margin:0 0 3px}}   /* a phone: Expert's values one per line, not boxes that look like buttons (2026-11-11) */
-#easymore .easygo{border-radius:3px;border:1px solid var(--ink);color:var(--ink);font-weight:600;padding:11px 26px}
+#easymore .easygo{border-radius:3px;border:1px solid var(--ink);color:var(--ink);font-weight:700;padding:11px 26px}
 .r2rtip{border-radius:3px;box-shadow:0 2px 10px rgba(0,0,0,.16)}
 .tlleg i{border-radius:0}
-.r2rp .t{font:600 13px/1.3 var(--body)}
+.r2rp .t{font:700 13px/1.3 var(--body)}
 .r2rctl .seg button{padding:5px 10px}
 #r2r svg{overflow:visible}
 
@@ -294,10 +295,10 @@ svg{border-radius:0}
 #map{box-shadow:none}
 .scrollx{border-radius:0}
 #showAll{border-radius:3px;box-shadow:none;background:var(--ink);color:var(--bg);font-size:15px;padding:10px 16px}
-#heatBtn,#creBtn{margin-left:8px;font:600 15px/1.2 var(--body);padding:9px 15px;border:1px solid var(--ink);border-radius:3px;background:var(--bg);color:var(--ink);cursor:pointer}
+#heatBtn,#creBtn{margin-left:8px;font:700 15px/1.2 var(--body);padding:9px 15px;border:1px solid var(--ink);border-radius:3px;background:var(--bg);color:var(--ink);cursor:pointer}
 #heatBtn.on,#creBtn.on{background:var(--ink);color:var(--bg)}
-.mapkey{font-size:14px} .mapkey i{box-shadow:none;border-radius:0;height:4px}
-#maphint{font-size:13.5px}
+.mapkey{font-size:15px} .mapkey i{box-shadow:none;border-radius:0;height:4px}
+#maphint{font-size:15px}
 @media (max-width:760px){
  .mapwrap{margin-left:-16px;margin-right:-16px} #map{border-left:0;border-right:0}
  .bmapc svg{width:calc(100% + 32px);max-width:none;margin-left:-16px;border-left:0;border-right:0}
@@ -314,39 +315,208 @@ html.demo .toolbar{border-top:0;border-bottom:0;padding:4px 0}
 .rkt th{background:none;border-bottom:1px solid var(--ink)}
 .rksg{border-radius:2px}
 .sgdistbox:not(:empty){border:0;border-top:1px solid var(--line);border-radius:0;padding:10px 0}
-footer{font-size:12.5px;margin-top:40px}
-</style><link rel="alternate" type="application/rss+xml" title="Hong Kong typhoon signal forecasts" href="../data/feed.xml" id="feedh"><script src="zh.js"></script><style>.langsw{position:absolute;top:10px;right:12px;z-index:60;font:600 13px/1 system-ui,-apple-system,sans-serif;padding:6px 10px;border-radius:3px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,.5);text-decoration:none} html.demo .langsw{display:none}.mast h1,.mast>.name{padding-right:96px}</style></head><body>
-<div class="wrap">
-<header class="mast"><h1>Hong Kong typhoon signal forecasts</h1>
-<nav aria-label="pages"><a class="tour" href="guide-zh.html">New here? Take the tour</a><a href="verify-zh.html">How good is it?</a><a href="ranking-zh.html">Storm ranking</a><a href="ideas-zh.html">Ideas</a></nav>
-<p class="disc">ECMWF and Google DeepMind ensemble forecasts turned into Hong Kong signal chances. Research output — the Hong Kong Observatory is the only authority for actual signals.</p></header>
+footer{font-size:13px;margin-top:40px}
 
- <div class="toolbar">
+/* ONE FRAME for every page (2026-11-16, user: 'fix the changes fable recommended', the 'vibe-coded' audit of 15 Nov): the same column,
+   body size, title band, page title and menu on all six pages, and one type scale (13, 15, 17, 22 and 36 px, weights 400 and 700).
+   Last, so it wins. */
+.wrap{max-width:1060px}
+body{font-size:16px}
+.mast h1{font:700 17px/1.3 var(--body);letter-spacing:0}
+.mast nav{font-size:15px;font-weight:400}
+.mast nav a[aria-current]{color:var(--ink);font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
+.bcard .bh,.ans .bh,.badge,.hero>.ans+.ans .badge{font:700 36px/1.15 var(--body);letter-spacing:0}
+h2,h3{letter-spacing:0}
+.mast nav a.tour{color:var(--ink);font-weight:400}
+.mast nav a.tour[aria-current]{font-weight:700}
+.toolbar .sub,.iss{font-size:15px;color:var(--ink)}
+body.easy #easymore{text-align:left;margin:16px 0}
+table.cmp th{white-space:nowrap}
+@media (max-width:760px){.mast h1{font:700 16px/21px var(--body)} .bcard .bh,.ans .bh,.badge,.hero>.ans+.ans .badge{font-size:28px}}
+
+/* HEADER (2026-11-17, Fable's layout review P2, adopted): the ink band holds the name, the page links and the language switch; a phone
+   gets a Menu button that opens the links. Under it one research line. Same block on every page. Last, so it wins. */
+.mast{display:block;padding:0;margin:0 0 14px;gap:0}
+.mast .band{display:flex;flex-wrap:nowrap;align-items:center;gap:0 22px;min-height:48px;background:var(--band);color:var(--bandink);
+ box-shadow:0 0 0 100vmax var(--band);clip-path:inset(0 -100vmax)}
+.mast .name{flex:0 1 auto;display:block;margin:0 auto 0 0;padding:12px 0;font:700 17px/1.25 var(--body);letter-spacing:0;color:var(--bandink);
+ background:none;box-shadow:none;clip-path:none;text-decoration:none}
+.mast nav{display:flex;flex:none;flex-wrap:nowrap;align-items:stretch;gap:0 22px;padding:0;font-size:15px;font-weight:400}
+.mast nav a{color:var(--bandink);text-decoration:none;padding:14px 0 11px;border-bottom:3px solid transparent;font-weight:400;white-space:nowrap}
+.mast nav a:hover{color:var(--bandink);text-decoration:none;border-bottom-color:#7b8188}
+.mast nav a[aria-current]{color:var(--bandink);font-weight:700;text-decoration:none;border-bottom-color:var(--bandink)}
+.mast nav a.tour{color:var(--bandink)}
+.mast .langsw,.mast .menu{position:static;flex:none;font:400 15px/1.2 var(--body);color:var(--bandink);background:none;border:1px solid #7b8188;border-radius:3px;
+ padding:5px 10px;text-decoration:none;cursor:pointer}
+.mast .menu{display:none}
+.mast .research{margin:0;padding:6px 0;max-width:none;font-size:13px;line-height:1.4;color:var(--ink);background:var(--soft);
+ box-shadow:0 0 0 100vmax var(--soft);clip-path:inset(0 -100vmax)}
+@media (max-width:860px){
+ .mast .band{flex-wrap:wrap;gap:0 10px;min-height:52px}
+ .mast .name{font-size:15px;line-height:1.25;max-width:13em;padding:8px 0}
+ .mast nav{display:none;order:9;flex:1 0 100%;flex-direction:column;gap:0;border-top:1px solid #3a3f45}
+ .mast.open nav{display:flex}
+ .mast nav a{padding:12px 0;border-bottom:1px solid #3a3f45;font-size:17px}
+ .mast nav a:last-child{border-bottom:0}
+ .mast nav a[aria-current]{border-bottom-color:#3a3f45}
+ .mast .menu{display:inline-block}
+}
+
+/* LAYOUT (2026-11-17, user: 'Looks good! adopt it' -> Fable's layout review, P1 to P6): the context line under the header, the run
+   menus behind 'Change storm', and one sheet. Basic and Advanced split the sheet into the numbers (left, 5/12) and the pictures (right,
+   7/12) on a computer; a phone reads headline, board, day strip, map, comparison, trend, facts. Expert keeps one column. Last, so it wins. */
+.ctx{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 16px;margin:0}
+.ctx .what{flex:1 1 320px;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;padding-bottom:10px;font-size:15px}
+.ctx .what>b{font-size:17px} .ctx .what>b:empty{display:none}
+.ctx .sub{flex:1 0 100%;padding:0!important;margin:0;font-size:15px;line-height:1.4;color:var(--ink)}
+.ctx .sub .sl{display:inline}
+.tag{font:700 13px/1.2 var(--body);background:var(--ink);color:var(--bg);padding:4px 8px}
+.tag.live{background:none;color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.ctx .step{flex:none;display:flex;gap:6px;padding-bottom:8px}
+.ctx .step button{font:400 15px/1.2 var(--body);padding:7px 11px;border:1px solid var(--line);border-radius:3px;background:var(--bg);color:var(--ink);cursor:pointer}
+.ctx .step button:hover{border-color:var(--ink)} .ctx .step button:disabled{opacity:.4;cursor:default;border-color:var(--line)}
+body:not(.basic) .ctx .step .chg{display:none}
+#modeslot{flex:none;align-self:flex-end}
+#modeslot .modesw{display:flex;margin:0;border:0;border-radius:0}
+#modeslot .modesw a{padding:8px 16px;font-size:15px;line-height:1.2;border:1px solid var(--ink);border-bottom:0;margin-left:-1px;color:var(--ink);text-decoration:none;background:var(--bg)}
+#modeslot .modesw a+a{border-left:1px solid var(--ink)}
+#modeslot .modesw a.on{background:var(--ink);color:var(--bg);font-weight:700}
+body.basic .toolbar{display:none} body.basic.tbopen .toolbar{display:flex}
+.toolbar{margin:0 0 10px} .stale{padding-left:0!important;margin:0 0 8px}
+.sheet{border-top:3px solid var(--ink);padding-top:18px}
+body:not(.basic) #status>.sech:first-child{border-top:0;margin-top:0}
+@media (min-width:861px){body.basic .sheet{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:40px;align-items:start}}
+.charts>*,.ledger>*{min-width:0}
+/* the answer and the signal board */
+.bhead .bh{display:flex;align-items:center;gap:14px;font:700 36px/1.1 var(--body);letter-spacing:0;color:var(--ink);margin:0}
+.bhead .bh .plate{width:78px;height:78px;font-size:44px}
+.bhead .iss{margin:10px 0 16px;font-size:15px;color:var(--ink)}
+.plate{display:inline-flex;align-items:center;justify-content:center;flex:none;width:36px;height:36px;font:700 17px/1 var(--body);font-variant-numeric:tabular-nums}
+.plate.s{width:22px;height:22px;font-size:13px}
+.p1{background:var(--no1);color:#14171a}.p3{background:var(--no3);color:#14171a}.p8{background:var(--no8);color:#fff}.p9{background:var(--no9);color:#fff}.p10{background:var(--no10);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .plate{color:#0e1012}}
+:root[data-theme="dark"] .plate{color:#0e1012}
+.board{width:100%;border-collapse:collapse;margin:0}
+.board thead th{font:400 13px/1.3 var(--body);color:var(--mut);text-align:left;padding:0 0 5px;border-bottom:1px solid var(--ink);background:none}
+.board thead th.r{text-align:right;padding-right:14px}
+.board tbody th,.board td{padding:11px 0;border-bottom:1px solid var(--line);vertical-align:middle;text-align:left;font-weight:400}
+.board tbody th{width:48px}
+.board .pc{width:84px;text-align:right;font:700 28px/1 var(--body);padding-right:14px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.board .pc small{font-size:15px;margin-left:1px}
+.board .bar{height:8px;background:var(--soft)} .board .bar i{display:block;height:100%}
+.board .win{font-size:15px;line-height:1.3;margin-top:6px} .board .win span{white-space:nowrap} .board .nx{color:var(--mut)}
+.facts{margin-top:16px;border-top:1px solid var(--line)}
+.facts .bv{padding:10px 0;margin:0;border-bottom:1px solid var(--line);font-size:15px} .facts .bv:empty{display:none}
+.cmpbox{margin-top:20px}
+.cmpbox h2,.figh h2,.recent h2,.when h2{font:700 15px/1.3 var(--body);letter-spacing:0;margin:0;padding:0;border:0}
+.cmpbox .cmp{width:100%}
+.figh{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:0 0 6px}
+.figh span,.figh a,.howto{font-size:13px;font-weight:400;white-space:nowrap}
+/* the pictures: Basic map, day strip, trend */
+.charts .tlcard{padding:0;margin:0 0 24px;border:0}
+.charts .tlcard>.k{font:700 15px/1.3 var(--body);color:var(--ink);margin:0 0 6px}
+#bmapbox,#qmapbox{margin:0 0 24px;padding:0} #bmapbox:empty{display:none}
+.bmapc .frame{border:1px solid var(--line);background:#e8eff6;position:relative}
+.bmapc .frame svg{display:block;width:100%;height:auto;border:0;border-radius:0;margin:0}
+.bmapc .key{background:#fff;color:#14171a;border-top:1px solid #c9ced3;padding:7px 10px;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;font-size:13px;line-height:1.3}
+.bmapc .key i{display:inline-block;width:18px;height:6px;margin-right:5px;vertical-align:middle}
+.bmapc .key .ks{display:inline-flex;flex-wrap:wrap;gap:4px 10px}
+.bmapc .key .kln{height:0;width:22px;border-top:3px solid #14171a}
+.bmapc .key .ksh{height:10px;background:#2f5d8a;opacity:.25}
+.bmapc .key .krg{width:11px;height:11px;border-radius:50%;border:2px solid #2e7d32}
+.bmapc .over{position:absolute;left:10px;bottom:10px;background:#fff;color:#14171a;border:1px solid #8a9198;padding:5px 9px;font-size:15px;font-weight:700}
+/* the map card of Advanced: title line, the zoom buttons inside the frame, the key on the map's own ground, the controls under it */
+body.basic #maph{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font:700 15px/1.3 var(--body);letter-spacing:0;margin:0 0 6px;padding:0;border:0;text-transform:none;color:var(--ink)}
+.mapcard{display:flex;flex-direction:column;margin:0 0 24px}
+.mapcard>.mapexp{order:1} .mapcard>#crebar{order:2} .mapcard>.mapwrap{order:3} .mapcard>#mapkey{order:4} .mapcard>.mapbar{order:5} .mapcard>#player{order:6} .mapcard>#maphint{order:7}
+.mapwrap{position:relative}
+#mapnav{position:absolute;top:8px;right:8px;display:flex;flex-direction:column;gap:0;z-index:5;margin:0;padding:0;background:none;border:0}
+#mapnav button{width:38px;height:36px;padding:0;border:1px solid #8a9198;border-radius:0;margin:-1px 0 0;background:#fff;color:#14171a;font-size:19px;line-height:1}
+#mapnav .gap,#mapnav [data-nav=w],#mapnav [data-nav=n],#mapnav [data-nav=s],#mapnav [data-nav=e]{display:none}
+#mapnav [data-nav=home]{font-size:12px}
+#mapkey{background:#fff;color:#14171a;border:1px solid var(--line);margin:-1px 0 0;padding:7px 10px;font-size:13px}
+#mapkey .kn{color:#5a6168}
+.mapbar{margin:8px 0 0;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+#maphint:empty{display:none}
+/* the quiet day's recent storms */
+.recent{margin-top:22px}
+.rc{width:100%;border-collapse:collapse;margin-top:6px;font-size:15px}
+.rc th,.rc td{padding:8px 0;border-bottom:1px solid var(--line);text-align:left;font-weight:400;vertical-align:middle;background:none}
+.rc thead th{font-size:13px;color:var(--mut);border-bottom:1px solid var(--ink);padding:0 0 5px}
+.rc td:last-child,.rc th:last-child{text-align:right}
+.recent .more{margin:10px 0 0;font-size:15px}
+body.easy #easymore{margin:14px 0 0}
+@media (max-width:860px){
+ .ctx{align-items:center;padding-top:2px}
+ .ctx .what{flex:1 1 60%;padding-bottom:0}
+ .ctx .step{padding-bottom:0} .ctx .step button:not(.chg){display:none}
+ #modeslot{flex:1 0 100%} #modeslot .modesw{width:100%} #modeslot .modesw a{flex:1;text-align:center;padding:9px 0}
+ body.basic .sheet{display:flex;flex-direction:column;padding-top:14px}
+ body.basic .ledger,body.basic .charts,body.basic #status,body.basic #cslot,body.basic #cslot2{display:contents}
+ body.basic .bhead{order:1} body.basic .board{order:2} body.basic .tlcard.when{order:3;margin-top:18px}
+ body.basic #bmapbox,body.basic #qmapbox,body.basic #maph,body.basic .mapcard{order:4}
+ body.basic .cmpbox{order:5;margin-top:0} body.basic #cslot2>.tlcard:not(.when){order:6} body.basic .facts{order:7;margin-top:0}
+ body.basic .recent{order:8} body.basic #easymore{order:9}
+ .bhead .bh{font-size:28px;gap:12px} .bhead .bh .plate{width:60px;height:60px;font-size:34px}
+ .board .pc{width:76px;padding-right:12px} .board tbody th{width:46px}
+ .bmapc .frame{margin:0 -16px;border-left:0;border-right:0}
+}
+
+.ctx .what{color:var(--ink)}
+body.easy #easymore .easygo{display:inline;border:0;border-radius:0;padding:0;font-weight:400;color:var(--link);text-decoration:underline}
+#foot{margin-top:28px;border-top:0;font-size:13px} #foot p{margin:0 0 4px}
+@media (max-width:860px){.ctx .what{display:contents} .ctx .tag{order:1} .ctx .what>b{order:2} .ctx .step{order:3;margin-left:auto} .ctx .sub{order:4} #modeslot{order:5}}
+
+#tl .pk{fill:#14171a} #tl .pw{fill:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #tl .pw,:root:not([data-theme="light"]) #tl .pk{fill:#0e1012}}
+:root[data-theme="dark"] #tl .pw,:root[data-theme="dark"] #tl .pk{fill:#0e1012}
+body:not(.basic) .toolbar{border-bottom:0}
+@media (max-width:860px){body.basic #cslot2>.tlcard:not(.when){margin-top:22px}}
+
+html.demo .sheet{display:block!important;border-top:0;padding-top:0} html.demo .ctx{display:none}
+
+#cslot3 .tlcard{margin:4px 0 0;padding:16px 0 0;border:0;border-top:1px solid var(--line)}
+#cslot3 .tlcard>.k{font:700 15px/1.3 var(--body);color:var(--ink);margin:0 0 6px}
+#foot p{display:inline-block;margin:0 20px 0 0}
+
+#mchart{margin:0 0 24px} #mchart:empty{display:none}
+#mchart #chead{font:700 15px/1.3 var(--body);letter-spacing:0;margin:0 0 6px;padding:0;border:0}
+@media (max-width:860px){body.basic #mchart{order:4}}
+
+
+
+.sigt td,.sigt th{padding-right:12px;vertical-align:top} .sigt td:last-child,.sigt th:last-child{text-align:left} .sigt th:nth-child(2),.sigt th:nth-child(3){width:44%} .sigt td span{white-space:nowrap} .sigt td span:not(.plate){display:block} .sigt .hrs{color:var(--mut);font-size:13px} .sigt .nx{color:var(--mut)}
+</style><link rel="alternate" type="application/rss+xml" title="Hong Kong typhoon signal forecasts" href="../data/feed.xml" id="feedh"><script src="zh.js"></script><style>html.demo .langsw{display:none}</style></head><body>
+<div class="wrap">
+<header class="mast"><div class="band"><h1 class="name">Hong Kong typhoon signal forecasts</h1><nav aria-label="pages"><a href="index-zh.html" aria-current="page">Forecasts</a><a href="guide-zh.html" class="tour">Tour</a><a href="verify-zh.html">How good is it?</a><a href="ranking-zh.html">Storm ranking</a><a href="ideas-zh.html">Ideas</a></nav><a id="langsw" class="langsw" href="index.html" lang="en">English</a><button class="menu" type="button" aria-expanded="false" onclick="var m=this.closest('.mast');m.classList.toggle('open');this.setAttribute('aria-expanded',m.classList.contains('open'))">Menu</button></div><p class="research">Research output. The Hong Kong Observatory is the only authority for actual signals.</p></header>
+
+ <div class="ctx" id="ctx"><div class="what"><span class="tag" id="ctxTag" hidden></span><b id="ctxName"></b><div class="sub" id="stamp"></div></div>
+  <div class="step"><button type="button" id="runPrev">Earlier forecast</button><button type="button" id="runNext">Later forecast</button><button type="button" id="chgBtn" class="chg" aria-expanded="false">Change storm</button></div><span id="modeslot"></span></div>
+ <div class="toolbar" id="toolbar">
   <div class="grp viewsel"><span class="lbl">Show</span><span id="viewbtns" class="seg"><button type="button" data-v="today">Today</button><button type="button" data-v="past">Past storms</button></span></div>
   <div class="grp runsel"><span class="lbl" id="runlbl">Run</span><span class="lbl lbl2">Highest signal</span><select id="yearSel" aria-label="HKO's highest signal" title="1. the highest signal HKO issued for the storm"></select><span class="lbl lbl2">Storm name</span><select id="stormSel" aria-label="storm" title="2. the storm"></select><select id="cyc" aria-label="run" title="3. the run (start time, UTC)"></select></div>
   <div class="grp enssel"><span class="lbl">Forecast</span><span id="ensbtns" class="seg" title="the forecasts that exist for this run -- each is its own system, judged on its own past"></span><span id="checks" class="note"></span></div>
-  <p class="stale" id="stale" hidden></p>
-  <div class="sub" id="stamp"></div>
  </div>
+ <p class="stale" id="stale" hidden></p>
  <div class="hkonow" id="hkonow" style="display:none" translate="no"></div>
- <div class="status" id="status"></div>
-
+ <div class="sheet" id="sheet"><div class="ledger"><div class="status" id="status"></div></div>
+ <div class="charts" id="charts"><div id="cslot"></div>
  <h2 class="sech" id="maph">Map</h2>
  <div class="mapcard">
- <div class="mapbar"><button id="zoomBtn">zoom to Hong Kong</button>
+ <div class="mapbar"><button id="zoomBtn">Zoom to Hong Kong</button>
 
-   <button id="detBtn" style="display:none" title="ECMWF's main forecast, made once in finer detail than the members, shown on its own: track, time bar, charts">deterministic run</button>
+   <button id="detBtn" style="display:none" title="ECMWF's main forecast, made once in finer detail than the members, shown on its own: track, time bar, charts">Deterministic run</button>
    <button id="btBtn" style="display:none" title="HKO's best track on its own: the storm's real path, wind and circles through time, with the signals HKO had up">HKO best track</button>
-   <button id="allPlay" title="every member's storm together through time">▶ all members</button>
-   <label class="note"><input type="checkbox" id="only150"> within 150 km only</label>
-   <label class="note" id="othL" title="every other storm in this forecast that enters the region and reaches a tropical depression (ECMWF's track file), thin grey"><input type="checkbox" id="othSt"> other storms</label></div>
+   <button id="allPlay" title="every member's storm together through time">Play all members</button>
+   <label class="note"><input type="checkbox" id="only150"> Within 150 km only</label>
+   <label class="note" id="othL" title="every other storm in this forecast that enters the region and reaches a tropical depression (ECMWF's track file), thin grey"><input type="checkbox" id="othSt"> Other storms</label></div>
  <p class="note mapexp" id="mapexp"></p>
  
  <div class="mapwrap"><div class="scrollx"><svg id="map" viewBox="0 0 1000 600" tabindex="0" aria-label="Forecast map"></svg></div>
   <div id="selbar" style="display:none"><button id="showAll" title="back to every member of this run">← Back to all members</button><button id="heatBtn" type="button" style="display:none" title="the signal this member would give if its centre passed up to 50 km from where it does">Where it passes</button></div></div>   
  <div class="mapnav" id="mapnav" role="group" aria-label="Move and zoom the map"><button type="button" data-nav="in" title="Zoom in" aria-label="Zoom in">+</button><button type="button" data-nav="out" title="Zoom out" aria-label="Zoom out">−</button><span class="gap"></span><button type="button" data-nav="w" title="Move west" aria-label="Move west">←</button><button type="button" data-nav="n" title="Move north" aria-label="Move north">↑</button><button type="button" data-nav="s" title="Move south" aria-label="Move south">↓</button><button type="button" data-nav="e" title="Move east" aria-label="Move east">→</button><span class="gap"></span><button type="button" data-nav="home" title="Back to the starting view" aria-label="Back to the starting view">↺</button></div>
  <div class="bar" id="player" style="display:none;margin:8px 0 0">
-  <button id="play" title="play this member's storm through time">▶ play</button>
+  <button id="play" title="play this member's storm through time">Play</button>
   <input type="range" id="slider" min="0" max="1" step="0.25" value="0" style="flex:1;min-width:160px" aria-label="time along this member's track">
   <span id="ptime" class="note" style="margin:0;min-width:250px;font-variant-numeric:tabular-nums"></span>
   <select id="speed" title="animation speed"><option value="3">3 h per second</option><option value="6">6 h per second</option><option value="12" selected>12 h per second</option><option value="24">24 h per second</option></select>
@@ -354,6 +524,8 @@ footer{font-size:12.5px;margin-top:40px}
  <div class="mapkey" id="mapkey"><span class="kh">Signal along each track</span><span><i data-lv="1"></i>No. 1</span><span><i data-lv="3"></i>No. 3</span><span><i data-lv="8"></i>No. 8</span><span><i data-lv="9"></i>No. 9</span><span><i data-lv="10"></i>No. 10</span><span><i data-lv="0"></i>none</span><span><i class="kdash"></i><b id="kdet">deterministic run</b></span><span><i class="kthin"></i>other tropical cyclones in the same forecast</span></div>
  <p class="note" id="maphint">Tap or click a line to follow one member.</p>
  </div>
+ <div id="cslot2"></div></div></div>
+ <div id="cslot3"></div>
 
  <h2 class="sech adv mch">Member charts</h2>
  <h2 id="chead">Most threatening member</h2>
@@ -607,7 +779,7 @@ const pickRun=keep=>{if(!inMode(cyc)&&!keep){cyc=cycles.filter(inMode).find(RECE
   else {NOSAME=cs.length?cs.join(" / "):fmtc(prev)+" "+prev.slice(0,4); return}}
  const av=HK[cyc]||{}; if(!MODES[mode].includes(ens)||!av[ens]) ens=MODES[mode].find(e=>av[e])||MODES[mode][0]};
 pickRun();
-{const nb=$("#mapnav"), mb=$(".mapbar"); if(nb&&mb&&!matchMedia("(max-width:760px)").matches) mb.appendChild(nb)}
+{const nb=$("#mapnav"), mw=$(".mapwrap"); if(nb&&mw) mw.appendChild(nb)}
 const BASIC=(()=>{const qs=new URLSearchParams(location.search); if(qs.get("demo")) return qs.get("mode")==="basic";
  try{const q=qs.get("mode");
  if(q==="basic"||q==="advanced"||q==="easy"){localStorage.setItem("hk_mode",q); return q!=="advanced"} const m=localStorage.getItem("hk_mode"); return m?m!=="advanced":PUB}catch(e){return PUB}})();
@@ -616,15 +788,17 @@ const EASY=BASIC&&(()=>{const qs=new URLSearchParams(location.search); if(qs.get
 {const c0=OPEN(); if(c0){cyc=c0; ens=DEFE(c0)||ens; mode=modeOf(ens)||mode}}
 if(BASIC){document.body.classList.add("basic");
  if(EASY){document.body.classList.add("easy"); const st=$("#status"); if(st){const m=document.createElement("p"); m.id="easymore";
-  m.innerHTML=`<a href="#" class="easygo">See the details →</a>`; st.after(m); m.querySelector("a").onclick=e=>{e.preventDefault(); try{localStorage.setItem("hk_mode","basic")}catch(x){}
+  m.innerHTML=`<a href="#" class="easygo">See the details</a>`; st.after(m); m.querySelector("a").onclick=e=>{e.preventDefault(); try{localStorage.setItem("hk_mode","basic")}catch(x){}
    const q=new URLSearchParams(location.search); q.set("mode","basic"); location.search=q.toString()}}}
   [$("#ensbtns")&&$("#ensbtns").closest(".grp"),$("#checks"),$("#only150")&&$("#only150").closest("label"),$("#mapexp"),$("#chead"),$("#tabs"),
   $("#chart")&&$("#chart").closest(".scrollx"),$("#stationchart"),$("#cnote")].forEach(e=>e&&e.classList.add("adv"));
  {const rl=$("#runlbl"), cy=$("#cyc"); if(rl) rl.textContent="Forecast from"; if(cy) cy.title="3. when the forecast started (Hong Kong time)"}
  const ds=$(".mast .disc"); if(ds) ds.textContent="Chances of tropical cyclone warning signals for Hong Kong, from computer forecasts. Research output — the Hong Kong Observatory is the only authority for actual signals.";
- $("#maphint").textContent="Each line is one possible path, coloured by the signal expected along it. Tap or click a line to see how windy Hong Kong gets along it."; const sa=$("#showAll"); if(sa) sa.textContent="← All paths"; const cb=$("#chart")&&$("#chart").closest(".scrollx"); if(cb) cb.classList.add("cbox"); const kh=$("#mapkey .kh"); if(kh) kh.textContent="Signal expected along each path"; const kn=$("#mapkey .kn"); if(kn) kn.classList.add("adv"); const ap=$("#allPlay"); if(ap) ap.textContent="▶ play"}
+ $("#maphint").textContent="Tap or click a path to see its signals and how windy Hong Kong gets along it."; {const mh=$("#maph"); if(mh) mh.innerHTML=`<span>Possible paths of the storm</span><a class="howto" href="guide-zh.html?mode=basic#b4">How to read this map</a>`}   /* the reading note is in the tour now (2026-11-17, layout review P5) */ const sa=$("#showAll"); if(sa) sa.textContent="← All paths"; const cb=$("#chart")&&$("#chart").closest(".scrollx"); if(cb) cb.classList.add("cbox"); const kh=$("#mapkey .kh"); if(kh) kh.textContent="Signal expected along each path"; const kn=$("#mapkey .kn"); if(kn) kn.classList.add("adv"); const ap=$("#allPlay"); if(ap) ap.textContent="Play"}
+if(BASIC&&!/[?&]demo=/.test(location.search)){const mc=$(".mapcard"); if(mc){const bx=document.createElement("div"); bx.id="mchart"; mc.after(bx);
+ [$(".sech.mch"),$("#chead"),$("#tabs"),$("#wisw"),$("#chart")&&$("#chart").closest(".scrollx"),$("#stationchart"),$("#cnote"),$("#bwx")].forEach(e=>{if(e)bx.appendChild(e)})}}
 window._defHint=$("#maphint").innerHTML;
-if(!/[?&]demo=/.test(location.search)){const nv=$(".mast nav"); if(nv){const sw=document.createElement("span"); sw.className="modesw";
+if(!/[?&]demo=/.test(location.search)){const nv=$("#modeslot"); if(nv){const sw=document.createElement("span"); sw.className="modesw";
  sw.innerHTML=`<a href="#" data-m="easy" class="${EASY?"on":""}">Basic</a><a href="#" data-m="basic" class="${BASIC&&!EASY?"on":""}">Advanced</a><a href="#" data-m="advanced" class="${BASIC?"":"on"}">Expert</a>`; nv.appendChild(sw);
  sw.querySelectorAll("a").forEach(a=>a.onclick=e=>{e.preventDefault(); try{localStorage.setItem("hk_mode",a.dataset.m)}catch(x){}
   const q=new URLSearchParams(location.search); q.set("run",cyc); q.set("f",ens); q.set("mode",a.dataset.m); location.search=q.toString()})}
@@ -637,16 +811,16 @@ const kmP=(a,b)=>Math.hypot((a[0]-b[0])*111.32*Math.cos((a[1]+b[1])/2*Math.PI/18
 const sameStorm=(R,t)=>{if(String(R.storm)===String(t.storm))return true; const m=new Map(t.pts.map(p=>[String(p[3]),p]));
  const d=R.pts.filter(p=>m.has(String(p[3]))).map(p=>kmP(p,m.get(String(p[3])))).sort((a,b)=>a-b); return d.length>=2&&d[Math.floor(d.length/2)]<400};
 function fillBasic(){const b=document.getElementById("bclose"); if(!b)return; const bx=document.getElementById("bmapbox"), k=REFK(); b.innerHTML=""; if(bx)bx.innerHTML="";
- if(!k)return; const go=()=>{if(REFK()!==k||document.getElementById("bclose")!==b)return; const T=wrapT((window.HKT||{})[k]), R=refOf(T,k); if(!R)return;
+ if(!k){if(EASY)areaMap(bx);return} const go=()=>{if(REFK()!==k||document.getElementById("bclose")!==b)return; const T=wrapT((window.HKT||{})[k]), R=refOf(T,k); if(!R){if(EASY)areaMap(bx);return}
   const top=bx?+bx.dataset.top||0:0, sg=T.tracks.filter(t=>t!==R&&t.m!==52&&t.pts&&t.pts.length&&tierOf(t)[0]>=3);
-  if(top&&sg.length>=3&&sg.filter(t=>sameStorm(R,t)).length<sg.length/2)return;
+  if(top&&sg.length>=3&&sg.filter(t=>sameStorm(R,t)).length<sg.length/2){if(EASY)areaMap(bx);return}
   const yr=+k.slice(0,4), [md,hm]=String(R.ca[1]).split(" "), [mo,dd]=md.split("-").map(Number), [hh,mi]=hm.split(":").map(Number);
   const t=new Date(Date.UTC(mo<+k.slice(4,6)?yr+1:yr,mo-1,dd,hh,mi)+8*36e5), DWK=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
   const who=k.endsWith("_aifsens")?"the control run of ECMWF's AI model":ens==="pangu"?"this forecast":"ECMWF's main forecast";
   const day=`<b>${DWK[t.getUTCDay()]} ${t.getUTCDate()} ${MON[t.getUTCMonth()]}</b>, about <b>${KM10(R.ca[0])} km</b> away.`;
   b.innerHTML=ens==="gefs"?"":ens==="era5"?`On HKO's best track, the storm came closest to Hong Kong on ${day}`:`In ${who}, the storm comes closest to Hong Kong on ${day}`
    +(ens==="deepmind"?" Google DeepMind does not make a main forecast.":"");
-  if(EASY&&bx&&top>=3)drawBasicMap(bx,T,R,k)};
+  if(EASY&&bx)drawBasicMap(bx,T,R,k)};
  if((window.HKT||{})[k])go(); else{const s=document.createElement("script"); s.src=`../data/tracks_${k}.js`; s.onload=go; document.head.appendChild(s)}}
 function drawBasicMap(bx,T,R,k){
  const at=new Map(); if(R.m===51||R.m===52)T.tracks.filter(t=>t!==R&&t.m!==52&&t.pts&&t.pts.length>1&&sameStorm(R,t)).forEach(t=>t.pts.forEach(p=>{const L=String(p[3]); if(!at.has(L))at.set(L,[]); at.get(L).push(p)}));
@@ -666,7 +840,11 @@ function drawBasicMap(bx,T,R,k){
   ...(sh.some(x=>x!=null)?[ai?"The shaded area is where seven of every ten of the AI model's computer forecasts put the centre of the storm.":"The shaded area is where seven of every ten of ECMWF's computer forecasts put the centre of the storm."]:[]),
   ...(OB&&!OB.none?[OB.gale>0?"The white dot marks the storm on HKO's best track when this forecast started, and the circles show how far its gale (green), storm (orange) and hurricane (red) winds reached."
    :"The white dot marks the storm on HKO's best track when this forecast started."]:[])];
- bx.innerHTML=`<div class="bmh">Expected path of the storm</div><svg></svg><div class="mapkey">${LVS.map(l=>`<span><i style="background:${SIGC[l]}"></i>${l?SIGN[l]:"no signal"}</span>`).join("")}</div><p class="note">${S.join(" ")}</p>`;
+ const KL=[`<span class="kt">Signal expected in Hong Kong as the storm passes</span><span class="ks">${LVS.map(l=>`<span><i style="background:${SIGC[l]}"></i>${l?SIGN[l]:"no signal"}</span>`).join("")}</span>`,
+  `<span><i class="kln"></i>${ens==="deepmind"?"ECMWF physics main forecast":ai?"Control run of the AI model":ens==="pangu"?"This forecast":"ECMWF's main forecast"}</span>`,
+  sh.some(x=>x!=null)?`<span><i class="ksh"></i>Seven in ten forecasts</span>`:"",
+  OB&&!OB.none&&OB.gale>0?`<span><i class="krg"></i>Gale, storm and hurricane winds on HKO's best track at the start</span>`:""].filter(Boolean);
+ bx.innerHTML=`<div class="figh"><h2>Expected path of the storm</h2><a class="howto" href="guide-zh.html?mode=easy#e2">How to read this map</a></div><div class="frame"><svg></svg><div class="key">${KL.join("")}</div></div>`;
  const s=bx.querySelector("svg"), {W,H,X,Y,hx,hy,lo0,lo1,la0,la1}=mapBase(s,[cx-w/2,cx+w/2,cy-h/2,cy+h/2]), pr=r=>r/110.57*(H/(la1-la0));
  const g=el("g",{opacity:.2,fill:"#2f5d8a"});
  R.pts.forEach((p,i)=>{if(sh[i]==null)return; const x0=X(p[0]),y0=Y(p[1]),r0=pr(sh[i]); g.appendChild(el("circle",{cx:x0,cy:y0,r:r0}));
@@ -801,13 +979,13 @@ function drawMoment(){
   const sg=sigIn(TRU,S.h,S.h+1e-6); lines.push([`actual: ${Math.round(dist(A.lon,A.lat))} km from HK${sg?`, HKO No. ${sg} up`:", no HKO signal"}`,null]);
   lines.push([`HKO best track: ${OBSC[clsOf(A.v)]}, about ${obsK(A.v)} km/h`,null])}
  const bw=Math.min(W-16,Math.max(A?300:262,...lines.map(([x,c])=>6.6*x.length+(c?40:16)))),bh=16*lines.length+10,bx=W-bw-8,by=H-bh-8;
- add(el("rect",{x:bx,y:by,width:bw,height:bh,rx:6,fill:"#fff",opacity:.92,stroke:"#999","stroke-width":.7}));
+ add(el("rect",{x:bx,y:by,width:bw,height:bh,rx:0,fill:"#fff",opacity:.92,stroke:"#999","stroke-width":.7}));
  lines.forEach(([txt,col],k)=>{const yy=by+18+16*k;
   if(col)add(el("line",{x1:bx+8,x2:bx+24,y1:yy-4,y2:yy-4,stroke:col,"stroke-width":4}));
   const tx=el("text",{x:bx+(col?30:8),y:yy,fill:"#111","font-size":11.5,"font-weight":/^(expected|wind index|actual:)/.test(txt)?600:400});tx.textContent=txt;add(tx)});
  add(el("circle",{cx:cx,cy:cy,r:5.5,fill:sgx>=1?SIGC[sgx]:"#555",stroke:"#111","stroke-width":1.8}));
  const lx=cx+9, ly=cy-6, tt=el("text",{x:lx+2,y:ly,fill:"#111","font-size":11});
- add(el("rect",{x:lx-3,y:ly-13,width:168,height:20,rx:5,fill:"#fff",opacity:.9,stroke:"#222","stroke-width":.7}));
+ add(el("rect",{x:lx-3,y:ly-13,width:168,height:20,rx:0,fill:"#fff",opacity:.9,stroke:"#222","stroke-width":.7}));
  tt.textContent=`${Math.round(dk)} km from HK, ${fmtH(S.h)}`; add(tt);
  $("#ptime").textContent=`${fmtH(S.h)}${selH===null?" (closest approach)":""} · ${Math.round(dk)} km from Hong Kong${sgx>=1?` · expected ${SIGN[sgx]}`:""}${wiv!==null?` · wind index ${Math.round(wiv)}`:""}`;
  if(t.wf) $("#slider").value=S.h}
@@ -817,7 +995,7 @@ function syncPlayer(){const t=MC&&MC.t, pl=$("#player");
  if(!t||!t.wf){pl.style.display="none"; if(playing) stopPlay(); return}
  if(playing&&t.m!==playM) stopPlay();
  pl.style.display=""; const sl=$("#slider"); sl.min=t.wf[0][0]; sl.max=t.wf[t.wf.length-1][0]; sl.value=momentH(t)}
-function stopPlay(){playing=false; $("#play").textContent="▶ play"; playLabel()}
+function stopPlay(){playing=false; $("#play").textContent="Play"; playLabel()}
 function step(){if(!playing) return; const t=MC&&MC.t; if(!t||!t.wf||t.m!==playM){stopPlay();return}
  const b=t.wf[t.wf.length-1][0], ts=performance.now();
  if(lastTs) selH=Math.min(b,selH+(+$("#speed").value)*(ts-lastTs)/1000); lastTs=ts;
@@ -826,7 +1004,7 @@ function step(){if(!playing) return; const t=MC&&MC.t; if(!t||!t.wf||t.m!==playM
 $("#play").onclick=()=>{if(playing){stopPlay();chart();return}
  const t=MC&&MC.t; if(!t||!t.wf) return; const a=t.wf[0][0], b=t.wf[t.wf.length-1][0];
  if(selH===null||selH>=b-1e-6) selH=a;
- playing=true; playM=t.m; lastTs=0; lastChart=0; $("#play").textContent="❚❚ pause"; playLabel(); step()};
+ playing=true; playM=t.m; lastTs=0; lastChart=0; $("#play").textContent="Pause"; playLabel(); step()};
 $("#slider").oninput=e=>{selH=+e.target.value; drawMoment(); chart()};
 function refM(){if(!TR)return null; const has=m=>TR.tracks.some(t=>t.m===m); return (ens==="ifsens"||ens==="tigge")&&has(52)?52:ens==="aifsens"&&has(51)?51:null}
 let allH=null, allPlaying=false, allTs=0, allStart=0, allEnd=0, AG=null, AXY=null; const ALLSPD=BASIC?48:24;
@@ -839,7 +1017,7 @@ function drawAll(){drawObs(); if(!AG||!AXY)return; while(AG.firstChild)AG.remove
   const lon=a[0]+f*(b[0]-a[0]), lat=a[1]+f*(b[1]-a[1]), v=a[2]+f*(b[2]-a[2]);
   AG.appendChild(el("circle",{cx:X(lon),cy:Y(lat),r:det(t)?6:4.2,fill:det(t)?"#000":byI?CLSC[clsOf(v)]:SIGC[sigAt(t,allH)],stroke:"#fff","stroke-width":1.3}))});
  const txt=`all members · ${fmtH(allH)} (+${Math.round(allH)} h)`, bw=8.2*txt.length+16;
- AG.appendChild(el("rect",{x:W/2-bw/2,y:H-32,width:bw,height:24,rx:6,fill:"#fff",opacity:.92,stroke:"#999","stroke-width":.7}));
+ AG.appendChild(el("rect",{x:W/2-bw/2,y:H-32,width:bw,height:24,rx:0,fill:"#fff",opacity:.92,stroke:"#999","stroke-width":.7}));
  const tx=el("text",{x:W/2,y:H-15,fill:"#111","font-size":13,"font-weight":700,"text-anchor":"middle"}); tx.textContent=txt; AG.appendChild(tx)}
 function allStop(){allPlaying=false; playLabel()}
 function allStep(){if(!allPlaying)return; const ts=performance.now();
@@ -851,12 +1029,12 @@ $("#allPlay").onclick=()=>{if(allPlaying){allStop();return} if(!TR)return;
  allStart=Math.min(...hs.map(x=>x[0])); allEnd=Math.max(...hs.map(x=>x[1]));
  if(allH===null||allH>=allEnd-1e-6) allH=allStart;
  if(sel!==null){sel=null;selH=null;const h0=allH;drawMap();chart();allH=h0}
- allPlaying=true; allTs=0; $("#allPlay").textContent="❚❚ pause"; allStep()};
+ allPlaying=true; allTs=0; $("#allPlay").textContent="Pause"; allStep()};
 
 function drawTabs(){
  if(["p3","p8","p10"].includes(tab)) tab="signal";
  if(tab==="wi"&&!(TR&&TR.tracks.some(x=>x.wix&&x.wix.length))) tab="signal";
- $("#tabs").innerHTML=[["signal","Expected signal"],["wi","Wind index"],["sg","Estimated wind"],["rk","Storm ranking"]].filter(([k])=>(k!=="wi"||(TR&&TR.tracks.some(x=>x.wix&&x.wix.length)))&&(!WH()||k==="wi"||k==="rk")&&(!BASIC||k==="wi"||k==="sg"||k==="rk"))
+ $("#tabs").innerHTML=[["signal","Expected signal"],["wi","Wind index"],["sg","Estimated wind"],["rk","Storm ranking"]].filter(([k])=>(k!=="wi"||(TR&&TR.tracks.some(x=>x.wix&&x.wix.length)))&&(!WH()||k==="wi"||k==="rk")&&(!BASIC||k==="signal"||k==="wi"||k==="sg"||k==="rk"))
    .map(([k,l])=>`<button data-t="${k}" class="${k===tab?"on":""}">${l}</button>`).join(" ")
 
   +"";
@@ -898,6 +1076,16 @@ function head(){
  $("#yearSel").onchange=e=>{const y=e.target.value; if(y==="__recent"){pickedStorm=null;go(pick(rec));return} const k=stormsIn(y).find(x=>ST[x].some(fam))||stormsIn(y)[0]; pickedStorm=k; go(pickStorm(k))};
  $("#stormSel").onchange=e=>{const k=e.target.value; if(k==="__recent"){go(pick(rec));return} pickedStorm=k; go(pickStorm(k))};
  $("#cyc").onchange=e=>go(e.target.value);
+ {const ord=[...runs].sort(), i=ord.indexOf(cyc), pv=$("#runPrev"), nx=$("#runNext");
+  if(pv){pv.disabled=i<=0; pv.onclick=()=>{if(i>0)go(ord[i-1])}}
+  if(nx){nx.disabled=i<0||i>=ord.length-1; nx.onclick=()=>{if(i>=0&&i<ord.length-1)go(ord[i+1])}}
+  const tg=$("#ctxTag"), nm=$("#ctxName"), cb=$("#chgBtn");
+  if(tg){tg.hidden=false; tg.textContent=today?(cyc===rec[0]?"Latest forecast":"Earlier forecast"):"Past storm"; tg.classList.toggle("live",today)}
+  if(nm)nm.textContent=today?"":curS&&curS!=="__recent"?curS:"";
+  if(cb){cb.textContent=today?"Past storms":"Change storm"; cb.setAttribute("aria-expanded",document.body.classList.contains("tbopen")?"true":"false");
+   cb.onclick=()=>{if(today){const pb=$("#viewbtns [data-v=past]"); if(pb){document.body.classList.add("tbopen"); pb.click()} return}
+    const o=document.body.classList.toggle("tbopen"); cb.setAttribute("aria-expanded",o?"true":"false")}}
+  window.STORMRUN=k=>pickStorm(k)}
  $("#viewbtns").querySelectorAll("button").forEach(b=>b.onclick=()=>{
   if(b.dataset.v==="today"){if(!today&&rec.length){pickedStorm=null;go(pick(rec))} return}
   if(!today)return; const R0="2025092112", k=casesOf(R0).find(x=>ST[x]);
@@ -929,9 +1117,42 @@ function unavailable(){const other=Object.keys(MODES).find(k=>k!==mode);
   +`<div class="v">no ${MODEN[mode]} run for ${NOSAME}</div><div class="note">pick a run in the menu above, or switch back to ${MODEN[other]}</div></div>`;
  TR=null; MC=null; allH=null; if(allPlaying)allStop(); $("#map").innerHTML=""; $("#chart").innerHTML=""; $("#cnote").textContent=""; $("#tabs").innerHTML=""; syncPlayer();
  $("#map").style.display="none"; $("#chart").style.display="none"}
-const noStorm=(d,txt)=>(BASIC?`<div class="bcard"><div class="bh">No storm near Hong Kong</div>${issuedDiv(d,cyc)}<div class="bv">${txt}</div>${EASY?"":cmpBlock()}</div>`
+function sigTable(t){const T0_=T0(), DW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], p2=n=>String(n).padStart(2,"0");
+ const f=h=>{const d=new Date(T0_+Math.round(h*60)*6e4+288e5); return `${DW[d.getUTCDay()]} ${d.getUTCDate()} ${MON[d.getUTCMonth()]} ${p2(d.getUTCHours())}:${p2(d.getUTCMinutes())}`};
+ const runs=[]; memberSignal(t).forEach(p=>{const h=labH(p[0]), v=p[1], r=runs[runs.length-1]; if(r&&r.g===v&&Math.abs(r.b-h)<1e-6)r.b=h+3; else runs.push({g:v,a:h,b:h+3})});
+ const M=runs.filter(r=>r.g>=1), c=casesOf(cyc).find(x=>(HKOSEQ[x]||[]).length), tU=x=>Date.parse(x+":00Z");
+ const HS=c?HKOSEQ[c].map(([a,b,g])=>({g,a:(tU(a)-T0_)/36e5,b:(tU(b)-T0_)/36e5})):[];
+ const nth=arr=>{const n={}; return new Map(arr.map(r=>{n[r.g]=(n[r.g]||0)+1; return [r.g+"#"+n[r.g],r]}))}, mm=nth(M), hm=nth(HS);
+ const st=r=>r?Math.min(r.m?r.m.a:1e9,r.h?r.h.a:1e9):0;
+ const rows=[...new Set([...mm.keys(),...hm.keys()])].map(k=>({g:+k.split("#")[0],m:mm.get(k),h:hm.get(k)})).sort((x,y)=>st(x)-st(y));
+ const cell=r=>r?`<span>${f(r.a)}</span> <span>to ${f(r.b)}</span> <span class="hrs">${Math.round(r.b-r.a)} h</span>`:`<span class="nx">–</span>`;
+ if(!rows.length)return `<p class="note">This path gives no signal.</p>`;
+ return `<table class="rc sigt"><thead><tr><th>Signal</th><th>This path</th>${HS.length?`<th>HKO issued</th>`:""}</tr></thead><tbody>`
+  +rows.map(r=>`<tr><td><span class="plate s p${r.g}" title="No. ${r.g}">${r.g}</span></td><td>${cell(r.m)}</td>${HS.length?`<td>${cell(r.h)}</td>`:""}</tr>`).join("")
+  +`</tbody></table><p class="note">${M.length?"":"This path gives no signal. "}Times along a path are in steps of 3 hours.</p>`}
+function sheetMove(){const c1=$("#cslot"), c2=$("#cslot2"), c3=$("#cslot3"), st=$("#status"); if(!c1||!c2||!c3||!st)return; c1.innerHTML=""; c2.innerHTML=""; c3.innerHTML=""; if(!BASIC||window.HK_DEMO)return;
+ ["#bmapbox","#qmapbox"].forEach(q=>{const x=st.querySelector(q); if(x)c1.appendChild(x)});
+ const w=st.querySelector(".tlcard.when"); if(w)c2.appendChild(w);
+ st.querySelectorAll(".tlcard").forEach(x=>c3.appendChild(x));
+ const ap=$("#allPast"); if(ap)ap.onclick=e=>{e.preventDefault(); const pb=$("#viewbtns [data-v=past]"); document.body.classList.add("tbopen"); if(pb)pb.click()};
+ quietMap()}
+const cmpBox=()=>{const t=cmpBlock(); return t?`<div class="cmpbox"><h2>Compared with other forecasts</h2>${t}</div>`:""};
+const recentStorms=()=>{if(window.HK_DEMO||!window.STORMRUN)return ""; const seen=new Set(), L=[];
+ [...PAST].sort((a,b)=>b[1].localeCompare(a[1])).forEach(p=>{const nm=p[2].split(" — ")[0]; if(seen.has(nm)||L.length>=7)return; seen.add(nm);
+  const run=window.STORMRUN(nm); if(run)L.push([nm,p[1],run])});
+ if(!L.length)return "";
+ return `<div class="recent"><h2>Recent storms</h2><table class="rc"><thead><tr><th>Storm</th><th>When</th><th>HKO's highest signal</th></tr></thead><tbody>`
+  +L.map(([nm,c,run])=>{const t=(HKOEV[nm]||{}).top; return `<tr><td><a href="?run=${run}&f=${DEFE(run)||"ifsens"}">${nm.replace(/ \d{4}$/,"")}</a></td><td>${MON[+c.slice(4,6)-1]} ${c.slice(0,4)}</td><td>${t?`<span class="plate s p${t}" title="No. ${t}">${t}</span>`:"None"}</td></tr>`}).join("")
+  +`</tbody></table><p class="more"><a href="#" id="allPast">All past storms</a></p></div>`};
+function quietMap(){const bx=document.getElementById("qmapbox"); if(bx)areaMap(bx,"No storm within 800 km")}
+function areaMap(bx,over){if(!bx)return;
+ bx.innerHTML=`<div class="figh"><h2>The area this forecast watches</h2></div><div class="frame"><svg></svg>${over?`<div class="over">${over}</div>`:""}</div>`;
+ const sv=bx.querySelector("svg"), {X,Y,hx,hy}=mapBase(sv,[104.4,124.0,14.6,30.0]);
+ sv.appendChild(el("circle",{cx:hx,cy:hy,r:6,fill:"#f2c200",stroke:"#333","stroke-width":1.2}));
+ const t=el("text",{x:hx+9,y:hy+4,fill:"#111","font-size":12,"font-weight":600,stroke:"#fff","stroke-width":3,"paint-order":"stroke"}); t.textContent="Hong Kong"; sv.appendChild(t)}
+const noStorm=(d,txt)=>(BASIC?`<div class="bhead"><div class="bh"><span>No storm near Hong Kong</span></div>${issuedDiv(d,cyc)}</div><div class="facts"><div class="bv">${txt}</div></div>${recentStorms()}${EASY?`<div class="bmapc quiet" id="qmapbox"></div>`:cmpBox()}`
  :`<h2 class="sech">The forecast</h2><div class="ans"><div class="k">Expected signal</div><div class="badge" style="color:var(--mut)">No storm near Hong Kong</div>${issuedDiv(d,cyc)}<div class="v">${txt}</div><div class="note" id="qclose"></div>${cmpBlock()}</div>`)
- +(window.HK_DEMO?"":BASIC?r2rCardB():r2rCard());
+ +(window.HK_DEMO||EASY?"":BASIC?r2rCardB():r2rCard());
 const passOf=(d,one,km)=>one?`closest approach <b>about ${KM10(km)} km</b>`:`<b>${d.within_150km}</b> of ${d.members} members pass within 150 km · <b>${d.within_500km}</b> within 500 km${km!=null?` · deterministic run about ${KM10(km)} km`:""}`;
 function fillDetCa(){const n=document.getElementById("passn"), d=(HK[cyc]||{})[ens]; if(!n||!d||!TR)return; const one=(d.members||0)<=1;
  if(!one&&ens!=="ifsens"&&ens!=="tigge")return; const R=refOf(TR,cyc+"_"+ens); if(R)n.innerHTML=passOf(d,one,R.ca[0])}
@@ -957,7 +1178,7 @@ function drawR2R(){const box=$("#r2r"); if(!box)return; const card=box.closest("
  if(!ens_.length){card.style.display="none";return}
  const MWA=ens_[0]==="all"?cs.flatMap(k=>(window.MWPOSTS||{})[k]||[]).map(p=>({t:Date.parse(p[0]+":00Z"),lv:p[1],lo:p[2],hi:p[3],w:p[4],pic:p[5]})):[];
  card.style.display=""; card.classList.toggle("r2rall",ens_[0]==="all");
- const PW=Math.round(box.clientWidth||600), W=Math.max(300,PW), H=ens_[0]==="all"?180:150, L=34, R=ens_[0]==="all"?(W<480?58:84):10, T=10, B=24;
+ const PW=Math.round(box.clientWidth||600), W=Math.max(300,PW), H=(ens_[0]==="all"?180:150)+(box.closest("#cslot3")?Math.round(Math.max(0,W-600)*.18):0),   /* taller when it runs the full width (2026-11-17) */ L=34, R=ens_[0]==="all"?(W<480?58:84):10, T=10, B=24;
  const ts=runs.map(tUc).concat(MWA.map(p=>p.t)), t0=Math.min(...ts)-3*36e5, t1=Math.max(...ts)+3*36e5, X=t=>L+(W-L-R)*(t-t0)/Math.max(t1-t0,1);
  const hko=cs.map(c=>HKOEV[c]&&HKOEV[c].L3).filter(Boolean).map(y=>[Date.parse(String(y[0]).replace(" ","T")+(String(y[0]).length<=16?":00Z":"Z")),Date.parse(String(y[1]).replace(" ","T")+(String(y[1]).length<=16?":00Z":"Z"))]);
  const SGc=[["No3","var(--no3)"],["No8","var(--no8)"],["No10","var(--no10)"]], SGN_={No3:"No. 3",No8:"No. 8",No10:"No. 10"}, pc=(p,sg)=>100*p[sg]/p.M, Y=v=>T+(H-T-B)*(1-v/100);
@@ -1019,7 +1240,7 @@ function drawR2R(){const box=$("#r2r"); if(!box)return; const card=box.closest("
 }
 const DMCITE=d=>d.tracks_withheld   // Google's citation (live) / CC BY credit (past), word for word: Advanced and Basic (2026-10-20)
       ?`<br><span class="dmcite">Google DeepMind Weather Lab. © 2024-6 Google LLC, whose machine learning models were used to create the experimental data made available under the following licence terms https://storage.googleapis.com/weathernext-public/terms-of-use.pdf. This data is intended for experimental modelling only and is not intended, validated, or approved for real world use.</span>`
-      :` · data: <a href="https://deepmind.google.com/science/weatherlab" target="_blank" rel="noopener">Google DeepMind Weather Lab</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>) <span>turned into Hong Kong signal chances here; Google is not involved in this site</span>`;
+      :` <span class="dmcite">Data from <a href="https://deepmind.google.com/science/weatherlab" target="_blank" rel="noopener">Google DeepMind Weather Lab</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>), turned into Hong Kong signal chances here. Google is not involved in this site.</span>`;
 function load(){
  HEAT=false;
  BIN=null; PATHC=null; PATHS=null; MIX=null; QP=null; if(QVB){VB=QVB; QVB=null}
@@ -1036,7 +1257,7 @@ function load(){
  if(!/[?&]demo=/.test(location.search)) try{const q=new URLSearchParams(location.search), c0=OPEN(), dflt=c0===cyc&&(DEFE(c0)||ens)===ens;
   if(dflt){q.delete("run");q.delete("f")}else{q.set("run",cyc);q.set("f",ens)} q.set("mode",EASY?"easy":BASIC?"basic":"advanced");
   history.replaceState(null,"",location.pathname+"?"+q.toString()+location.hash)}catch(e){}
- $("#foot").innerHTML=(BASIC?`Times are Hong Kong time`:`Times are Hong Kong time · run names are UTC (12Z = 20:00 Hong Kong time)`)+` · <a href="../data/${ZHPG?"feed-zh":"feed"}.xml">Feed of changes (RSS)</a>`;
+ $("#foot").innerHTML=(BASIC?"":`<p>Run names are in UTC, and 12Z is 20:00 Hong Kong time.</p>`)+`<p><a href="../data/${ZHPG?"feed-zh":"feed"}.xml">Feed of changes (RSS)</a></p>`;
  if(d&&d.generated){const g=new Date(d.generated.replace(" ","T")+":00Z"), hrs=(Date.now()-g)/3.6e6;
   $("#stamp").innerHTML=`<b>${FCN[ens]||ens}</b>`+(d.experimental?` · <b>experimental</b>`:"")
    +(ens==="pangu"?" · re-forecast from ERA5, one run":"")+(ens==="gefs"?` · ${d.members} members, no main forecast`:"")+(ens==="era5"?" · From ERA5 and HKO's best track":"")
@@ -1049,10 +1270,13 @@ function load(){
 ;}
  else $("#stamp").textContent="";
  if(BASIC&&d&&d.generated){const t=new Date(Date.parse(d.generated.replace(" ","T")+":00Z")+8*36e5), z=n=>String(n).padStart(2,"0");
-  $("#stamp").innerHTML=`<span class="sl sx">Updated ${t.getUTCDate()} ${MON[t.getUTCMonth()]} ${z(t.getUTCHours())}:${z(t.getUTCMinutes())} (Hong Kong time)</span>`+(pastOf(cyc)?`<span class="sl sx">Past storm: ${pastOf(cyc)}</span>`:"")
-  +`<span class="sl${ens==="deepmind"?"":" sx"}"><span>Forecast: ${FCN[ens]||ens}</span>`+(ens==="deepmind"?DMCITE(d):"")+`</span>`
-  +(ens==="ifsens"&&/^(06|18)$/.test(cyc.slice(8,10))?`<span class="sl sx">This update looks 6 days ahead.</span>`:"")
-  +((NR=>NR?`<span class="sl sx">Next update expected about ${hktS(NR.t)} (Hong Kong time)</span>`:"")(RECENT(cyc)&&cyc===cycles.find(c=>(HK[c]||{})[ens])?nextRun(ens):null))}
+  const P=pastOf(cyc), ps=P?P.split(" / ").map(x=>{const [nm_,h]=x.split(" — "), w=!h?"":/^no HKO signal/.test(h)?"HKO issued no signal.":h.replace(/^HKO /,"HKO issued ")+".";
+    return P.includes(" / ")&&w?`For ${nm_}, ${w[0].toLowerCase()+w.slice(1)}`:w}).filter(Boolean):[];
+  const NR=RECENT(cyc)&&cyc===cycles.find(c=>(HK[c]||{})[ens])?nextRun(ens):null;
+  $("#stamp").innerHTML=[...ps.map(x=>`<span class="sl">${x}</span>`), `<span class="sl">From the ${FCN[ens]||ens} forecast.</span>`,
+   P?"":`<span class="sl">Updated ${t.getUTCDate()} ${MON[t.getUTCMonth()]} ${z(t.getUTCHours())}:${z(t.getUTCMinutes())} (Hong Kong time).</span>`,
+   ens==="ifsens"&&/^(06|18)$/.test(cyc.slice(8,10))?`<span class="sl">This update looks 6 days ahead.</span>`:"",
+   NR?`<span class="sl">The next update is expected about ${hktS(NR.t)} (Hong Kong time).</span>`:""].filter(Boolean).join(" ")+(ens==="deepmind"?DMCITE(d):"")}
  if(!d){
   const hh=cyc.slice(8,10), last=cycles.find(c=>(HK[c]||{})[ens]), near=cycles.filter(c=>(HK[c]||{})[ens]).sort((a,b)=>Math.abs(tUcy(a)-tUcy(cyc))-Math.abs(tUcy(b)-tUcy(cyc)))[0];
   const eta=last&&cyc>last&&LIVEF.includes(ens)?etaOf(ens,cyc):null;
@@ -1060,16 +1284,16 @@ function load(){
    :eta?`Not out yet for ${fmtc(cyc)}. Expected about ${hktS(eta)} Hong Kong time (from the last few days).`:`No run of this forecast for ${fmtc(cyc)}.`;
   $("#stamp").innerHTML=`<b>${FCN[ens]||ens}</b> · <span>not available for this run time</span>`;
   $("#status").innerHTML=`<div class="ans na"><div class="k">${FCN[ens]||ens}</div><div class="badge">Not available</div><div class="v">${why}</div>`
-   +(near?`<div class="v">Nearest run with it: <a href="#" id="toNear">${fmtc(near)}</a></div>`:"")+`</div>`;
+   +(near?`<div class="v">Nearest run with it: <a href="#" id="toNear">${fmtc(near)}</a></div>`:"")+`</div>`; sheetMove();
   const b=$("#toNear"); if(b)b.onclick=e=>{e.preventDefault();cyc=near;PICKED=false;sel=null;selH=null;head();load()};
   [...document.querySelectorAll(".mapbar,#mapkey,#mapnav,#maph,#chead,#tabs,.sech.mch"),$("#chart")&&$("#chart").closest(".scrollx")].forEach(e=>{if(e)e.style.display="none"});
   $("#map").style.display="none"; TR=null; MC=null; sel=null; selH=null; syncPlayer(); $("#selbar").style.display="none";
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";$("#maphint").textContent="";return}
- if(NAv(d)){$("#status").innerHTML=noStorm(d,"No storm in Google DeepMind's forecast comes within 800 km of Hong Kong. It follows only storms that have already formed, so a storm that forms later will not show here. The ECMWF forecasts include those.");
+ if(NAv(d)){$("#status").innerHTML=noStorm(d,"No storm in Google DeepMind's forecast comes within 800 km of Hong Kong. It follows only storms that have already formed, so a storm that forms later will not show here. The ECMWF forecasts include those."); sheetMove();
   [...document.querySelectorAll(".mapbar,#mapkey,#mapnav,#maph,#chead,#tabs,.sech.mch"),$("#chart")&&$("#chart").closest(".scrollx")].forEach(e=>{if(e)e.style.display="none"});
   $("#map").style.display="none"; TR=null; MC=null; sel=null; selH=null; syncPlayer(); $("#selbar").style.display="none";
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";$("#maphint").textContent="";drawR2R();return}
- if(d.quiet){$("#status").innerHTML=noStorm(d,"No storm is forecast to come within 800 km of Hong Kong.");
+ if(d.quiet){$("#status").innerHTML=noStorm(d,"No storm is forecast to come within 800 km of Hong Kong."); sheetMove();
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";
   drawR2R(); quietPaths();return}
  const src=(d.sources||[]).includes("s1")?"s1":"s1", MJ=Math.floor((d.members||51)/2)+1;
@@ -1139,14 +1363,20 @@ function load(){
    +`<p class="note">times HKT${one?"":", median over the members giving the signal (10–90% below)"}`+`</p></details>`;
  }
  GA={members:d.members||0,one};
- const basicCard=()=>{const M=d.members||50, pc=sg=>one?(nOf(sg)?100:0):Math.round(100*nOf(sg)/M), x=topL&&E&&E[topL[0]]&&E[topL[0]].n?E[topL[0]]:null;
+ const basicCard=()=>{const M=d.members||50, pc=sg=>one?(nOf(sg)?100:0):Math.round(100*nOf(sg)/M);
   const none=100-Math.max(...LV.map(([sg])=>pc(sg)));
-  return `<div class="bcard"><div class="bh" style="color:${topL?topL[3]:"var(--ink)"}">${topL?`Signal ${topL[1]} likely (${pc(topL[0])}%)`:`Most likely no signal (${none}%)`}</div>${issuedDiv(d,cyc)}`
-   +LV.map(([sg,lab,L,col])=>`<div class="bbar"><b>${lab}</b><div class="tr"><div class="fl" style="width:${pc(sg)}%;background:${col}"></div></div><span class="pc">${pc(sg)}%</span></div>`).join("")
-   +(EASY||one?"":cmpBlock())
-   +(x?`<div class="bv">Expected ${GCL(x.start[1])?"by":"from"} <b>${hk(x.start[1])}</b>${GCL(x.start[1])?" (where the data begins)":""} ${GCL(x.start[1])?"until":"to"} <b>${hk(x.end[1])}</b> (Hong Kong time)</div>`:"")+`<div class="bv" id="bclose"></div>${obsHTML("bv")}</div><div class="bmapc" id="bmapbox" data-top="${topL?topL[2]:0}"></div>`
-   +r2rCardB()};
- $("#status").innerHTML=BASIC?basicCard():tb||`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">none</div>${issuedDiv(d,cyc)}<div class="note">${pass}</div></div>`;
+  const win=sg=>{const x=E&&E[sg]&&E[sg].n?E[sg]:null; if(!x)return pc(sg)?"":`<span class="nx">Not expected</span>`;
+   return GCL(x.start[1])?`<span>By ${hk(x.start[1])}</span> <span>until ${hk(x.end[1])}</span>`:`<span>${hk(x.start[1])}</span> <span>to ${hk(x.end[1])}</span>`};
+  return `<div class="bhead"><div class="bh">${topL?`<span class="plate p${topL[2]}" aria-hidden="true">${topL[2]}</span>`:""}<span>${topL?`Signal ${topL[1]} likely (${pc(topL[0])}%)`:`Most likely no signal (${none}%)`}</span></div>${issuedDiv(d,cyc)}</div>`
+   +`<table class="board"><thead><tr><th>Signal</th><th class="r">Chance</th><th>Expected, Hong Kong time</th></tr></thead><tbody>`
+   +LV.map(([sg,lab,L,col])=>`<tr><th><span class="plate p${L}" title="${lab}">${L}</span></th><td class="pc">${pc(sg)}<small>%</small></td><td><div class="bar"><i style="width:${pc(sg)}%;background:${col}"></i></div><div class="win">${win(sg)}</div></td></tr>`).join("")
+   +`</tbody></table>`
+   +(EASY||one?"":cmpBox())
+   +`<div class="facts"><div class="bv" id="bclose"></div>${obsHTML("bv")}</div>`
+   +`<div class="tlcard when"><div class="figh"><h2>When each signal is expected</h2><span>Hong Kong time</span></div><div id="tl"></div></div>`
+   +`<div class="bmapc" id="bmapbox" data-top="${topL?topL[2]:0}"></div>`
+   +(EASY?"":r2rCardB())};
+ $("#status").innerHTML=BASIC?basicCard():tb||`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">none</div>${issuedDiv(d,cyc)}<div class="note">${pass}</div></div>`; sheetMove();
  drawTL({E,one,members:d.members||0,MJ,hcases,init:Date.UTC(+cyc.slice(0,4),+cyc.slice(4,6)-1,+cyc.slice(6,8),+cyc.slice(8,10))});
  drawR2R();
  const key=cyc+"_"+ens;
@@ -1172,7 +1402,7 @@ function load(){
 const GS=x=>x&&x.n?(x.groups||[{n:x.n,start:x.start,end:x.end,hours:x.hours}]):[], MAING=x=>GS(x).reduce((a,b)=>b.n>a.n?b:a,GS(x)[0]);
 let TLA=null, GA=null;
 function drawTL(a){if(a)TLA=a;a=TLA;const box=document.getElementById("tl");if(!box||!a)return;
- const {E,one,members,MJ,hcases,init}=a, H=36e5;
+ const {E,one,members,MJ,hcases,init}=a, H=36e5, CP=BASIC;
  const tU=s=>Date.parse(String(s).replace(" ","T")+(String(s).length<=16?":00Z":"Z"));
  const LVs=[["No3","No. 3",3,"var(--no3)"],["No8","No. 8",8,"var(--no8)"],["No10","No. 10",10,"var(--no10)"]];
  const W=Math.max(300,Math.round(box.getBoundingClientRect().width)), ph=W<560, LW=ph?50:74, R=W-2, fz=ph?11:12, cw=fz*.6;
@@ -1192,7 +1422,7 @@ function drawTL(a){if(a)TLA=a;a=TLA;const box=document.getElementById("tl");if(!
  let s="", grid="", y=0;
  const rect=(x0,x1,y0,h,st,tip)=>{s+=`<rect x="${x0.toFixed(1)}" y="${y0}" width="${Math.max(x1-x0,2).toFixed(1)}" height="${h}" rx="3" style="${st}">${tip?`<title>${tip}</title>`:""}</rect>`};
  const txt=(x,y0,t,st,anc)=>{s+=`<text x="${x.toFixed(1)}" y="${y0}" font-size="${fz}" text-anchor="${anc||"start"}" style="${st||"fill:var(--mut)"}">${t}</text>`};
- const side=(x0,x1,y0,t,st)=>{const w=t.length*cw; st+=";paint-order:stroke;stroke:var(--card);stroke-width:4px;stroke-linejoin:round";
+ const side=(x0,x1,y0,t,st)=>{const w=t.length*cw+(/^zh/.test(document.documentElement.lang||"")?fz*2:0);
   if(x1+6+w<=R)txt(x1+6,y0,t,st);else if(x0-6-w>=LW)txt(x0-6,y0,t,st,"end");else txt(R,y0,t,st,"end")};
  const AX=34;
  for(let d=Math.floor((lo+8*H)/(24*H))*24*H-8*H; d<hi; d+=24*H){const a0=Math.max(d,lo), a1=Math.min(d+24*H,hi), w=X(a1)-X(a0);
@@ -1215,19 +1445,20 @@ function drawTL(a){if(a)TLA=a;a=TLA;const box=document.getElementById("tl");if(!
  if(hcases.length)y+=8;
  LVs.forEach(([sg,lab,L,col],li)=>{const x=E&&E[sg], y0=y, op=x&&x.n?(x.n>=MJ||one?1:.45):1;
   if(li)s+=`<line x1="0" x2="${R}" y1="${y0-5}" y2="${y0-5}" style="stroke:var(--line)"/>`;
-  txt(0,y0+13,lab,`fill:${col};font-weight:700`);
+  if(CP){s+=`<rect x="0" y="${y0}" width="24" height="18" style="fill:${col}"><title>${lab}</title></rect><text x="12" y="${y0+13}" font-size="${fz}" font-weight="700" text-anchor="middle" class="${L===3?"pk":"pw"}">${L}</text>`}
+  else txt(0,y0+13,lab,`fill:${col};font-weight:700`);
   let xl=Infinity, xr=-Infinity;
   const LB=[];
   GS(x).forEach(g=>{const a0=X(tU(g.start[0])),a1=X(tU(g.start[1])),b1=X(tU(g.end[1])),b2=X(tU(g.end[2])), og=one||g.n>=MJ?1:.45;
    const tip=`${lab} forecast: ${one?"":`${g.n} of ${members} members · `}start ${GCL(g.start[1])?"by ":""}${hl(tU(g.start[1]),1)}${GCL(g.start[1])?" (where the data begins)":""}${one?"":` (10–90% ${hl(tU(g.start[0]))} – ${hl(tU(g.start[2]))})`} · end ${hl(tU(g.end[1]),1)}${one?"":` (${hl(tU(g.end[0]))} – ${hl(tU(g.end[2]))})`} · ${g.hours[1]} h${one?"":` (${g.hours[0]}–${g.hours[2]})`}, HKT`;
    if(!one)rect(a0,b2,y0+2,14,`fill:${col};opacity:${(.25*og).toFixed(2)}`,tip);
    rect(a1,b1,y0+2,14,`fill:${col};opacity:${og}`,tip); LB.push([Math.min(a0,a1),Math.max(b1,b2),g]); xl=Math.min(xl,a0,a1); xr=Math.max(xr,b1,b2)});
-  if(x&&x.det){const d0=X(tU(x.det[0])),d1=X(tU(x.det[1]));
+  if(x&&x.det&&!CP){const d0=X(tU(x.det[0])),d1=X(tU(x.det[1]));
    s+=`<g style="stroke:var(--ink);stroke-width:2"><line x1="${d0.toFixed(1)}" x2="${d1.toFixed(1)}" y1="${y0+21}" y2="${y0+21}"/><line x1="${d0.toFixed(1)}" x2="${d0.toFixed(1)}" y1="${y0+18}" y2="${y0+24}"/><line x1="${d1.toFixed(1)}" x2="${d1.toFixed(1)}" y1="${y0+18}" y2="${y0+24}"/><title>deterministic run: ${hl(tU(x.det[0]),1)} → ${hl(tU(x.det[1]),1)} HKT · ${x.det[2]} h</title></g>`;
    xl=Math.min(xl,d0); xr=Math.max(xr,d1)}
-  if(LB.length===1){const g=LB[0][2];side(xl,xr,y0+13,one?hh(g.hours[1]):`${g.n}/${members} · ${hh(g.hours[1])}`,"fill:var(--ink)")}
-  else if(LB.length>1)LB.forEach(([p,q,g])=>side(p,q,y0+13,`${g.n}/${members} · ${hh(g.hours[1])}`,"fill:var(--ink)"));
-  else txt(LW+4,y0+13,!E?"no timing in this run's data":x&&x.det?"deterministic run only":(one?"not reached":"no member"));
+  if(LB.length===1){const g=LB[0][2];side(xl,xr,y0+13,one||CP?hh(g.hours[1]):`${g.n}/${members} · ${hh(g.hours[1])}`,"fill:var(--ink)")}
+  else if(LB.length>1)LB.forEach(([p,q,g])=>side(p,q,y0+13,CP?hh(g.hours[1]):`${g.n}/${members} · ${hh(g.hours[1])}`,"fill:var(--ink)"));
+  else txt(LW+4,y0+13,CP?(!E?"No timing in this forecast":"Not expected"):!E?"no timing in this run's data":x&&x.det?"deterministic run only":(one?"not reached":"no member"));
   y+=30});
  const B=y-4; let foot="";
  if(ens==="gefs"){const g0=X(init), g1=X(init+6*H); if(g1-g0>1)grid+=`<rect x="${g0.toFixed(1)}" y="${AX}" width="${(g1-g0).toFixed(1)}" height="${Math.max(0,B-AX)}" style="fill:var(--mut);opacity:.2"><title>No NOAA data before 6 h: the reforecast starts 6 hours into the run, so nothing is forecast here</title></rect>`}
@@ -1236,7 +1467,8 @@ function drawTL(a){if(a)TLA=a;a=TLA;const box=document.getElementById("tl");if(!
   foot+=`<text x="${xx}" y="${B+13}" font-size="${fz-1}" text-anchor="middle" style="fill:var(--mut)">${lab} ${hl(t)}</text>`});
  const Ht=B+(foot?18:2);
  const anyDet=LVs.some(([g])=>E&&E[g]&&E[g].det), faded=!one&&LVs.some(([g])=>E&&E[g]&&E[g].n>0&&E[g].n<MJ);
- const lg=[`<span><i style="background:var(--mut)"></i>${one?"forecast":"forecast, median start → median end"}</span>`,
+ const lg=CP?(EASY||one?[]:[`<span><i style="background:var(--mut)"></i>Most likely hours</span>`,`<span><i style="background:var(--mut);opacity:.3"></i>Earliest start to latest end</span>`,
+   faded?`<span><i style="background:var(--mut);opacity:.45"></i>Lighter, fewer than half the members</span>`:""].filter(Boolean).join("")):[`<span><i style="background:var(--mut)"></i>${one?"forecast":"forecast, median start → median end"}</span>`,
   one?"":`<span><i style="background:var(--mut);opacity:.3"></i>10% earliest start → 90% latest end</span>`,
   anyDet?`<span><i style="height:2px;background:var(--ink);vertical-align:3px"></i>deterministic run</span>`:"",
   faded?`<span><i style="background:var(--mut);opacity:.45"></i>faded: fewer than half the members</span>`:"",ens==="gefs"?`<span><i style="background:var(--mut);opacity:.2"></i>no NOAA data before 6 h</span>`:""].filter(Boolean).join("");
@@ -1511,28 +1743,28 @@ function drawObs(){if(!OG||!OXY)return; while(OG.firstChild)OG.removeChild(OG.fi
  const TRb=truthNow(), sg=sigIn(TRb,h,h+1e-6), dk=Math.round(dist(A.lon,A.lat)), W=OXY.W, H=OXY.H;
  const lines=[fmtH(h),`HKO best track: ${A.cls}, about ${obsK(A.v)} km/h`,`actual: ${dk} km from HK${sg?`, HKO No. ${sg} up`:", no HKO signal"}`];
  const bw=Math.min(W-16,Math.max(260,...lines.map(x=>6.6*x.length+16))), bh=16*lines.length+10, bx=W-bw-8, by=H-bh-8;
- add(el("rect",{x:bx,y:by,width:bw,height:bh,rx:4,fill:"#fff",opacity:.94,stroke:"#999","stroke-width":.7}));
+ add(el("rect",{x:bx,y:by,width:bw,height:bh,rx:0,fill:"#fff",opacity:.94,stroke:"#999","stroke-width":.7}));
  lines.forEach((x,i)=>{const t=el("text",{x:bx+8,y:by+18+16*i,fill:"#111","font-size":11.5,"font-weight":i?400:600}); t.textContent=x; add(t)});
  $("#ptime").textContent=`${fmtH(h)} · ${dk} km from Hong Kong`}
 let BT=false, BTH=null, btPlaying=false, btTs=0, btChartTs=0;
 const btSpan=()=>{const T_=truthNow(); if(!T_||!T_.track||T_.track.length<2)return null; const k=T_.track; return [isoH(k[0][3]),isoH(k[k.length-1][3])]};
-function btOff(){if(!BT)return; BT=false; if(btPlaying){btPlaying=false; $("#play").textContent="▶ play"} document.body.classList.remove("btsel"); playLabel()}
+function btOff(){if(!BT)return; BT=false; if(btPlaying){btPlaying=false; $("#play").textContent="Play"} document.body.classList.remove("btsel"); playLabel()}
 function btSync(){const pl=$("#player"), sp=btSpan(); playLabel();
  if(!sp){pl.style.display="none";return} pl.style.display=""; const sl=$("#slider"); sl.min=sp[0]; sl.max=sp[1]; sl.value=BTH}
 function btStep(){if(!btPlaying||!BT)return; const sp=btSpan(); if(!sp){btPlaying=false;return} const ts=performance.now();
  if(btTs) BTH=Math.min(sp[1],BTH+(+$("#speed").value)*(ts-btTs)/1000); btTs=ts; drawObs(); $("#slider").value=BTH;
  if(ts-btChartTs>150){chart(); btChartTs=ts}
- if(BTH>=sp[1]-1e-6){btPlaying=false; $("#play").textContent="▶ play"; playLabel(); chart(); return} setTimeout(btStep,40)}
+ if(BTH>=sp[1]-1e-6){btPlaying=false; $("#play").textContent="Play"; playLabel(); chart(); return} setTimeout(btStep,40)}
 $("#btBtn").onclick=()=>{if(BT){btOff(); drawMap(); chart(); syncPlayer(); return}
  const sp=btSpan(); if(!sp)return; if(allPlaying)allStop(); allH=null; if(playing)stopPlay(); sel=null; selH=null; BIN=null;
  BTH=Math.min(Math.max(0,sp[0]),sp[1]); BT=true; document.body.classList.remove("bsel"); document.body.classList.add("btsel"); drawMap(); chart(); syncPlayer();
  setTimeout(()=>{try{$("#map").scrollIntoView({behavior:"smooth",block:"nearest"})}catch(e){}},60)};
 {const p0=$("#play").onclick; $("#play").onclick=()=>{if(!BT){p0();return} const sp=btSpan(); if(!sp)return;
-  if(btPlaying){btPlaying=false; $("#play").textContent="▶ play"; playLabel(); chart(); return}
-  if(BTH===null||BTH>=sp[1]-1e-6) BTH=sp[0]; btPlaying=true; btTs=0; btChartTs=0; $("#play").textContent="❚❚ pause"; playLabel(); btStep()}}
+  if(btPlaying){btPlaying=false; $("#play").textContent="Play"; playLabel(); chart(); return}
+  if(BTH===null||BTH>=sp[1]-1e-6) BTH=sp[0]; btPlaying=true; btTs=0; btChartTs=0; $("#play").textContent="Pause"; playLabel(); btStep()}}
 {const s0=$("#slider").oninput; $("#slider").oninput=e=>{if(!BT){s0(e);return} BTH=+e.target.value; drawObs(); chart()}}
 function playLabel(){const b=$("#allPlay"); if(!b)return; const one=BT||(sel!==null&&MC&&MC.t&&MC.t.wf);
- b.textContent=allPlaying||playing||btPlaying?"❚❚ pause":one||BASIC?"▶ play":"▶ all members"}
+ b.textContent=allPlaying||playing||btPlaying?"Pause":one||BASIC?"Play":"Play all members"}
 {const a0=$("#allPlay").onclick; $("#allPlay").onclick=()=>{const t=MC&&MC.t;
   if(!allPlaying&&(BT||(sel!==null&&t&&t.wf))){$("#play").onclick(); playLabel(); return} a0(); playLabel()}}
 function btChart(){const s=$("#chart"), sg=$("#stationchart"), TRb=truthNow(); s.innerHTML=""; if(sg){sg.innerHTML=""; sg.style.display="none"} s.style.display="";
@@ -1613,7 +1845,7 @@ function drawMap(){
  if(window._defHint===undefined)window._defHint=$("#maphint").innerHTML;
  $("#maphint").innerHTML=window._defHint;
  {const r=refM(); $("#detBtn").style.display=r!==null?"":"none"; $("#detBtn").classList.toggle("on",r!==null&&sel===r);
-  $("#detBtn").textContent=r===51?"control run":"deterministic run";
+  $("#detBtn").textContent=r===51?"Control run":"Deterministic run";
   {const kd=$("#kdet"); if(kd){kd.textContent=r===51?"control run":"deterministic run"; kd.parentNode.style.display=r!==null?"":"none"}}
   $("#mapexp").innerHTML=`<b>Lines:</b> ${TR.tracks.filter(x=>x.m!==52).length>1?`${(HK[cyc]||{})[ens]&&(HK[cyc]||{})[ens].members||50} possible paths`:"the possible paths"}, each started from slightly different conditions.`
    +(n=>n?` <span>${n} of them never ${n===1?"reaches":"reach"} a tropical depression and ${n===1?"is":"are"} not drawn.</span>`:"")(TR.tracks.filter(x=>!isDet(x)&&x.m!==DEFM()&&weakT(x)).length)
@@ -1689,7 +1921,7 @@ function drawMap(){
    s.appendChild(ex);}
  });
 if(false&&!byI&&W>=820){const lx=W-222, items=[[1,"No. 1"],[3,"No. 3"],[8,"No. 8"],[9,"No. 9"],[10,"No. 10"],[0,"none"]];
-  s.appendChild(el("rect",{x:lx-8,y:8,width:222,height:18*items.length+26,rx:5,fill:"#fff",opacity:.9,stroke:"#999","stroke-width":.6,"pointer-events":"none"}));
+  s.appendChild(el("rect",{x:lx-8,y:8,width:222,height:18*items.length+26,rx:0,fill:"#fff",opacity:.9,stroke:"#999","stroke-width":.6,"pointer-events":"none"}));
   const hd=el("text",{x:lx,y:24,fill:"#111","font-size":11,"font-weight":600,"pointer-events":"none"});hd.textContent=BASIC?"signal expected along each path":"signal along each track";s.appendChild(hd);
   items.forEach(([k,lab],i)=>{const yy=42+18*i; s.appendChild(el("line",{x1:lx,x2:lx+26,y1:yy-4,y2:yy-4,stroke:SIGC[k],"stroke-width":3.4,"pointer-events":"none"}));
    const tx=el("text",{x:lx+34,y:yy,fill:"#111","font-size":11,"pointer-events":"none"});tx.textContent=lab;s.appendChild(tx)})}
@@ -1701,14 +1933,14 @@ if(false&&!byI&&W>=820){const lx=W-222, items=[[1,"No. 1"],[3,"No. 3"],[8,"No. 8
   else TRU.track.slice(0,-1).forEach((p,i)=>{const q=TRU.track[i+1], g=sigIn(TRU,isoH(p[3]),isoH(q[3]));
    s.appendChild(el("line",{x1:X(p[0]),y1:Y(p[1]),x2:X(q[0]),y2:Y(q[1]),stroke:SIGC[g]||SIGC[0],"stroke-width":4,"stroke-linecap":"round","pointer-events":"none"}))});
   TRU.track.forEach(p=>s.appendChild(el("circle",{cx:X(p[0]),cy:Y(p[1]),r:2.4,fill:"#000","pointer-events":"none"})));
-  const lg=el("rect",{x:8,y:sel!==null||BT?60:8,width:330,height:22,rx:5,fill:"#fff",opacity:.9,stroke:"#999","stroke-width":.6});s.appendChild(lg);
-  const lt=el("text",{x:16,y:sel!==null||BT?75:23,fill:"#000","font-size":11.5,"font-weight":600});lt.textContent=BT?"HKO best track, coloured by the signal HKO had up":`— — actual track: ${TRU.source.split(" (")[0]}`;s.appendChild(lt);
+  const lg=el("rect",{x:8,y:sel!==null||BT?60:8,width:330,height:22,rx:0,fill:"#fff",opacity:.9,stroke:"#999","stroke-width":.6});s.appendChild(lg);
+  const lt=el("text",{x:16,y:sel!==null||BT?75:23,fill:"#000","font-size":11.5,"font-weight":600});lt.textContent=BT?"HKO best track, coloured by the signal HKO had up":`Dashed line, ${TRU.source.split(" (")[0]}`;s.appendChild(lt);
   const hasC=TRU.track.some(p=>p[5]>0), lc=hasC?el("text",{x:16,y:(sel!==null||BT?75:23)+16,fill:"#000","font-size":W<500?10.5:11.5}):null;
-  if(lc){lc.textContent="Circles: gale (green), storm (orange), hurricane (red)"; s.appendChild(lc); lg.setAttribute("height",38)}
+  if(lc){lc.textContent="Circles show gale (green), storm (orange) and hurricane (red) winds"; s.appendChild(lc); lg.setAttribute("height",38)}
   try{lg.setAttribute("width",Math.min(W-16,Math.max(lt.getComputedTextLength(),lc?lc.getComputedTextLength():0)+18))}catch(e){}
   OXY={X:X,Y:Y,W:W,H:H,RX:r=>r/(111.32*Math.cos(.389))*(W/(lo1-lo0)),RY:r=>r/110.57*(H/(la1-la0))}; OG=el("g",{"pointer-events":"none"}); s.appendChild(OG); drawObs()}
  else{OG=null; OXY=null}
- if(BT)$("#maphint").textContent="Press ▶ play to follow the storm along HKO's best track. Click any path to go back to the forecast.";
+ if(BT)$("#maphint").textContent="Press Play to follow the storm along HKO's best track. Click any path to go back to the forecast.";
  stationDots(s,X,Y,lo1-lo0);
  if(lo1-lo0>=5){
   s.appendChild(el("circle",{cx:hx,cy:hy,r:6,fill:"#f2c200",stroke:"#333","stroke-width":1.2}));
@@ -1794,7 +2026,7 @@ function wiDist(s){
 function chart(){
  const s=$("#chart"), sg=$("#stationchart");s.innerHTML="";sg.innerHTML="";
  if(BT){btChart();return}
- if(BASIC){if(!["wi","sg","rk"].includes(tab)){tab="wi"; drawTabs(); tab="wi"} document.body.classList.toggle("bsel",sel!==null); document.body.classList.toggle("tab-wi",tab==="wi");
+ if(BASIC){if(!["signal","wi","sg","rk"].includes(tab)){tab="signal"; drawTabs(); tab="signal"} document.body.classList.toggle("bsel",sel!==null); document.body.classList.toggle("tab-wi",tab==="wi");
   if(sel===null){window._bsel=null; return}
   if(window._bsel!==sel){window._bsel=sel; setTimeout(()=>{try{$("#chead").scrollIntoView({behavior:"smooth",block:"nearest"})}catch(e){}},60)}}
  if(tab==="rk"){s.style.display="none"; sg.style.display=""; const t=stationTrack(); $("#cnote").textContent="";
@@ -1802,6 +2034,9 @@ function chart(){
    sg.querySelectorAll("[data-rkgrp]").forEach(b=>b.onclick=()=>{RKGRP=b.dataset.rkgrp; chart()}); sg.querySelectorAll("[data-rkold]").forEach(b=>b.onclick=()=>{RKOLD=!RKOLD; chart()})}
   else {$("#chead").textContent="Storm ranking"; sg.innerHTML=`<p class="note">Station numbers are not ready for this run yet.</p>`}
   return}
+ if(tab==="signal"){s.style.display="none"; sg.style.display=""; $("#cnote").textContent=""; const t=TR&&TR.tracks.find(x=>x.m===(sel??DEFM()));
+  if(!t){$("#chead").textContent="Expected signal"; sg.innerHTML=""; return}
+  $("#chead").textContent=BASIC?"Along this path: the signals expected":`${memLab(t.m,1)}${defTag(t.m)} — expected signal`; sg.innerHTML=sigTable(t); return}
  if(tab==="sg"){
   s.style.display="none"; sg.style.display="";
   const t=stationTrack();
@@ -1946,7 +2181,8 @@ const DEMO=(location.search.match(/[?&]demo=(play|member|map|stations|toolbar|an
 if(DEMO){window.HK_DEMO=DEMO; document.documentElement.classList.add("demo","demo-"+DEMO);
  const KEEP={toolbar:[".toolbar"],answer:["#status"],timeline:["#status"],stationtable:["#chead","#tabs","#stationchart","#cnote"]}[DEMO]||[".mapcard"];
  const W=document.querySelector(".wrap"); [...document.body.children].forEach(c=>{if(c!==W&&c.tagName!=="SCRIPT")c.style.display="none"});
- if(W)[...W.children].forEach(c=>{if(!KEEP.some(k=>c.matches(k)))c.style.display="none"});
+ if(W)[...W.children].forEach(c=>{if(!KEEP.some(k=>c.matches(k)||c.querySelector(k)))c.style.display="none"});
+ {const sh=document.querySelector(".sheet"); if(sh)[...sh.children].forEach(c=>{if(!KEEP.some(k=>c.matches(k)||c.querySelector(k)))c.style.display="none"})}
  const noLink=e=>{const a=e.target.closest&&e.target.closest("a[href]"); if(a){e.preventDefault(); e.stopPropagation()}};
  addEventListener("click",noLink,true); addEventListener("auxclick",noLink,true);
  if(W&&/^(toolbar|answer|timeline|stationtable)$/.test(DEMO)){W.inert=true; W.style.pointerEvents="none"}
@@ -1979,4 +2215,4 @@ try{const q=new URLSearchParams(location.search), f=q.get("f"); let r=q.get("run
  if(r&&HK[r]){cyc=r; if(f&&HK[r][f]){ens=f; mode=modeOf(f)||mode; CHOSEN=true} else if(DEFE(r)){ens=DEFE(r); mode=modeOf(ens)||mode}}}catch(e){}
 head();load();
 </script><script src="credits.js"></script>
-<a id="langsw" class="langsw" href="index.html" lang="en">English</a><script>(function(){var a=document.getElementById("langsw");if(!a)return;if(window.top!==window.self){a.style.display="none";return}a.href=a.getAttribute("href")+location.search+location.hash;a.addEventListener("click",function(){try{localStorage.setItem("hk_lang","en")}catch(e){}})})();</script></body></html>
+<script>(function(){var a=document.getElementById("langsw");if(!a)return;if(window.top!==window.self){a.style.display="none";return}a.href=a.getAttribute("href")+location.search+location.hash;a.addEventListener("click",function(){try{localStorage.setItem("hk_lang","en")}catch(e){}})})();</script></body></html>

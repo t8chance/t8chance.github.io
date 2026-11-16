@@ -3,19 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Storm ranking</title>
+<title>Storm ranking, Hong Kong typhoon signal forecasts</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%2314171a%27/%3E%3C/svg%3E">
 <meta name="description" content="Tropical cyclones since 2007 ranked by the wind at Hong Kong's eight reference stations, with this forecast placed among them.">
 
 <style>
 :root{
  --bg:#edf1f4;--card:#fff;--soft:#e3e9ee;--ink:#13202b;--mut:#55636f;--line:#d3dbe2;--link:#1a5ea8;
- --r10:#fbe1e4;--r9:#fdf0cf;--fc:#1a5ea8;--fcbg:#e3eefa;--no3:#c77700;--no8:#c62828;--no9:#8e2a8a;--no10:#4527a0;
+ --r10:#fbe1e4;--r9:#fdf0cf;--fc:#1a5ea8;--fcbg:#e3eefa;--no3:#d98c1a;--no8:#cc2255;--no9:#7f0000;--no10:#54278f;
  --shadow:0 1px 2px rgba(19,32,43,.06),0 12px 32px rgba(19,32,43,.09);
  --disp:"Barlow Condensed","Roboto Condensed","Arial Narrow",sans-serif;
  --body:"Barlow",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang HK","Noto Sans TC",sans-serif}
 @media (prefers-color-scheme:dark){:root{
  --bg:#0f1923;--card:#16222e;--soft:#1c2a37;--ink:#e2e9ef;--mut:#93a3b1;--line:#273746;--link:#8cbcff;
- --r10:#3a1f26;--r9:#3a3220;--fc:#8cbcff;--fcbg:#17304a;--no3:#f0b35a;--no8:#ff7b72;--no9:#d98ad6;--no10:#b39dff;
+ --r10:#3a1f26;--r9:#3a3220;--fc:#8cbcff;--fcbg:#17304a;--no3:#f0a23a;--no8:#f05a82;--no9:#ffc6b8;--no10:#b08ae8;
  --shadow:0 1px 0 rgba(255,255,255,.03);color-scheme:dark}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--body);-webkit-font-smoothing:antialiased}
@@ -23,35 +24,35 @@ a{color:var(--link)}
 .wrap{max-width:1060px;margin:0 auto;padding:0 16px}
 .mast{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 28px;padding:24px 0 14px}
 .mast .name{font:700 clamp(24px,3vw,30px)/1.05 var(--disp);color:var(--ink);text-decoration:none}
-.mast nav{display:flex;flex-wrap:wrap;gap:4px 20px;font-size:15px;font-weight:500}
+.mast nav{display:flex;flex-wrap:wrap;gap:4px 20px;font-size:15px;font-weight:400}
 .mast nav a{color:var(--ink);text-decoration:none}
 .mast nav a:hover,.mast nav a[aria-current]{color:var(--link);text-decoration:underline}
-h1{margin:10px 0 6px;font:700 clamp(30px,4.6vw,46px)/1.02 var(--disp);text-wrap:balance}
-.kicker{margin:0;font:600 13px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+h1{margin:10px 0 6px;font:700 36px/1.02 var(--disp);text-wrap:balance}
+.kicker{margin:0;font:700 13px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
 .lead{margin:0 0 16px;color:var(--mut);max-width:70ch}
 .fc{background:var(--fcbg);border:1px solid var(--fc);border-radius:14px;padding:12px 16px;margin:0 0 14px;max-width:760px}
 .fc b{color:var(--ink)}
 .ctl{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:0 0 12px}
 .seg{display:inline-flex;flex-wrap:wrap;gap:2px;padding:3px;background:var(--soft);border-radius:12px}
-.seg button{border:0;background:transparent;border-radius:9px;padding:6px 12px;font:500 14px var(--body);color:var(--mut);cursor:pointer}
+.seg button{border:0;background:transparent;border-radius:9px;padding:6px 12px;font:400 15px var(--body);color:var(--mut);cursor:pointer}
 .seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.16)}
 .tw{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
 table{border-collapse:collapse;width:100%;min-width:640px;font-variant-numeric:tabular-nums}
 th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
-th{font:600 13px/1.25 var(--body);color:var(--mut);background:var(--soft);vertical-align:bottom;white-space:normal}
+th{font:700 13px/1.25 var(--body);color:var(--mut);background:var(--soft);vertical-align:bottom;white-space:normal}
 table.nar{min-width:0}table.nar td,table.nar th{padding:7px 7px}table.nar td.l{white-space:normal}table.nar .sg{min-width:0;margin-left:4px}
 td.l,th.l{text-align:left}
 tr.s10 td{background:var(--r10)} tr.s9 td{background:var(--r9)}
 tr.fc td{background:var(--fcbg);font-weight:700;font-size:17px;border-top:2px solid var(--fc);border-bottom:2px solid var(--fc)}
 tr.me td{font-weight:700}
-.sg{display:inline-block;min-width:44px;padding:1px 7px;border-radius:999px;font:600 12px/1.6 var(--body);color:#fff}
+.sg{display:inline-block;min-width:44px;padding:1px 7px;border-radius:999px;font:700 13px/1.6 var(--body);color:#fff}
 .sg3{background:var(--no3)}.sg8{background:var(--no8)}.sg9{background:var(--no9)}.sg10{background:var(--no10)}.sgf{background:var(--fc)}
 .mut{color:var(--mut);font-weight:400}
-.note{color:var(--mut);font-size:13.5px;margin:10px 0 0;max-width:80ch}
+.note{color:var(--mut);font-size:15px;margin:10px 0 0;max-width:80ch}
 .key{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--mut);margin:10px 0 0}
 .key i{display:inline-block;width:14px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px;border:1px solid var(--line)}
 main{padding:6px 0 48px}
-.rkrough{font-size:11px;font-weight:600;color:var(--mut);border:1px solid var(--mut);border-radius:6px;padding:0 4px;margin-left:4px;vertical-align:1px}.rkold{margin-left:10px;border:2px solid var(--link);color:var(--link);background:transparent;border-radius:10px;padding:6px 13px;font-weight:600;cursor:pointer}.rkold.on{background:var(--link);color:var(--card)}
+.rkrough{font-size:13px;font-weight:700;color:var(--mut);border:1px solid var(--mut);border-radius:6px;padding:0 4px;margin-left:4px;vertical-align:1px}.rkold{margin-left:10px;border:2px solid var(--link);color:var(--link);background:transparent;border-radius:10px;padding:6px 13px;font-weight:700;cursor:pointer}.rkold.on{background:var(--link);color:var(--card)}
 /* look of 2026-11-10: a flat page. White ground, ink text, hairline rules, square corners, no boxes or shadows, the device's own typeface,
    one ink title band. These rules come last, so they win over the ones above. */
 :root{--bg:#fff;--card:#fff;--soft:#eff0f1;--ink:#14171a;--mut:#5a6168;--line:#d8dbde;--link:#0a55a3;--raise:#fff;--shadow:none;--band:#14171a;--bandink:#fff;
@@ -59,21 +60,21 @@ main{padding:6px 0 48px}
  --disp:-apple-system,BlinkMacSystemFont,"Helvetica Neue","PingFang HK","Segoe UI","Noto Sans HK","Noto Sans TC","Microsoft JhengHei",Roboto,Arial,sans-serif}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1012;--card:#0e1012;--soft:#1b1e21;--ink:#eceef0;--mut:#9aa1a8;--line:#2c3136;--link:#7db4ff;--raise:#2c3136;--shadow:none;--band:#000;--bandink:#fff}}
 :root[data-theme="dark"]{--bg:#0e1012;--card:#0e1012;--soft:#1b1e21;--ink:#eceef0;--mut:#9aa1a8;--line:#2c3136;--link:#7db4ff;--raise:#2c3136;--shadow:none;--band:#000;--bandink:#fff}
-b,strong{font-weight:600}
+b,strong{font-weight:700}
 .mast{padding:0 0 10px;gap:8px 24px}
 .mast .name{flex-basis:100%;display:block;margin:0;padding:13px 0 12px;font:700 18px/1.3 var(--body);letter-spacing:0;color:var(--bandink);background:var(--band);
  box-shadow:0 0 0 100vmax var(--band);clip-path:inset(0 -100vmax)}
-.mast nav{flex:1 1 auto;gap:8px 20px;font-size:14.5px;padding-top:2px}
+.mast nav{flex:1 1 auto;gap:8px 20px;font-size:15px;padding-top:2px}
 .mast nav a:hover{color:var(--link)}
-.mast nav a[aria-current]{color:var(--ink);font-weight:600;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
+.mast nav a[aria-current]{color:var(--ink);font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
 @media (max-width:760px){.mast .name{padding:12px 0 11px;font-size:17px}}
-h1{font:700 clamp(27px,4.2vw,38px)/1.12 var(--body);letter-spacing:-.015em}
-h2{font:700 clamp(20px,2.4vw,24px)/1.2 var(--body);letter-spacing:-.01em}
+h1{font:700 36px/1.12 var(--body);letter-spacing:0}
+h2{font:700 22px/1.2 var(--body);letter-spacing:0}
 h3{font:700 17px/1.25 var(--body)}
-.kicker{letter-spacing:0;text-transform:none;font:600 13.5px/1.2 var(--body)}
+.kicker{letter-spacing:0;text-transform:none;font:700 15px/1.2 var(--body)}
 .seg{padding:0;gap:6px;background:none;border-radius:0}
 .seg button{border:1px solid var(--line);border-radius:3px;color:var(--mut);background:var(--bg)}
-.seg button.on{background:var(--bg);border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);color:var(--ink);font-weight:600}
+.seg button.on{background:var(--bg);border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);color:var(--ink);font-weight:700}
 h1{margin:14px 0 6px}
 .fc{border-radius:3px}
 .tw{background:none;border:0;border-top:2px solid var(--ink);border-radius:0;box-shadow:none}
@@ -83,15 +84,61 @@ th{background:none;border-bottom:1px solid var(--ink)}
 .rkrough{border-radius:2px}
 .key i{border-radius:0}
 .views{display:flex;flex-wrap:wrap;gap:4px 24px;margin:6px 0 14px;border-bottom:1px solid var(--line)}
-.views a{padding:9px 0 8px;margin-bottom:-1px;border-bottom:2px solid transparent;color:var(--mut);text-decoration:none;font-weight:600;font-size:15.5px}
+.views a{padding:9px 0 8px;margin-bottom:-1px;border-bottom:2px solid transparent;color:var(--mut);text-decoration:none;font-weight:700;font-size:15px}
 .views a:hover{color:var(--ink)} .views a[aria-current]{color:var(--ink);border-bottom-color:var(--ink)}
+
+/* ONE FRAME for every page (2026-11-16, user: 'fix the changes fable recommended', the 'vibe-coded' audit of 15 Nov): the same column,
+   body size, title band, page title and menu on all six pages, and one type scale (13, 15, 17, 22 and 36 px, weights 400 and 700).
+   Last, so it wins. */
+.wrap{max-width:1060px}
+body{font-size:16px}
+.mast .name{font:700 17px/1.3 var(--body);letter-spacing:0}
+.mast nav{font-size:15px;font-weight:400}
+.mast nav a[aria-current]{color:var(--ink);font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
+h1{font:700 36px/1.15 var(--body);letter-spacing:0}
+h2,h3{letter-spacing:0}
+
+@media (max-width:760px){.mast .name{font:700 16px/21px var(--body)} h1{font-size:28px}}
+
+/* HEADER (2026-11-17, Fable's layout review P2, adopted): the ink band holds the name, the page links and the language switch; a phone
+   gets a Menu button that opens the links. Under it one research line. Same block on every page. Last, so it wins. */
+.mast{display:block;padding:0;margin:0 0 14px;gap:0}
+.mast .band{display:flex;flex-wrap:nowrap;align-items:center;gap:0 22px;min-height:48px;background:var(--band);color:var(--bandink);
+ box-shadow:0 0 0 100vmax var(--band);clip-path:inset(0 -100vmax)}
+.mast .name{flex:0 1 auto;display:block;margin:0 auto 0 0;padding:12px 0;font:700 17px/1.25 var(--body);letter-spacing:0;color:var(--bandink);
+ background:none;box-shadow:none;clip-path:none;text-decoration:none}
+.mast nav{display:flex;flex:none;flex-wrap:nowrap;align-items:stretch;gap:0 22px;padding:0;font-size:15px;font-weight:400}
+.mast nav a{color:var(--bandink);text-decoration:none;padding:14px 0 11px;border-bottom:3px solid transparent;font-weight:400;white-space:nowrap}
+.mast nav a:hover{color:var(--bandink);text-decoration:none;border-bottom-color:#7b8188}
+.mast nav a[aria-current]{color:var(--bandink);font-weight:700;text-decoration:none;border-bottom-color:var(--bandink)}
+.mast nav a.tour{color:var(--bandink)}
+.mast .langsw,.mast .menu{position:static;flex:none;font:400 15px/1.2 var(--body);color:var(--bandink);background:none;border:1px solid #7b8188;border-radius:3px;
+ padding:5px 10px;text-decoration:none;cursor:pointer}
+.mast .menu{display:none}
+.mast .research{margin:0;padding:6px 0;max-width:none;font-size:13px;line-height:1.4;color:var(--ink);background:var(--soft);
+ box-shadow:0 0 0 100vmax var(--soft);clip-path:inset(0 -100vmax)}
+@media (max-width:860px){
+ .mast .band{flex-wrap:wrap;gap:0 10px;min-height:52px}
+ .mast .name{font-size:15px;line-height:1.25;max-width:13em;padding:8px 0}
+ .mast nav{display:none;order:9;flex:1 0 100%;flex-direction:column;gap:0;border-top:1px solid #3a3f45}
+ .mast.open nav{display:flex}
+ .mast nav a{padding:12px 0;border-bottom:1px solid #3a3f45;font-size:17px}
+ .mast nav a:last-child{border-bottom:0}
+ .mast nav a[aria-current]{border-bottom-color:#3a3f45}
+ .mast .menu{display:inline-block}
+}
+
+/* 2026-11-17 (Fable's layout review + audit V6): the forecast page's square plates, no row tint (the plate says it) */
+.sg{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 5px;border-radius:0;font:700 13px/1 var(--body);color:#fff;vertical-align:middle}
+.sg3{color:#14171a} .sgf{background:none;color:var(--fc);box-shadow:inset 0 0 0 1px var(--fc)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sg:not(.sgf){color:#0e1012}}
+:root[data-theme="dark"] .sg:not(.sgf){color:#0e1012}
+tr.s10 td,tr.s9 td{background:none}
 </style>
-<script src="zh.js"></script><style>.langsw{position:absolute;top:10px;right:12px;z-index:60;font:600 13px/1 system-ui,-apple-system,sans-serif;padding:6px 10px;border-radius:3px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,.5);text-decoration:none} html.demo .langsw{display:none}.mast h1,.mast>.name{padding-right:96px}</style></head>
+<script src="zh.js"></script><style>html.demo .langsw{display:none}</style></head>
 <body>
 <div class="wrap">
-<header class="mast"><a class="name" href="index-zh.html">Hong Kong typhoon signal forecasts</a>
- <nav aria-label="pages"><a href="index-zh.html">Forecasts</a><a href="guide-zh.html">Tour</a><a href="verify-zh.html">How good is it?</a><a href="ranking-zh.html" aria-current="page">Storm ranking</a><a href="ideas-zh.html">Ideas</a></nav>
-</header>
+<header class="mast"><div class="band"><a class="name" href="index-zh.html">Hong Kong typhoon signal forecasts</a><nav aria-label="pages"><a href="index-zh.html">Forecasts</a><a href="guide-zh.html" class="tour">Tour</a><a href="verify-zh.html">How good is it?</a><a href="ranking-zh.html" aria-current="page">Storm ranking</a><a href="ideas-zh.html">Ideas</a></nav><a id="langsw" class="langsw" href="ranking.html" lang="en">English</a><button class="menu" type="button" aria-expanded="false" onclick="var m=this.closest('.mast');m.classList.toggle('open');this.setAttribute('aria-expanded',m.classList.contains('open'))">Menu</button></div><p class="research">Research output. The Hong Kong Observatory is the only authority for actual signals.</p></header>
 <main id="main" translate="no"></main>
 </div>
 <script src="ranking_data.js"></script>
@@ -124,24 +171,24 @@ function draw(){
  const fcLab=fcRow?T(`This forecast · ${(FN[F.f]||[F.f||""])[0]}${F.r?", "+runLab(F.r):""}${F.m?`, ${mLab()}${F.top?" (most threatening)":""}`:""}`,
                      `本預報 · ${(FN[F.f]||[,F.f||""])[1]}${F.r?"，"+runLab(F.r):""}${F.m?`，${mLab()}${F.top?"（最具威脅）":""}`:""}`):"";
  const vHref=o=>{const q=new URLSearchParams(location.search); if(o)q.set("from","1979"); else q.delete("from"); const s=q.toString(); return (location.pathname.split("/").pop()||"ranking-zh.html")+(s?"?"+s:"")};
- let h=`<p class="kicker">${T("Storm ranking","熱帶氣旋排名")}</p><h1>${T("How windy did Hong Kong get?","香港風力有多強？")}</h1>`
+ let h=`<h1>${T("Storms ranked by wind in Hong Kong","熱帶氣旋按香港風力排名")}</h1>`
   +`<nav class="views" aria-label="${T("years","年份")}"><a href="${vHref(false)}"${RKOLD?"":' aria-current="page"'}>${T("Since 2007","2007 年以來")}</a><a href="${vHref(true)}"${RKOLD?' aria-current="page"':""}>${T("Since 1979","1979 年以來")}</a></nav>`
   +`<p class="lead">${T(`Tropical cyclones since ${RKOLD?1979:2007} ${{10:"that brought Signal No. 10",89:"whose highest signal was No. 8 or No. 9",3:"whose highest signal was No. 3",all:"that brought Signal No. 3 or higher"}[GRP]}, ranked by the average over the Hong Kong Observatory's 8 reference stations of each station's highest 10-minute mean wind.${RKOLD?" Storms before 2007 are added from Wikipedia's station tables and HKO's annual reports as estimates (marked h or ≈).":""||""}`,
                        `${RKOLD?1979:2007} 年以來${{10:"令天文台發出十號信號",89:"天文台最高發出八號或九號信號",3:"天文台最高只發出三號信號",all:"令天文台發出三號或以上信號"}[GRP]}的熱帶氣旋，按天文台 8 個指定參考測風站各自錄得的最高十分鐘平均風速的平均值排列。${RKOLD?"2007 年以前的熱帶氣旋根據維基百科的測風站表格及天文台年刊加入，屬估算（標示 h 或 ≈）。":""}`)}</p>`;
- if(fcRow) h+=`<div class="fc">${T(`<b>${fcLab}</b><br>8-station average about <b>${Math.round(F.v)} km/h</b>, gale at <b>${gTxt}</b> of the 8 stations — it would rank <b>${ord(rk)}</b> of the ${n} below.${F.v<55?" Below 55 km/h this estimate cannot place weaker storms finely: a rough position only.":""}`,
-                                    `<b>${fcLab}</b><br>8 站平均約 <b>${Math.round(F.v)} 公里/小時</b>，<b>${gTxt}</b> 個測風站達烈風 —— 在下表 ${n} 個熱帶氣旋中排${ord(rk)}。${F.v<55?"低於每小時 55 公里時，這個估算未能精確區分較弱的熱帶氣旋，位置僅供大概參考。":""}`)}</div>`;
+ if(fcRow) h+=`<div class="fc">${T(`<b>${fcLab}</b><br>8-station average about <b>${Math.round(F.v)} km/h</b>, gale at <b>${gTxt}</b> of the 8 stations, and it would rank <b>${ord(rk)}</b> of the ${n} below.${F.v<55?" Below 55 km/h this estimate cannot place weaker storms finely: a rough position only.":""}`,
+                                    `<b>${fcLab}</b><br>8 站平均約 <b>${Math.round(F.v)} 公里/小時</b>，<b>${gTxt}</b> 個測風站達烈風，在下表 ${n} 個熱帶氣旋中排${ord(rk)}。${F.v<55?"低於每小時 55 公里時，這個估算未能精確區分較弱的熱帶氣旋，位置僅供大概參考。":""}`)}</div>`;
  h+=`<div class="ctl"><span class="seg" role="group" aria-label="${T("storms shown","顯示")}">${GRPS.map(([k,e,z])=>`<button type="button" data-a="${k}" class="${GRP===k?"on":""}">${T(e,z)} (${(window.RANKT||[]).concat(RKOLD?window.RANKOLD||[]:[]).sort((a,b)=>b.a10-a.a10).filter(IN(k)).length})</button>`).join("")}</span></div>`;
  const NAR=innerWidth<700; draw.nar=NAR;
- const sgB=sig=>`<span class="sg sg${sig}">${ZH?SIGZ[sig]:"No. "+sig}</span>`;
+ const sgB=sig=>`<span class="sg sg${sig}" title="${ZH?SIGZ[sig]:"No. "+sig}">${sig}</span>`;
  const headN=`<tr><th>#</th><th class="l">${T("Tropical cyclone","熱帶氣旋")}</th><th>${T("8-station average, highest 10-min mean (km/h)","8 站最高十分鐘平均風速的平均（公里/小時）")}</th><th>${T("Stations at gale (of 8)","達烈風站數")}</th></tr>`;
  const head=`<tr><th rowspan="2">#</th><th rowspan="2" class="l">${T("Tropical cyclone","熱帶氣旋")}</th><th rowspan="2">${T("Highest signal","最高信號")}</th>`
   +`<th colspan="${SHOWCAT?2:1}">${T("At closest approach","最接近香港天文台時")}</th><th colspan="2">${T("8-station average of the highest mean wind (km/h)","8 個參考測風站最高平均風速的平均值（公里/小時）")}</th><th rowspan="2">${T("Stations reaching gale (of 8)","達烈風站數（8 站中）")}</th></tr>`
   +`<tr>${SHOWCAT?`<th>${T("Category","強度")}</th>`:""}<th>${T("Direction and distance (km)","方位及距離（公里）")}</th><th>${T("60-minute","60 分鐘")}</th><th>${T("10-minute","10 分鐘")}</th></tr>`;
  const rowN=(r,i)=>{const sig=r.sig===10?10:r.sig===9?9:r.sig>=8?8:3;
-  return `<tr class="${sig===10?"s10":sig===9?"s9":""}${me&&key(r)===me?" me":""}"><td>${i}</td><td class="l">${r.y} ${nm(r)}${OLDM(r)||""}${sgB(sig)}${me&&key(r)===me?` <span class="mut">${T("· this storm","· 本熱帶氣旋")}</span>`:""}</td><td><b>${r.a10.toFixed(1)}</b></td><td>${r.g}${r.old&&r.nst<8?T(` of ${r.nst}`,`／${r.nst}`):""||""}</td></tr>`};
+  return `<tr class="${sig===10?"s10":sig===9?"s9":""}${me&&key(r)===me?" me":""}"><td>${i}</td><td class="l">${r.y} ${nm(r)}${OLDM(r)||""}${sgB(sig)}${me&&key(r)===me?` <span class="mut">${T("(this storm)","（本熱帶氣旋）")}</span>`:""}</td><td><b>${r.a10.toFixed(1)}</b></td><td>${r.g}${r.old&&r.nst<8?T(` of ${r.nst}`,`／${r.nst}`):""||""}</td></tr>`};
  const rowH=(r,i)=>{const sig=r.sig===10?10:r.sig===9?9:r.sig>=8?8:3, pre=r.pre?"<sup>#</sup>":"";
-  return `<tr class="${sig===10?"s10":sig===9?"s9":""}${me&&key(r)===me?" me":""}"><td>${i}</td><td class="l">${r.y} ${nm(r)}${OLDM(r)||""}${me&&key(r)===me?` <span class="mut">${T("· this storm","· 本熱帶氣旋")}</span>`:""}</td>`
-   +`<td><span class="sg sg${sig}">${ZH?SIGZ[sig]:"No. "+sig}</span></td>`
+  return `<tr class="${sig===10?"s10":sig===9?"s9":""}${me&&key(r)===me?" me":""}"><td>${i}</td><td class="l">${r.y} ${nm(r)}${OLDM(r)||""}${me&&key(r)===me?` <span class="mut">${T("(this storm)","（本熱帶氣旋）")}</span>`:""}</td>`
+   +`<td>${sgB(sig)}</td>`
    +(SHOWCAT?`<td>${r.cat?(ZH?CAT[r.cat][1]:CAT[r.cat][0])+pre+(r.catbt?"<sup>≈</sup>":""):"–"}</td>`:"")
    +`<td>${r.dir?(ZH?DIRZ[r.dir]:r.dir)+pre:"–"} ${r.km!=null?r.km+pre:""}</td><td>${r.a60!=null?r.a60.toFixed(1):"–"}</td><td><b>${r.a10.toFixed(1)}</b></td><td>${r.g}${r.old&&r.nst<8?T(` of ${r.nst}`,`／${r.nst}`):""||""}</td></tr>`};
  let body="", i=0, put=false;
@@ -151,11 +198,11 @@ function draw(){
   return `<tr class="fc"><td>${k}</td><td class="l">${T("This forecast","本預報")} <span class="mut">${F.m?mLab():""}</span></td><td><span class="sg sgf">${T("forecast","預測")}</span></td>`
   +(SHOWCAT?`<td>${FILLF&&F.cc&&CAT[F.cc]?(ZH?CAT[F.cc][1]:CAT[F.cc][0]):"–"}</td>`:"")+`<td>${FILLF&&F.cd&&DIRZ[F.cd]&&F.ca!=null?(ZH?DIRZ[F.cd]:F.cd)+" "+F.ca:"–"}</td><td>–</td><td>${Math.round(F.v)}</td><td>${gTxt}</td></tr>`}
  h+=`<div class="tw"><table${NAR?' class="nar"':""}><thead>${NAR?headN:head}</thead><tbody>${body}</tbody></table></div>`;+(NAR?`<p class="note">${T(`On a wider screen the table also shows the ${SHOWCAT?"category, ":""}direction and distance at closest approach and the 60-minute average.`,`在較闊的屏幕上，此表亦會顯示最接近時的${SHOWCAT?"強度、":""}方位及距離和 60 分鐘平均值。`)}</p>`:"");
- h+=`<div class="key">${rows.some(r=>r.sig===10)?`<span><i style="background:var(--r10)"></i>${T("No. 10","十號")}</span>`:""}${rows.some(r=>r.sig===9)?`<span><i style="background:var(--r9)"></i>${T("No. 9","九號")}</span>`:""}${fcRow?`<span><i style="background:var(--fcbg);border-color:var(--fc)"></i>${T("this forecast","本預報")}</span>`:""}</div>`;
+ h+=`<div class="key">${fcRow?`<span><i style="background:var(--fcbg);border-color:var(--fc)"></i>${T("this forecast","本預報")}</span>`:""}</div>`;
  if(RKOLD) h+=`<p class="note">${T(`Storms before 2007 (marked h or ≈) come from Wikipedia's station tables or HKO's annual reports. Hourly means are converted to 10-minute equivalents with the ratio measured at these stations, and a station without a record is filled in from the others, scaled by its usual exposure, so their averages are estimates. Their gale count covers only the stations with a record. Storms with records from only 2 or 3 of the 8 stations are marked rough. Tested on storms since 2007 with every station known, the filled-in average is off by about 3 km/h with 2 or 3 stations (5 to 6 km/h for the strongest storms) and by under 1 km/h with 7. Before 1986 three stations read differently from today's sites, measured against Waglan Island in storms on similar tracks. Kai Tak read about 40% higher, Chek Lap Kok (then a hill station on the island) about 30% higher and Cheung Chau about 7% lower, so for 1979 to 1985 these three are scaled to today's sites before averaging.`,`2007 年以前的熱帶氣旋（標示 h 或 ≈）資料來自維基百科的測風站表格或天文台年刊。每小時平均風速按這些測風站的實測比率換算為十分鐘平均風速；缺少紀錄的測風站則按其他測風站的數值及該站一般的受風程度推算，故平均值只屬估算。烈風站數只計算有紀錄的測風站。八個測風站中只有兩或三個有紀錄的熱帶氣旋標示為「粗略」。以 2007 年以來所有測風站均有紀錄的熱帶氣旋測試，只有兩或三個測風站時，推算的平均值約相差每小時 3 公里（最強的熱帶氣旋相差 5 至 6 公里），有七個測風站時則相差不足 1 公里。1986 年以前，以橫瀾島作比較，在路徑相近的熱帶氣旋中，啟德的讀數約高出 40%，赤鱲角（當時為島上山頭的測風站）約高出 30%，長洲則約低 7%，因此 1979 至 1985 年這三站先換算至現址水平才計算平均值。`)}</p>`;
- h+=`<p class="note">${T(`Ranked by the 10-minute average, the one this site estimates (the Observatory's own table ranks by the 60-minute column). No. 8 or higher: the Observatory's 2007–2026 comparison table (cases in 2012 or earlier use the Lau Fau Shan station; # = preliminary). No. 3: the Observatory's tropical cyclone reports as compiled on Wikipedia; the Observatory's table gives no 60-minute average${SHOWCAT?" or category":""} for them${SHOWCAT?" (≈ = category from the Observatory's best track, its strongest hour within 3 hours of closest approach; done this way, 36 of the 40 storms in the Observatory's table get its own category)":""}.${fcRow?" The forecast row is a reference only: one member's estimated station winds, averaged.":""}`,
+ h+=`<p class="note">${T(`Ranked by the 10-minute average, the one this site estimates. The Observatory's own table ranks by the 60-minute column. Storms of No. 8 or higher come from the Observatory's 2007–2026 comparison table. Cases in 2012 or earlier use the Lau Fau Shan station, and # marks a preliminary value. Storms of No. 3 come from the Observatory's tropical cyclone reports as compiled on Wikipedia, which give no 60-minute average${SHOWCAT?" or category":""}.${SHOWCAT?" ≈ marks a category taken from the Observatory's best track, its strongest hour within 3 hours of closest approach. Done this way, 36 of the 40 storms in the Observatory's table get its own category.":""}${fcRow?" The forecast row is a reference only: one member's estimated station winds, averaged.":""}`,
   `按 10 分鐘平均值排列（即本網站估算的數值；天文台的原表按 60 分鐘欄排列）。八號或以上：天文台 2007 至 2026 年比較表（2012 年或以前的個案以流浮山測風站統計；# 為初步數據）。三號：天文台熱帶氣旋報告（維基百科整理）；天文台的表沒有這些熱帶氣旋的 60 分鐘平均值${SHOWCAT?"及強度":""}${SHOWCAT?"（≈ 為按天文台最佳路徑估計的強度：取最接近時前後 3 小時內的最高強度；以此方法，天文台表中 40 個熱帶氣旋有 36 個與其所列強度相同）":""}。${fcRow?"預測一行僅供參考：為單一成員估算的各站風速平均。":""}`)}</p>`;
- if(!fcRow) h+=`<p class="note">${T("To place a forecast here, open a run on the forecast page, then 'Stations' → 'See it in the storm ranking'.","如要把預測放進此表：在預報頁打開一個運行，再按「測風站」→「在熱帶氣旋排名中查看」。")}</p>`;
+ if(!fcRow) h+=`<p class="note">${T("To place a forecast here, open a run on the forecast page in Expert, open Stations, then press See it in the storm ranking.","如要把預測放進此表，請在預報頁的專業模式打開一次預報，再按「測風站」及「在熱帶氣旋排名中查看」。")}</p>`;
  const M=document.getElementById("main"); M.innerHTML=h;
  M.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{GRP=b.dataset.a; draw()});
  M.querySelectorAll("[data-rkold]").forEach(b=>b.onclick=()=>{RKOLD=!RKOLD; draw()});
@@ -166,5 +213,5 @@ addEventListener("resize",()=>{if((innerWidth<700)!==draw.nar)draw()});
 })();
 </script>
 <script src="credits.js"></script>
-<a id="langsw" class="langsw" href="ranking.html" lang="en">English</a><script>(function(){var a=document.getElementById("langsw");if(!a)return;if(window.top!==window.self){a.style.display="none";return}a.href=a.getAttribute("href")+location.search+location.hash;a.addEventListener("click",function(){try{localStorage.setItem("hk_lang","en")}catch(e){}})})();</script></body>
+<script>(function(){var a=document.getElementById("langsw");if(!a)return;if(window.top!==window.self){a.style.display="none";return}a.href=a.getAttribute("href")+location.search+location.hash;a.addEventListener("click",function(){try{localStorage.setItem("hk_lang","en")}catch(e){}})})();</script></body>
 </html>

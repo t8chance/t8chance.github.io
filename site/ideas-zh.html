@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ideas</title>
+<title>Send an idea, Hong Kong typhoon signal forecasts</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%2314171a%27/%3E%3C/svg%3E">
 <meta name="description" content="Send an idea or suggestion for the Hong Kong typhoon signal forecasts.">
 
 <style>
@@ -24,36 +25,36 @@ a{color:var(--link)}
 .wrap{max-width:1060px;margin:0 auto;padding:0 16px}
 .mast{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 28px;padding:24px 0 18px}
 .mast .name{font:700 clamp(24px,3vw,30px)/1.05 var(--disp);color:var(--ink);text-decoration:none}
-.mast nav{display:flex;flex-wrap:wrap;gap:4px 20px;font-size:15px;font-weight:500}
+.mast nav{display:flex;flex-wrap:wrap;gap:4px 20px;font-size:15px;font-weight:400}
 .mast nav a{color:var(--ink);text-decoration:none}
 .mast nav a:hover,.mast nav a[aria-current]{color:var(--link);text-decoration:underline}
 main{padding:min(6vh,56px) 0 72px}
 .grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:40px;align-items:center}
-.kicker{margin:0 0 8px;font:600 14px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
-h1{margin:0 0 14px;font:700 clamp(40px,6vw,68px)/.98 var(--disp);text-wrap:balance}
-.lead{margin:0 0 26px;max-width:46ch;color:var(--mut);font-size:18px}
+.kicker{margin:0 0 8px;font:700 15px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+h1{margin:0 0 14px;font:700 36px/.98 var(--disp);text-wrap:balance}
+.lead{margin:0 0 26px;max-width:46ch;color:var(--mut);font-size:17px}
 form{display:grid;gap:12px;max-width:560px}
 textarea,input[type=text]{width:100%;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
 textarea{min-height:140px;resize:vertical;line-height:1.5}
 textarea:focus,input[type=text]:focus{outline:none;border-color:var(--ink)}
 .row{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px}
-button{font:700 19px/1 var(--disp);letter-spacing:.02em;cursor:pointer;border:0;border-radius:999px;padding:15px 30px;background:var(--ink);color:var(--card)}
+button{font:700 17px/1 var(--disp);letter-spacing:0;cursor:pointer;border:0;border-radius:999px;padding:15px 30px;background:var(--ink);color:var(--card)}
 button:disabled{opacity:.55;cursor:default}
 button:not(:disabled):hover{transform:translateY(-1px)}
-.st{margin:0;min-height:1.5em;font-weight:600}
+.st{margin:0;min-height:1.5em;font-weight:700}
 .st.ok{color:var(--ok)} .st.err{color:var(--warn)}
-.count{color:var(--mut);font-size:14px;font-variant-numeric:tabular-nums}
+.count{color:var(--mut);font-size:15px;font-variant-numeric:tabular-nums}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
-.fine{margin:18px 0 0;color:var(--mut);font-size:14px;max-width:52ch}
+.fine{margin:18px 0 0;color:var(--mut);font-size:15px;max-width:52ch}
 .mastfig{margin:0;justify-self:center;width:min(100%,260px)}
-.mastfig svg{display:block;width:100%;height:auto;border-radius:22px;background:linear-gradient(var(--sky1),var(--sky2));border:1px solid var(--line)}
+.mastfig svg{display:block;width:100%;height:auto;border-radius:22px;background:var(--soft);border:1px solid var(--line)}
 .pole,.yard{stroke:var(--mast);stroke-width:7;stroke-linecap:round}
 .line{stroke:var(--mast);stroke-width:1.6;opacity:.7}
 .base{fill:var(--mast)}
 #sig{transition:transform 1.6s cubic-bezier(.22,.9,.24,1)}
 #sig .shape{fill:var(--sig)}
 .cap{font:700 17px var(--disp);fill:var(--ink);text-anchor:middle}
-.flaghint{font:500 13px var(--body);fill:var(--mut);text-anchor:middle}
+.flaghint{font:400 13px var(--body);fill:var(--mut);text-anchor:middle}
 @media (max-width:760px){.grid{grid-template-columns:1fr;gap:26px}.mastfig{order:-1;width:min(70%,220px)}main{padding-top:12px}}
 @media (prefers-reduced-motion:reduce){#sig{transition:none}button:not(:disabled):hover{transform:none}}
 
@@ -64,46 +65,84 @@ button:not(:disabled):hover{transform:translateY(-1px)}
  --disp:-apple-system,BlinkMacSystemFont,"Helvetica Neue","PingFang HK","Segoe UI","Noto Sans HK","Noto Sans TC","Microsoft JhengHei",Roboto,Arial,sans-serif}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1012;--card:#0e1012;--soft:#1b1e21;--ink:#eceef0;--mut:#9aa1a8;--line:#2c3136;--link:#7db4ff;--raise:#2c3136;--shadow:none;--band:#000;--bandink:#fff}}
 :root[data-theme="dark"]{--bg:#0e1012;--card:#0e1012;--soft:#1b1e21;--ink:#eceef0;--mut:#9aa1a8;--line:#2c3136;--link:#7db4ff;--raise:#2c3136;--shadow:none;--band:#000;--bandink:#fff}
-b,strong{font-weight:600}
+b,strong{font-weight:700}
 .mast{padding:0 0 10px;gap:8px 24px}
 .mast .name{flex-basis:100%;display:block;margin:0;padding:13px 0 12px;font:700 18px/1.3 var(--body);letter-spacing:0;color:var(--bandink);background:var(--band);
  box-shadow:0 0 0 100vmax var(--band);clip-path:inset(0 -100vmax)}
-.mast nav{flex:1 1 auto;gap:8px 20px;font-size:14.5px;padding-top:2px}
+.mast nav{flex:1 1 auto;gap:8px 20px;font-size:15px;padding-top:2px}
 .mast nav a:hover{color:var(--link)}
-.mast nav a[aria-current]{color:var(--ink);font-weight:600;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
+.mast nav a[aria-current]{color:var(--ink);font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
 @media (max-width:760px){.mast .name{padding:12px 0 11px;font-size:17px}}
-h1{font:700 clamp(27px,4.2vw,38px)/1.12 var(--body);letter-spacing:-.015em}
-h2{font:700 clamp(20px,2.4vw,24px)/1.2 var(--body);letter-spacing:-.01em}
+h1{font:700 36px/1.12 var(--body);letter-spacing:0}
+h2{font:700 22px/1.2 var(--body);letter-spacing:0}
 h3{font:700 17px/1.25 var(--body)}
-.kicker{letter-spacing:0;text-transform:none;font:600 13.5px/1.2 var(--body)}
+.kicker{letter-spacing:0;text-transform:none;font:700 15px/1.2 var(--body)}
 .seg{padding:0;gap:6px;background:none;border-radius:0}
 .seg button{border:1px solid var(--line);border-radius:3px;color:var(--mut);background:var(--bg)}
-.seg button.on{background:var(--bg);border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);color:var(--ink);font-weight:600}
-h1{font:700 clamp(30px,5vw,44px)/1.08 var(--body)}
+.seg button.on{background:var(--bg);border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);color:var(--ink);font-weight:700}
+h1{font:700 36px/1.08 var(--body)}
 textarea,input[type=text]{border-radius:3px;box-shadow:none}
-button{font:600 16px/1 var(--body);letter-spacing:0;border-radius:3px;padding:13px 24px}
+button{font:700 17px/1 var(--body);letter-spacing:0;border-radius:3px;padding:13px 24px}
 .mastfig svg{border-radius:0}
 .cap{font:700 15px var(--body)}
+
+/* ONE FRAME for every page (2026-11-16, user: 'fix the changes fable recommended', the 'vibe-coded' audit of 15 Nov): the same column,
+   body size, title band, page title and menu on all six pages, and one type scale (13, 15, 17, 22 and 36 px, weights 400 and 700).
+   Last, so it wins. */
+.wrap{max-width:1060px}
+body{font-size:16px}
+.mast .name{font:700 17px/1.3 var(--body);letter-spacing:0}
+.mast nav{font-size:15px;font-weight:400}
+.mast nav a[aria-current]{color:var(--ink);font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
+h1{font:700 36px/1.15 var(--body);letter-spacing:0}
+h2,h3{letter-spacing:0}
+
+@media (max-width:760px){.mast .name{font:700 16px/21px var(--body)} h1{font-size:28px}}
+
+/* HEADER (2026-11-17, Fable's layout review P2, adopted): the ink band holds the name, the page links and the language switch; a phone
+   gets a Menu button that opens the links. Under it one research line. Same block on every page. Last, so it wins. */
+.mast{display:block;padding:0;margin:0 0 14px;gap:0}
+.mast .band{display:flex;flex-wrap:nowrap;align-items:center;gap:0 22px;min-height:48px;background:var(--band);color:var(--bandink);
+ box-shadow:0 0 0 100vmax var(--band);clip-path:inset(0 -100vmax)}
+.mast .name{flex:0 1 auto;display:block;margin:0 auto 0 0;padding:12px 0;font:700 17px/1.25 var(--body);letter-spacing:0;color:var(--bandink);
+ background:none;box-shadow:none;clip-path:none;text-decoration:none}
+.mast nav{display:flex;flex:none;flex-wrap:nowrap;align-items:stretch;gap:0 22px;padding:0;font-size:15px;font-weight:400}
+.mast nav a{color:var(--bandink);text-decoration:none;padding:14px 0 11px;border-bottom:3px solid transparent;font-weight:400;white-space:nowrap}
+.mast nav a:hover{color:var(--bandink);text-decoration:none;border-bottom-color:#7b8188}
+.mast nav a[aria-current]{color:var(--bandink);font-weight:700;text-decoration:none;border-bottom-color:var(--bandink)}
+.mast nav a.tour{color:var(--bandink)}
+.mast .langsw,.mast .menu{position:static;flex:none;font:400 15px/1.2 var(--body);color:var(--bandink);background:none;border:1px solid #7b8188;border-radius:3px;
+ padding:5px 10px;text-decoration:none;cursor:pointer}
+.mast .menu{display:none}
+.mast .research{margin:0;padding:6px 0;max-width:none;font-size:13px;line-height:1.4;color:var(--ink);background:var(--soft);
+ box-shadow:0 0 0 100vmax var(--soft);clip-path:inset(0 -100vmax)}
+@media (max-width:860px){
+ .mast .band{flex-wrap:wrap;gap:0 10px;min-height:52px}
+ .mast .name{font-size:15px;line-height:1.25;max-width:13em;padding:8px 0}
+ .mast nav{display:none;order:9;flex:1 0 100%;flex-direction:column;gap:0;border-top:1px solid #3a3f45}
+ .mast.open nav{display:flex}
+ .mast nav a{padding:12px 0;border-bottom:1px solid #3a3f45;font-size:17px}
+ .mast nav a:last-child{border-bottom:0}
+ .mast nav a[aria-current]{border-bottom-color:#3a3f45}
+ .mast .menu{display:inline-block}
+}
 </style>
-<script src="zh.js"></script><style>.langsw{position:absolute;top:10px;right:12px;z-index:60;font:600 13px/1 system-ui,-apple-system,sans-serif;padding:6px 10px;border-radius:3px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,.5);text-decoration:none} html.demo .langsw{display:none}.mast h1,.mast>.name{padding-right:96px}</style></head>
+<script src="zh.js"></script><style>html.demo .langsw{display:none}</style></head>
 <body>
 <div class="wrap">
-<header class="mast"><a class="name" href="index-zh.html">Hong Kong typhoon signal forecasts</a>
- <nav aria-label="pages"><a href="index-zh.html">Forecasts</a><a href="guide-zh.html">Tour</a><a href="verify-zh.html">How good is it?</a><a href="ranking-zh.html">Storm ranking</a><a href="ideas-zh.html" aria-current="page">Ideas</a></nav>
-</header>
+<header class="mast"><div class="band"><a class="name" href="index-zh.html">Hong Kong typhoon signal forecasts</a><nav aria-label="pages"><a href="index-zh.html">Forecasts</a><a href="guide-zh.html" class="tour">Tour</a><a href="verify-zh.html">How good is it?</a><a href="ranking-zh.html">Storm ranking</a><a href="ideas-zh.html" aria-current="page">Ideas</a></nav><a id="langsw" class="langsw" href="ideas.html" lang="en">English</a><button class="menu" type="button" aria-expanded="false" onclick="var m=this.closest('.mast');m.classList.toggle('open');this.setAttribute('aria-expanded',m.classList.contains('open'))">Menu</button></div><p class="research">Research output. The Hong Kong Observatory is the only authority for actual signals.</p></header>
 
 <main>
  <div class="grid">
   <section>
-   <p class="kicker">Ideas &amp; suggestions</p>
-   <h1>Got an idea? Hoist it.</h1>
-   <p class="lead">Something you would like to see, something that confused you, a storm we should add. Write it below and hoist it up the mast. We read every one.</p>
+   <h1>Send an idea</h1>
+   <p class="lead">Tell us what you would like to see, what confused you, or a storm we should add.</p>
    <form id="f" novalidate>
     <label class="hp" for="msg">Your idea</label>
     <textarea id="msg" maxlength="2000" placeholder="e.g. Show the chance of No. 8 for Macau too" required></textarea>
-    <input type="text" id="who" maxlength="120" autocomplete="off" placeholder="Name or email, only if you would like a reply (optional)">
+    <input type="text" id="who" maxlength="120" autocomplete="off" placeholder="Name or email if you would like a reply">
     <input class="hp" type="text" id="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-    <div class="row"><button id="go" type="submit">Hoist it ↑</button><span class="count" id="cnt">0 / 2000</span></div>
+    <div class="row"><button id="go" type="submit">Send</button><span class="count" id="cnt">0 / 2000</span></div>
     <p class="st" id="st" role="status" aria-live="polite"></p>
    </form>
    <p class="fine">Your message goes only to the people who run this site. Nothing you write is published.</p>
@@ -142,7 +181,7 @@ $("#f").addEventListener("submit",async e=>{e.preventDefault();
  if($("#hp").value) return;
  if(text.length<3){st.className="st err"; st.textContent="Write a few words first."; msg.focus(); return}
  if(!ENDPOINT&&!TRY) return;
- go.disabled=true; st.className="st"; st.textContent="Hoisting…";
+ go.disabled=true; st.className="st"; st.textContent="Sending…";
  const contact=who.value.trim(), body={message:text, contact, lang:document.documentElement.lang, page:location.pathname.split("/").pop()||"ideas-zh.html",
   _subject:"New idea for the Hong Kong typhoon signal site"};
  if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact)) body.email=contact;
@@ -155,7 +194,7 @@ $("#f").addEventListener("submit",async e=>{e.preventDefault();
   hint.textContent=""; cap.textContent=""; requestAnimationFrame(()=>{sig.style.transform="translateY(-222px)"});
   setTimeout(()=>{cap.textContent=`Signal ${name} hoisted`},1500);
   n+=1; try{sessionStorage.setItem("hk_ideas",String(n))}catch(x){}
-  st.className="st ok"; st.textContent=ENDPOINT?"Hoisted — thanks! We have it.":"Hoisted (preview: nothing was sent).";
+  st.className="st ok"; st.textContent=ENDPOINT?"Sent. Thank you.":"Preview only, nothing was sent.";
   msg.value=""; cnt.textContent="0 / 2000";
   setTimeout(()=>{go.disabled=false},1600);
  }catch(x){st.className="st err"; st.textContent="It did not go through. Please try again in a moment."; go.disabled=false}
@@ -163,5 +202,5 @@ $("#f").addEventListener("submit",async e=>{e.preventDefault();
 })();
 </script>
 <script src="credits.js"></script>
-<a id="langsw" class="langsw" href="ideas.html" lang="en">English</a><script>(function(){var a=document.getElementById("langsw");if(!a)return;if(window.top!==window.self){a.style.display="none";return}a.href=a.getAttribute("href")+location.search+location.hash;a.addEventListener("click",function(){try{localStorage.setItem("hk_lang","en")}catch(e){}})})();</script></body>
+<script>(function(){var a=document.getElementById("langsw");if(!a)return;if(window.top!==window.self){a.style.display="none";return}a.href=a.getAttribute("href")+location.search+location.hash;a.addEventListener("click",function(){try{localStorage.setItem("hk_lang","en")}catch(e){}})})();</script></body>
 </html>

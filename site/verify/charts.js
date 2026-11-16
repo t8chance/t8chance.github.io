@@ -1,6 +1,7 @@
 // Live charts for 'How good is it?' (build_verify_charts.py, 2026-10-10): each check drawn in the page instead of a picture.
 // Data: inputs/check_points.js (strength, reach: the same points as check.html) and verify/verify_points.js (gale stations, wind-index
 // peaks). x = what HKO recorded, y = what this site gave, dashed line = same as HKO. Hover or tap a dot for details.
+// 2026-11-16 audit fixes: square outlined switches, plain number rows under an ink rule, square chart frames (as the rest of the page).
 (()=>{
 // styles live here so every page that loads this script draws the same charts (How good is it?, Inputs by year); colours from the page's
 // --ink / --mut / --line / --card, own tokens with dark values
@@ -9,23 +10,23 @@ const ST=document.createElement("style"); ST.textContent=`
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--vdot:#6fa8e8;--vgrid:#262626;--vcat:#3a3a3a;--vsoft:#2a2a2a;--vraise:#3a3a3a}}
 :root[data-theme="dark"]{--vdot:#6fa8e8;--vgrid:#262626;--vcat:#3a3a3a;--vsoft:#2a2a2a;--vraise:#3a3a3a}
 .vc .pick{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:12px 0 0} .vc .pick .lbl{color:var(--mut);font-size:13px}
-.vc .seg{display:inline-flex;flex-wrap:wrap;gap:2px;padding:3px;background:var(--soft,var(--vsoft));border-radius:12px}
-.vc .seg button{font:inherit;font-size:14px;border:0;background:transparent;border-radius:9px;padding:7px 13px;color:var(--mut);cursor:pointer}
-.vc .seg button:hover{color:var(--ink)} .vc .seg button.on{background:var(--raise,var(--vraise));color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.16)}
-.vc .vsub{color:var(--mut);font-size:13.5px;margin:8px 0 6px} .vc .vread{color:var(--mut);font-size:13px;margin:4px 0 6px;max-width:72ch}
+.vc .seg{display:inline-flex;flex-wrap:wrap;gap:6px}
+.vc .seg button{font:inherit;font-size:15px;border:1px solid var(--line);background:var(--bg);border-radius:3px;padding:7px 13px;color:var(--ink);cursor:pointer}
+.vc .seg button:hover{border-color:var(--ink)} .vc .seg button.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);font-weight:700}
+.vc .vsub{color:var(--mut);font-size:15px;margin:8px 0 6px} .vc .vread{color:var(--mut);font-size:13px;margin:4px 0 6px;max-width:72ch}
 .vc .vbody{display:grid;grid-template-columns:minmax(0,600px) minmax(0,1fr);gap:6px 24px;align-items:start}
-.vc .vtiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:10px 0 4px;max-width:620px}
-.vc .vtiles>div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:13.5px;color:var(--mut);min-width:0}
-.vc .vtiles .n{display:block;font:700 30px/1.05 var(--disp,inherit);color:var(--ink);font-variant-numeric:tabular-nums}
-@media (max-width:860px){.vc .vbody{grid-template-columns:minmax(0,1fr)} .vc .vtiles{gap:8px} .vc .vtiles .n{font-size:24px}
- .vc .vtiles>div{padding:8px 10px;font-size:12.5px} .vc .seg button{padding:7px 10px}}
-.vc svg{width:100%;max-width:600px;height:auto;display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;margin:6px 0;touch-action:pan-y}
+.vc .vtiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 20px;margin:10px 0 4px;max-width:620px;border-top:2px solid var(--ink)}
+.vc .vtiles>div{background:none;border:0;border-radius:0;padding:8px 0;font-size:15px;color:var(--mut);min-width:0}
+.vc .vtiles .n{display:block;font:700 22px/1.15 var(--body,inherit);color:var(--ink);font-variant-numeric:tabular-nums}
+@media (max-width:860px){.vc .vbody{grid-template-columns:minmax(0,1fr)} .vc .vtiles{gap:8px} .vc .vtiles .n{font-size:22px}
+ .vc .vtiles>div{padding:8px 0;font-size:13px} .vc .seg button{padding:7px 10px}}
+.vc svg{width:100%;max-width:600px;height:auto;display:block;background:var(--card);border:1px solid var(--line);border-radius:0;margin:6px 0;touch-action:pan-y}
 .vc svg text{fill:var(--mut);font-size:11px;font-variant-numeric:tabular-nums} .vc svg .axl{font-size:12px} .vc svg .catl{font-size:10px}
 .vc svg .gr{stroke:var(--vgrid)} .vc svg .cat{stroke:var(--vcat)} .vc svg .ax{fill:none;stroke:var(--line)} .vc svg .one{stroke:var(--ink);stroke-dasharray:5 4;opacity:.7}
 .vc svg .d{fill:var(--vdot);fill-opacity:.35} .vc svg .dense .d{fill-opacity:.1} .vc svg .b{fill:var(--vdot);fill-opacity:.3;stroke:var(--vdot);stroke-width:1.2}
-.vc svg .bn{fill:var(--ink);font-size:11px;font-weight:600} .vc svg .lab{fill:var(--ink);font-size:11px;paint-order:stroke;stroke:var(--card);stroke-width:3px}
+.vc svg .bn{fill:var(--ink);font-size:11px;font-weight:700} .vc svg .lab{fill:var(--ink);font-size:11px;paint-order:stroke;stroke:var(--card);stroke-width:3px}
 .vc svg .hl{fill:none;stroke:var(--ink);stroke-width:1.6}
-.vtip{position:fixed;z-index:10;max-width:260px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font-size:12.5px;line-height:1.4;box-shadow:0 4px 16px rgba(0,0,0,.18);pointer-events:none}`;
+.vtip{position:fixed;z-index:10;max-width:260px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:3px;padding:7px 10px;font-size:13px;line-height:1.4;box-shadow:0 2px 10px rgba(0,0,0,.16);pointer-events:none}`;
 document.head.appendChild(ST);
 const NS="http://www.w3.org/2000/svg", C=window.CHECK||{methods:{},names:{}}, P=window.VPTS||{gale:{},wipeak:{}};
 const el=(t,a={})=>{const e=document.createElementNS(NS,t); for(const k in a)e.setAttribute(k,a[k]); return e};
@@ -43,31 +44,31 @@ const bias=(b,u,hi,lo)=>Math.round(b)===0?[`0 ${u}`,"about right on average"]:[`
 /*PRIVATE*/const CM=window.CMPTS||{};   // Inputs by year, section 4: the methods compared on the old ECMWF forecasts (inputs/compare_points.js)
 function cmp(v,k,lim,step,u,cats,xl,yl,hi,lo){const e=(CM[v]||[])[+k]; if(!e)return null; const nc=key=>(CM.names||{})[key]||nm(key);
  return {sub:`${e.title} · ${e.sub}`,lo:0,lim,step,cats,xl,yl,pts:e.pts.map(p=>({x:p[0],y:p[1],t:nc(e.keys[p[2]]),s:"",v:`HKO ${Math.round(p[0])} ${u} · estimate ${Math.round(p[1])} ${u}`})),
-  tiles:[[e.stats[2],"storms"],bias(e.stats[0],u,hi,lo),[`${Math.round(e.stats[1])} ${u}`,"typical miss"]],read:`On the dashed line = same as HKO; above = too ${hi}, below = too ${lo}.`}}/*/PRIVATE*/
+  tiles:[[e.stats[2],"storms"],bias(e.stats[0],u,hi,lo),[`${Math.round(e.stats[1])} ${u}`,"typical miss"]],read:`On the dashed line the estimate matches HKO. Above it is too ${hi} and below it is too ${lo}.`}}/*/PRIVATE*/
 const KINDS={/*PRIVATE*/
  cmp_strength:{opts:[["0","From the pressure"],["1","S2"],["2","S3"]],def:"1",get:k=>cmp("strength",k,150,20,"kt",CLS,"HKO's recorded strength (knots)","estimated strength (knots)","strong","weak")},
  cmp_reach:{opts:[["0","R2"],["1","R1"]],def:"1",get:k=>cmp("reach",k,500,100,"km",null,"HKO's gale-wind reach toward Hong Kong (km)","reach drawn (km)","far","short")},
  strength:{opts:FC,def:"ifs2025",get:k=>{const m=C.methods[k]; if(!m)return null; return Object.assign(xy(m.strength,150,"kt","strength",m.strength.keys,"strong","weak"),
   {sub:`${m.title} · ${m.sub.strength}`,lo:0,lim:150,step:20,cats:CLS,xl:"HKO's recorded strength (knots)",yl:"strength this site used (knots)",
-   read:"On the dashed line = same as HKO; above = too strong, below = too weak."})}},
+   read:"On the dashed line the site matches HKO. Above it is too strong and below it is too weak."})}},
  reach:{opts:FC,def:"ifs2025",get:k=>{const m=C.methods[k]; if(!m)return null; return Object.assign(xy(m.reach,500,"km","reach",m.reach.keys,"far","short"),
   {sub:`${m.title} · ${m.sub.reach}`,lo:0,lim:500,step:100,xl:"HKO's gale-wind reach toward Hong Kong (km)",yl:"reach this site drew (km)",
-   read:"On the dashed line = same as HKO; above = too far, below = too short."})}},
+   read:"On the dashed line the site matches HKO. Above it is too far and below it is too short."})}},
 /*/PRIVATE*/ gale:{opts:FC,def:"ifs2025",get:k=>{const g=P.gale[k]; if(!g||!g.pts.length)return null; const by={};
   g.pts.forEach(([o,m,c])=>{const q=by[o+","+m]||(by[o+","+m]={x:o,y:m,n:0,c:[]}); q.n++; q.c.push(c)});
   const e=g.pts.map(p=>p[1]-p[0]), right=e.filter(v=>v===0).length/e.length, miss=e.reduce((a,v)=>a+Math.abs(v),0)/e.length;
-  return {sub:`${g.title} · runs made before HKO's highest signal`,lo:-.5,lim:8.5,step:1,xl:"stations with gale, HKO",yl:"stations with gale, this site (middle version)",
+  return {sub:`${g.title}, runs made before HKO's highest signal`,lo:-.5,lim:8.5,step:1,xl:"stations with gale, HKO",yl:"stations with gale, this site (middle version)",
    pts:Object.values(by).map(q=>{const u=[...new Set(q.c)]; return {x:q.x,y:q.y,n:q.n,t:`HKO ${q.x}, this site ${q.y}`,s:`${q.n} run${q.n>1?"s":""}`,v:u.slice(0,5).join(", ")+(u.length>5?` and ${u.length-5} more`:"")}}),
    tiles:[[g.pts.length,"runs"],[`${Math.round(100*right)}%`,"exactly right"],[miss.toFixed(1),"stations off on average"]],
-   read:"Each circle = runs with the same pair of numbers; bigger = more runs. On the dashed line = same as HKO."}}},
+   read:"Each circle is the runs with the same pair of numbers, and a bigger circle is more runs. On the dashed line the site matches HKO."}}},
  wipeak:{opts:[["recent","Since Aug 2021"],["old","2004 to Jul 2021"]],def:"recent",get:k=>{const w=P.wipeak[k]; if(!w)return null;
   const e=w.map(p=>p[1]-p[0]), b=e.reduce((a,v)=>a+v,0)/e.length, miss=e.reduce((a,v)=>a+Math.abs(v),0)/e.length, mx=Math.max(...w.map(p=>Math.max(p[0],p[1])));
   const top=[...w].sort((a,c)=>c[0]-a[0]).slice(0,3).map(p=>p[2]);
   return {sub:k==="old"?`${w.length} storms, against the peaks HKCOC published`:`${w.length} storms, against the index from HKO's station winds`,
    lo:0,lim:Math.max(100,Math.ceil((mx+5)/10)*10),step:20,cats:WIB,xl:k==="old"?"HKCOC's published peak (km/h)":"observed peak, from HKO's station winds (km/h)",yl:"peak this site estimates (km/h)",
-   pts:w.map(p=>({x:p[0],y:p[1],t:p[2],s:"",v:`observed ${Math.round(p[0])} km/h · this site ${Math.round(p[1])} km/h`,lab:top.includes(p[2])?p[2]:""})),
+   pts:w.map(p=>({x:p[0],y:p[1],t:p[2],s:"",v:`observed ${Math.round(p[0])} km/h, this site ${Math.round(p[1])} km/h`,lab:top.includes(p[2])?p[2]:""})),
    tiles:[[w.length,"storms"],bias(b,"km/h","high","low"),[`${Math.round(miss)} km/h`,"typical miss"]],
-   read:"Each dot = one storm's highest wind index. On the dashed line = same as observed; above = too high, below = too low."}}}};
+   read:"Each dot is one storm's highest wind index. On the dashed line the site matches what was observed. Above it is too high and below it is too low."}}}};
 const tip=document.createElement("div"); tip.className="vtip"; tip.hidden=true; document.body.appendChild(tip);
 const hideTip=()=>{tip.hidden=true; document.querySelectorAll(".vc .hl").forEach(r=>r.style.display="none")};
 document.addEventListener("pointerdown",e=>{if(!e.target.closest(".vc svg"))hideTip()});
