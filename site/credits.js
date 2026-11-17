@@ -1,11 +1,5 @@
-// 2026-11-16 audit fixes: plain sentences (no bold lead-ins, colons or semicolons), no double rule under the page's h2 rule.
-// DATA AND CREDITS footer on every page (2026-10-17, user: 'do we need to do these for IFS and AIFS (credit them)'): the attribution the
-// data licences ask for, shown prominently. ECMWF open data (IFS, AIFS) and ECMWF's archived ensembles (TIGGE): CC BY 4.0, wording from
-// apps.ecmwf.int/datasets/licences/general (service based on ECMWF data + source + licence + disclaimer + modification notice);
-// Google DeepMind Weather Lab: CC BY 4.0 for past forecasts, live ones under Google's experimental-data terms; Pangu-Weather re-forecasts
-// start from ERA5 (Copernicus); observations from the Hong Kong Observatory. Licence wording stays in English on the Chinese pages.
 (function () {
-  if (document.documentElement.classList.contains("demo")) return;                  // not inside the tour's frames
+  if (document.documentElement.classList.contains("demo")) return;
   var zh = /^zh/.test(document.documentElement.lang || "");
   var css = ".credits{max-width:1060px;margin:28px auto 36px;padding:0 16px;border-top:0;font-size:13px;line-height:1.5;color:var(--mut,#5a6168)}"
     + ".credits h2{margin:0 0 8px;padding-top:12px;border-top:1px solid var(--ink,#14171a);font-size:15px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--ink,#14171a)}.credits p{margin:0 0 8px;max-width:78ch}.credits a{color:inherit}.credits summary{cursor:pointer;color:var(--link,#0a55a3);margin:4px 0 8px}.credits details[open] summary{margin-bottom:8px}";
@@ -24,17 +18,14 @@
     "Station winds for some storms before 2008 come from the tables in Chinese Wikipedia's articles (" + A("https://zh.wikipedia.org", "zh.wikipedia.org") + "), by Wikipedia's contributors, under " + A("https://creativecommons.org/licenses/by-sa/4.0/", "CC BY-SA 4.0") + ".",
     "The Hong Kong Observatory's best tracks, warning signals and station winds were used to check and set up the forecasts. The signal shown as in force on the forecast page is read from HKO's open data on <a href=\"https://data.gov.hk/en/\">DATA.GOV.HK</a> and used under the DATA.GOV.HK terms, and the data belong to the Government of the Hong Kong SAR. The Hong Kong Observatory is the only authority for actual signals. This site is research output and is not endorsed by any of the organisations above."
   ];
-  var zhs = "本網站使用以下機構提供的預報數據，推算香港天文台發出各號熱帶氣旋警告信號的機會，並製作相關圖表。這些機構均未參與本網站的製作，亦不代表認可本網站。所有熱帶氣旋警告信號均以香港天文台的正式公布為準。";   // 2026-11-01 reviewer wording
+  var zhs = "本網站使用以下機構提供的預報數據，推算香港天文台發出各號熱帶氣旋警告信號的機會，並製作相關圖表。這些機構均未參與本網站的製作，亦不代表認可本網站。所有熱帶氣旋警告信號均以香港天文台的正式公布為準。";
   var f = document.createElement("footer"); f.className = "credits"; f.setAttribute("aria-label", "Data and credits");
-  // FOLDED (2026-11-17, user: 'Looks good! adopt it' -> Fable's layout review P8, with the owner's choice to keep ECMWF and Copernicus open):
-  // one summary line, the ECMWF and Copernicus attributions in the open (their terms ask for the wording with the product), and the other
-  // credits in a closed section one tap away (CC BY 4.0 3(a)(2) allows attribution by a link to a resource that holds it)
   var P = function (s) { return '<p lang="en" translate="no" class="cr">' + s + "</p>"; };
   var sum = zh ? "<p>" + zhs + "時間均為香港時間。</p>"
     : "<p>Times are Hong Kong time. Data come from ECMWF, Google DeepMind, NOAA, Copernicus and the Hong Kong Observatory. This site is research output and is not endorsed by any of them.</p>";
   f.innerHTML = "<h2>" + (zh ? "資料來源及鳴謝" : "Data and credits") + "</h2>" + sum + [en[0], en[2], en[3]].map(P).join("")
     + "<details><summary>" + (zh ? "其他鳴謝及授權" : "More credits and licences") + "</summary>" + [en[1], en[4], en[5], en[6]].map(P).join("") + "</details>";
-  var go = function () { var w = document.querySelector(".wrap"), mw = w ? getComputedStyle(w).maxWidth : "";   // as wide as the page's own column (2026-11-10)
+  var go = function () { var w = document.querySelector(".wrap"), mw = w ? getComputedStyle(w).maxWidth : "";
     if (/px$/.test(mw)) { f.style.maxWidth = mw; f.style.paddingLeft = f.style.paddingRight = "16px" } document.body.appendChild(f); };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go();
 })();

@@ -3,357 +3,76 @@
 <title>Hong Kong typhoon signal forecasts</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%2314171a%27/%3E%3C/svg%3E">
 <style>
-/* Layout: a signal board -- masthead; one run strip; the answer as the loudest block; then the timeline, the map with its own
-   controls, and the charts. Neutrals are the map's cool sea-greys; HKO's signal colours are the only strong colour. */
-:root{
- --bg:#edf1f4;--card:#fff;--soft:#e3e9ee;--ink:#13202b;--mut:#55636f;--line:#d3dbe2;--link:#1a5ea8;
- --no1:#c3cad1;--no3:#d98c1a;--no8:#cc2255;--no9:#7f0000;--no10:#54278f;--wib:#e8590c;--wil:#0b7285;
- --good:#1a7f37;--bad:#c62828;--halo:#fff;--raise:#fff;--warn:#9a5b00;--shadow:0 1px 2px rgba(19,32,43,.06),0 10px 28px rgba(19,32,43,.07);
- --disp:"Barlow Condensed","Roboto Condensed","Arial Narrow",sans-serif;
- --body:"Barlow",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-@media (prefers-color-scheme:dark){:root{
- --bg:#0f1923;--card:#16222e;--soft:#1c2a37;--ink:#e2e9ef;--mut:#93a3b1;--line:#273746;--link:#8cbcff;
- --no1:#6f7a84;--no3:#f0a23a;--no8:#f05a82;--no9:#ffc6b8;--no10:#b08ae8;--wib:#ffa94d;--wil:#3bc9db;
- --good:#5cc97a;--bad:#ff7b72;--halo:#16222e;--raise:#33475a;--warn:#f0b35a;--shadow:0 1px 0 rgba(255,255,255,.03);color-scheme:dark}}
-*{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font:400 15.5px/1.55 var(--body);-webkit-font-smoothing:antialiased}
-a{color:var(--link);text-underline-offset:2px}
-b,strong{font-weight:700}
-:focus-visible{outline:2px solid var(--link);outline-offset:2px}
-.wrap{max-width:1120px;margin:0 auto;padding:0 16px 56px}
-html.demo .wrap{padding:6px 2px 4px} html.demo-answer .tlcard,html.demo-timeline .hero,html.demo-timeline .bcard{display:none} html.demo .toolbar,html.demo #status{margin:0} html.demo body{background:var(--bg)} html.demo .mapcard{margin:0}
+/* The forecast page, one stylesheet. A flat page (look of 2026-11-10): white ground, ink text, hairline rules, square corners, no boxes
+   or shadows, the device's own typeface, one ink title band. HKO's signal colours are the only strong colour.
+   ONE FRAME for every page (2026-11-16, user: 'fix the changes fable recommended', the 'vibe-coded' audit of 15 Nov): the same column,
+   body size, title band, page title and menu on all six pages, and one type scale (13, 15, 17, 22 and 36 px, weights 400 and 700).
+   Order: tokens, base, shared pieces, then the page from top to bottom -- header, context line, run menus, sheet, the answer (Expert),
+   the signal board (Basic and Advanced), map, member charts, footer -- and the tour's frames last. Each part's phone rules sit with
+   the part. Breakpoints: 760 px (a phone) and 860 px (one column, the Menu button). */
 
-/* masthead */
-.mast{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 28px;padding:24px 0 18px}
-.mast h1{margin:0;font:700 clamp(26px,3.3vw,35px)/1.05 var(--disp);letter-spacing:.005em;text-wrap:balance}
-.mast nav{display:flex;flex-wrap:wrap;gap:4px 20px;font-size:15px;font-weight:400}
-.mast nav a{color:var(--ink);text-decoration:none}
-.mast nav a:hover{color:var(--link);text-decoration:underline}
-.mast nav a.tour{color:var(--link);font-weight:700}
-.disc{flex-basis:100%;margin:0;color:var(--mut);font-size:13px;max-width:72ch}
-
-/* the run strip */
-.toolbar{display:flex;flex-direction:column;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin:0 0 20px}
-.grp{display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-width:0}
-.lbl{flex:none;width:78px;font:700 15px/1 var(--disp);color:var(--mut)}
-.sub{color:var(--mut);font-size:13px;margin:0}
-.toolbar .sub{padding-left:86px}
-.toolbar .sub b{color:var(--ink)}
-.stale{margin:0;padding-left:86px;color:var(--warn);font-weight:700;font-size:15px}
-@media (max-width:760px){.stale{padding-left:0}}
-select,button{font:400 15px/1.2 var(--body);color:var(--ink);border:1px solid var(--line);border-radius:10px;background:var(--card);padding:8px 12px;cursor:pointer;max-width:100%}
-select{-webkit-appearance:none;appearance:none;background:var(--soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%237d8b97' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 11px center/10px 6px;border-color:transparent;padding-right:32px;font-weight:700}
-button:hover,select:hover{border-color:var(--mut)}
-button,select,label,input{touch-action:manipulation}   /* no double-tap zoom: quick taps on + / - each count (iOS) */
-button.on{background:var(--ink);border-color:var(--ink);color:var(--card)}
-.seg{display:inline-flex;flex-wrap:wrap;gap:2px;padding:3px;background:var(--soft);border-radius:12px}
-.seg button{border:0;background:transparent;border-radius:9px;padding:7px 13px;color:var(--mut)}
-.seg button:hover{color:var(--ink)}
-#ensbtns button.na{opacity:.5}
-.seg button.on{background:var(--raise);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.16)}
-#checks{margin:0 0 0 4px}
-input[type=checkbox],input[type=range]{accent-color:var(--ink)}
-
-/* the answer */
-.status{margin:0 0 20px}
-.hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px;margin:0 0 14px}
-.hero>.ans:only-child{grid-column:1/-1}
-.ans.na{background:repeating-linear-gradient(45deg,var(--card) 0 8px,var(--soft) 8px 11px)}.ans.na .badge,.ans.na .v{color:var(--mut)}
-.ans{min-width:0;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px 16px;box-shadow:var(--shadow)}
-/* 2026-10-17: the HKO card in the same style as the forecast card */
-.ans .k,.tlcard .k{font:700 17px/1.2 var(--disp);color:var(--mut)}
-.badge{font:700 36px/.92 var(--disp);letter-spacing:0;margin:8px 0 10px}
-.hero>.ans+.ans .badge{font-size:36px;margin:8px 0 8px}
-.ans .v{font-size:15px;font-variant-numeric:tabular-nums}
-.ans{container-type:inline-size}
-.gs{margin:9px 0 0} .gl{display:block;margin:0 0 5px;font:700 15px/1 var(--disp);color:var(--mut)}
-.gd{display:inline-flex;gap:3px;vertical-align:-1px;margin-right:6px} .gd i{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--ink);opacity:.3}
-.gd i.f{background:var(--ink);opacity:1} .gd i.p{background:var(--mut);opacity:.6}
-.gn{font:700 22px/1 var(--disp)}
-.r8{margin:12px 0 0;font-size:15px;line-height:1.45} .r8 .r8s{color:var(--mut);font-size:15px;margin-top:3px}   /* the 8-station average and its rank */
-.gh{font:700 17px/1.25 var(--disp);color:var(--ink);letter-spacing:0;margin:12px 0 4px} #galeF>div:not(.gh){margin-top:9px}   /* "Forecast, at any time from this run onward" over the station counts; the rows spaced as in the HKO card */
-@container (max-width:470px){.gl{display:block;min-width:0;margin:0 0 5px}}   /* a narrow card: the label above its dots, so '1 of 8' never splits (after .gl, so it wins) */
-.rng{color:var(--mut);font-size:13px}
-.note{color:var(--mut);font-size:13px;margin:8px 0 0}
-.mapexp{margin:6px 0 4px;font-size:15px;max-width:none} .mapexp b{color:var(--ink)}
-.mexp{margin:6px 0 2px;font-size:15px;line-height:1.45;color:var(--mut);max-width:62ch} .mexp b{color:var(--ink)}
-.what{margin:12px 0 0;font-size:15px;color:var(--mut)} .what summary{cursor:pointer;color:var(--link);font-weight:700} .what p{margin:8px 0 0;max-width:64ch}
-.tlcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px 12px;margin:0 0 12px}
-/* BASIC mode (2026-10-17) */
-body.basic .adv{display:none!important}
-#easymore{display:none}body.easy .wrap>:not(.mast):not(.ctx):not(.toolbar):not(.sheet):not(#stale):not(.hkonow):not(#easymore){display:none!important}body.easy #maph,body.easy .mapcard{display:none!important}
-body.easy .toolbar>:not(#stamp):not(.grp){display:none!important}/* Basic shows Today / Past storms and the run pickers too (2026-11-02, user: 'in easy mode, enable past storms also'); the forecast buttons stay hidden (.adv) */body.easy .toolbar .sub{padding-left:0}body.easy #status .tlcard,body.easy #status .sech{display:none!important}
-body.easy #easymore{display:block;text-align:center;margin:22px 0 8px}#easymore .easygo{display:inline-block;padding:12px 28px;border-radius:999px;border:1px solid var(--line,#ccc);font-weight:700;text-decoration:none}
-body.basic.bsel #chead.adv,body.basic.bsel.tab-wi .cbox.adv,body.basic.bsel #cnote.adv,body.basic.bsel:not(.tab-wi) #stationchart.adv{display:block!important} body.basic.bsel #tabs.adv{display:flex!important} .bwx{display:none} body.basic.bsel.tab-wi .bwx{display:block;max-width:70ch}
-.modesw{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;vertical-align:middle;margin-left:4px}.modesw a{padding:3px 11px;font-size:13px;text-decoration:none;color:var(--mut)}.modesw a.on{background:var(--ink);color:var(--card)}
-.bcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px 14px;margin:0 0 12px}
-.bcard .bh{font:700 36px/1.15 var(--disp);margin:0 0 12px;text-wrap:balance}
-.ans .bh{font:700 36px/1.15 var(--disp);margin:8px 0 10px;text-wrap:balance}
-.bbar{display:grid;grid-template-columns:64px 1fr 52px;gap:10px;align-items:center;margin:7px 0}.bbar b{font-weight:700}
-.bbar .tr{height:14px;border-radius:7px;background:var(--soft);overflow:hidden}.bbar .fl{height:100%;border-radius:7px;min-width:2px}
-.bbar .pc{font:700 17px var(--disp);text-align:right;font-variant-numeric:tabular-nums}
-.cmp{border-collapse:collapse;margin:10px 0 2px;font-size:15px;font-variant-numeric:tabular-nums}.cmp th{font-weight:700;color:var(--mut)}
-.cmp td,.cmp th{padding:3px 0 3px 18px;text-align:right;border-top:1px solid var(--line)}.cmp td:first-child,.cmp th:first-child{padding-left:0;text-align:left}
-.cmp tr:first-child th{border-top:0}.cmp tr.me td{font-weight:700}.cmp .note{font-size:13px;margin:0}
-.hkonow{margin:10px 0 4px;padding:6px 0 6px 12px;border-left:4px solid var(--no3);font-size:15px}
-.bcard .bv{margin:10px 0 0;font-size:15px}.obs{margin-top:10px!important;font-size:15px!important}.selhide{display:none!important}#play{display:none!important}body.btsel #chead.adv,body.btsel .cbox.adv,body.btsel #cnote.adv{display:block!important}body.btsel #tabs,body.btsel #wisw,body.btsel #stationchart,body.btsel .mch,body.btsel #bwx{display:none!important}#stamp .sl{display:block}@media (max-width:600px){#stamp .sx{display:none}body.basic #stamp:not(:has(.sl:not(.sx))){display:none}}.bmapc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px 10px;margin:0 0 12px}.bmapc:empty{display:none}
-.bmapc .bmh{font-weight:700;font-size:17px;margin:0 0 8px}.bmapc svg{display:block;width:100%;height:auto;border-radius:10px}.bmapc .note{margin:6px 0 0}.iss{margin:4px 0 10px;font-size:15px;color:var(--mut)}
-.tlcard .k{margin-bottom:8px}
-.sech{font:700 13px/1 var(--disp);letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:24px 0 10px}#status>.sech:first-child{margin-top:6px}
-html.demo .sech{display:none} #mapexp{display:none} .mapbar .mapnav{margin:0 0 0 auto}
-.r2rlg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--mut);margin:-2px 0 6px}.r2rlg b{font-weight:700}
-.r2rp{margin:0 0 4px}.r2rp .t{font:700 13px/1.3 var(--disp);color:var(--ink);margin:6px 0 0}#r2r svg{display:block;width:100%;height:auto;border:0;border-radius:0;background:none}#r2r circle,#r2r rect.na,#r2r .mk{cursor:pointer}
-.r2rctl{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:0 0 8px}.r2rctl .seg button{padding:5px 11px;font-size:13px}
-.r2rall .r2rlg .sg{display:none}.r2rlgA{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--ink);margin:4px 0 0}.r2rlgA svg{vertical-align:middle;margin-right:4px}#r2r .r2rlgA svg{display:inline-block;width:38px;height:12px}
-.r2rallnote{margin:2px 0 0;font-size:13px;color:var(--mut)}
-.rkrough{font-size:13px;font-weight:700;color:var(--mut);border:1px solid var(--mut);border-radius:6px;padding:0 4px;margin-left:4px;vertical-align:1px}.rkold{margin-left:10px;border:2px solid var(--link);color:var(--link);background:transparent;border-radius:10px;padding:6px 13px;font-weight:700;cursor:pointer}.rkold.on{background:var(--link);color:#fff}.rk .rkfc{margin:0 0 10px;padding:10px 14px;border:1px solid var(--link);border-radius:12px;background:rgba(26,94,168,.08);font-size:15px}.rkctl{margin:0 0 8px}
-.rktw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}.rkt{border-collapse:collapse;width:100%;min-width:600px;font-variant-numeric:tabular-nums;font-size:15px}.rkt.nar{min-width:0}
-.rkt th,.rkt td{padding:6px 9px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}.rkt th{font-size:13px;color:var(--mut);background:var(--soft);white-space:normal;vertical-align:bottom}
-.rkt td.l,.rkt th.l{text-align:left}.rkt.nar td.l{white-space:normal}.rkt tr.s10 td{background:rgba(229,115,135,.17)}.rkt tr.s9 td{background:rgba(240,190,60,.2)}.rkt tr.me td{font-weight:700}
-.rkt tr.fc td{background:rgba(26,94,168,.14);font-weight:700;border-top:2px solid var(--link);border-bottom:2px solid var(--link)}.rk .mut{color:var(--mut);font-weight:400}
-.rksg{display:inline-block;min-width:40px;padding:0 6px;border-radius:999px;font-size:13px;font-weight:700;line-height:1.7;color:#fff;margin-left:4px}.rksg3{background:var(--no3)}.rksg8{background:var(--no8)}.rksg9{background:var(--no9,#8e2a8a)}.rksg10{background:var(--no10)}.rksgf{background:var(--link)}
-#r2r{position:relative}.r2rtip{position:absolute;z-index:6;pointer-events:none;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font-size:13px;line-height:1.5;box-shadow:var(--shadow);white-space:nowrap}
-.r2rtip b{display:block;font-weight:700;margin-bottom:2px}.r2rtip i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}.r2rtip .mu{color:var(--mut)}#r2r .r2rtip svg{display:inline-block;width:16px;height:10px}
-#tl svg{border:0;border-radius:0;background:transparent;box-shadow:none}
-.tlleg{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:13px;color:var(--mut);margin-top:8px}
-.tlleg i{display:inline-block;width:22px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
-details.nums>summary{cursor:pointer;color:var(--link);font-weight:700;font-size:15px;margin:4px 0 12px}
-.lvgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.lv{min-width:0;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
-.lv h3{margin:0 0 8px;font:700 22px/1 var(--disp);color:var(--c)}
-.lv dl{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;margin:0;font-size:15px}
-.lv dt{color:var(--mut)} .lv dd{margin:0;font-variant-numeric:tabular-nums}
-
-/* map */
-.mapcard{margin:26px 0 0}
-.mapbar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin:0 0 10px}
-.mapbar .lbl{width:auto;margin-right:4px}
-.mapbar .note{margin:0}
- .swipe{display:none}
-.scrollx{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:16px}
-.mapwrap{position:relative} #selbar{position:absolute;top:12px;left:12px;z-index:5}
-.mapnav{display:flex;gap:5px;align-items:center;margin:8px 0 0}
-.mapnav button{flex:0 1 44px;min-width:32px;height:40px;padding:0;font:600 19px/1 var(--body);display:inline-flex;align-items:center;justify-content:center}
-.mapnav [data-nav=in],.mapnav [data-nav=out]{font-size:25px;font-weight:500}
-.mapnav button:disabled{opacity:.38;cursor:default} .mapnav .gap{flex:0 0 6px}
-#showAll{font:700 17px/1.2 var(--body);padding:11px 18px;border:0;border-radius:12px;background:#13202b;color:#fff;box-shadow:0 2px 12px rgba(0,0,0,.28);cursor:pointer}
-#showAll:hover{filter:brightness(1.18)} #showAll:focus-visible{outline:3px solid var(--link);outline-offset:2px}
-svg{width:100%;height:auto;display:block;background:var(--card);border:1px solid var(--line);border-radius:16px}
-#map{box-shadow:var(--shadow);display:block;width:100%}
-#map text{paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}   /* labels readable over the tracks (2026-10-11) */
-.mapkey{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;margin:10px 0 2px;font-size:15px;color:var(--ink)}
-.mapkey span{display:inline-flex;align-items:center;gap:7px;white-space:nowrap} .mapkey .kh{font-weight:700}
-.mapkey i{display:inline-block;width:26px;height:5px;border-radius:3px;box-shadow:0 0 0 2px #e8eff6}
-.mapkey .kdash{height:0;border-top:3px dashed #000;border-radius:0} .mapkey .kthin{height:0;border-top:2px dashed #999;border-radius:0}
-.mapkey b{font-weight:400} .mapkey .kn{color:var(--mut);font-size:15px;white-space:normal}
-#maphint{font-size:15px}
-.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}
-
-/* charts */
-h2{font:700 22px/1.1 var(--disp);letter-spacing:0;margin:36px 0 10px;text-wrap:balance}
-#tabs{gap:2px 20px;border-bottom:1px solid var(--line);margin:0 0 14px}
-#tabs button{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;padding:9px 1px;margin-bottom:-1px;color:var(--mut);font-weight:700}
-#tabs button:hover{color:var(--ink)}
-#tabs button.on{background:none;color:var(--ink);border-bottom-color:var(--ink)}
-#tabs label{font-size:13px;color:var(--mut)}
-/* the wind-index views (2026-11-04, user: 'no one even sees it now'): a switch on its own row, the chosen view dark */
-#wisw{margin:-4px 0 14px;gap:8px 10px} #wisw .lbl{width:auto;margin-right:2px} #wisw .seg{border:1px solid var(--line)}
-#wisw .seg button{padding:8px 15px;font-weight:700;color:var(--ink)} #wisw .seg button.on{background:var(--ink);color:var(--card);box-shadow:none}
-.kv{display:inline-block;padding:3px 10px;margin:3px 6px 3px 0;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:13px;line-height:1.5}
-table.tl{border-collapse:collapse;font-size:13px;margin:6px 0 2px;width:100%} table.tl th,table.tl td{border-bottom:1px solid var(--line);padding:5px 7px;text-align:center}
-table.tl tr[data-c]{cursor:pointer} table.tl tr.on td{font-weight:700;background:var(--card)}
-.tt-k{fill:#1a1a1a} .tt-w{fill:var(--halo)}
-table.sg{border-collapse:collapse;font-size:13px;margin:4px 0} .sg th,.sg td{border-bottom:1px solid var(--line);padding:3px 8px;text-align:left} .sg td:nth-child(n+2){text-align:right}
-#stationchart{overflow-x:auto}
-.sgm tr.sgrow{cursor:pointer} .sgm tr.sgrow:hover td,.sgm tr.sgon td{background:var(--soft)}
-.sgdistbox:not(:empty){margin:10px 0 4px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
-.sgdist svg{display:block;max-width:100%;height:auto} .sgdh{margin:0 0 4px;font-size:15px;color:var(--mut)} .sgdh b{color:var(--ink)}
-.sghint{font-weight:700;color:var(--ink)} .sgm .dg{color:var(--good);font-weight:700} .sgm .dr{color:var(--bad);font-weight:700}
-table.sgm{border-collapse:collapse;font-size:15px;margin:4px 0;min-width:650px;font-variant-numeric:tabular-nums} .sgm th,.sgm td{border-bottom:1px solid var(--line);padding:6px 9px;text-align:right;white-space:nowrap} .sgm th{font-weight:700;color:var(--mut)} .sgm th:first-child,.sgm td:first-child{text-align:left}
-.sgcounts{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
-footer{color:var(--mut);font-size:13px;border-top:1px solid var(--line);margin-top:36px;padding-top:14px}
-
-@media (max-width:760px){
- .mast{padding-top:16px} .hero{grid-template-columns:1fr} .lvgrid{grid-template-columns:1fr}
- .lbl{width:100%} .toolbar .sub{padding-left:0} .mapbar .lbl{width:100%}
- #chart{width:100%;height:auto}
- @media (max-width:731px){#chart text{paint-order:stroke;stroke:var(--card);stroke-width:3px;stroke-linejoin:round}}   /* 2026-10-17: a phone draws the chart at its own width (chart()), its labels haloed where they cross the bars; the MAP fits the screen and keeps its labels at size (2026-10-11) */
- .toolbar select{width:100%} .swipe{display:block}
- #tabs{gap:2px 14px} #tabs button{font-size:15px;padding:8px 1px}
-}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
-
-/* look of 2026-11-10: a flat page. White ground, ink text, hairline rules, square corners, no boxes or shadows, the device's own typeface,
-   one ink title band. The signal colours stay the only colour. These rules come last, so they win over the ones above. */
+/* ---- 1. tokens ---- */
 :root{
  --bg:#fff;--card:#fff;--soft:#eff0f1;--ink:#14171a;--mut:#5a6168;--line:#d8dbde;--link:#0a55a3;
- --halo:#fff;--raise:#fff;--shadow:none;--band:#14171a;--bandink:#fff;
- --body:-apple-system,BlinkMacSystemFont,"Helvetica Neue","PingFang HK","Segoe UI","Noto Sans HK","Noto Sans TC","Microsoft JhengHei",Roboto,Arial,sans-serif;
- --disp:-apple-system,BlinkMacSystemFont,"Helvetica Neue","PingFang HK","Segoe UI","Noto Sans HK","Noto Sans TC","Microsoft JhengHei",Roboto,Arial,sans-serif}
+ --no1:#c3cad1;--no3:#d98c1a;--no8:#cc2255;--no9:#7f0000;--no10:#54278f;--wib:#e8590c;--wil:#0b7285;
+ --good:#1a7f37;--bad:#c62828;--halo:#fff;--warn:#9a5b00;--band:#14171a;--bandink:#fff;
+ --body:-apple-system,BlinkMacSystemFont,"Helvetica Neue","PingFang HK","Segoe UI","Noto Sans HK","Noto Sans TC","Microsoft JhengHei",Roboto,Arial,sans-serif}
 @media (prefers-color-scheme:dark){:root{
  --bg:#0e1012;--card:#0e1012;--soft:#1b1e21;--ink:#eceef0;--mut:#9aa1a8;--line:#2c3136;--link:#7db4ff;
- --halo:#0e1012;--raise:#2c3136;--shadow:none;--band:#000;--bandink:#fff}}
+ --no1:#6f7a84;--no3:#f0a23a;--no8:#f05a82;--no9:#ffc6b8;--no10:#b08ae8;--wib:#ffa94d;--wil:#3bc9db;
+ --good:#5cc97a;--bad:#ff7b72;--halo:#0e1012;--warn:#f0b35a;--band:#000;--bandink:#fff;color-scheme:dark}}
+
+/* ---- 2. base elements ---- */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+a{color:var(--link);text-underline-offset:2px}
 b,strong{font-weight:700}
-select,button{border-radius:3px}
-button{border-color:var(--line);background:var(--bg)}
+h2{font:700 22px/1.2 var(--body);margin:30px 0 10px;text-wrap:balance}
+:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+select,button{font:400 15px/1.2 var(--body);color:var(--ink);border:1px solid var(--line);border-radius:3px;background:var(--bg);padding:8px 12px;cursor:pointer;max-width:100%}
+select{-webkit-appearance:none;appearance:none;background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%237d8b97' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 11px center/10px 6px;padding-right:32px}
+button:hover,select:hover{border-color:var(--mut)}
+button.on{background:var(--ink);border-color:var(--ink);color:var(--card)}
+button,select,label,input{touch-action:manipulation}   /* no double-tap zoom: quick taps on + / - each count (iOS) */
+input[type=checkbox],input[type=range]{accent-color:var(--ink)}
+svg{display:block;width:100%;height:auto;background:var(--card);border:1px solid var(--line)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
-/* masthead: an ink band with the site's name, then the page links, then how much to show */
-.mast{padding:0 0 12px;gap:10px 24px}
-.mast h1{flex-basis:100%;margin:0;padding:13px 0 12px;font:700 18px/1.3 var(--body);letter-spacing:0;color:var(--bandink);background:var(--band);
- box-shadow:0 0 0 100vmax var(--band);clip-path:inset(0 -100vmax)}
-.mast nav{flex:1 1 auto;align-items:center;gap:8px 20px;font-size:15px;padding-top:2px}
-.mast nav a.tour{font-weight:700}
-.modesw{margin-left:auto;border:1px solid var(--ink);border-radius:3px}
-.modesw a{padding:5px 13px;font-size:15px;color:var(--ink)}
-.modesw a+a{border-left:1px solid var(--ink)}
-.modesw a.on{background:var(--ink);color:var(--bg)}
-.disc{font-size:13px;line-height:1.45;max-width:86ch}
-@media (max-width:760px){
- .mast h1{padding:12px 0 11px;font:700 16px/21px var(--body)}   /* whole-pixel line: a fractional one left a hairline under the band; 16 px keeps the English title on one line at 390 px (Fable review 2026-11-11) */
- .mast nav{gap:0 18px} .mast nav>a{padding:5px 0}   /* taller tap targets for the links, same spacing (2026-11-11) */
- .modesw{display:flex;flex:1 0 100%;margin:0}
- .modesw a{flex:1;text-align:center;padding:8px 0;font-size:15px}
-}
-
-/* the run strip: no box, two hairlines */
-.toolbar{background:none;border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:0;padding:12px 0;margin:0 0 6px;gap:8px}
-.lbl{width:100px;font:700 13px/1.2 var(--body)}
-.toolbar .sub{padding-left:108px;font-size:13px}
-.stale{padding-left:108px;font-size:15px}
-select{background-color:var(--bg);border-color:var(--line);font-weight:400}
-.seg{padding:0;gap:6px;background:none;border-radius:0}
-.seg button{border:1px solid var(--line);border-radius:3px;padding:7px 12px;color:var(--mut);background:var(--bg)}
+/* ---- 3. shared pieces: the column, small print, a row of controls, a switch, a signal plate ---- */
+.wrap{max-width:1060px;margin:0 auto;padding:0 16px 56px}
+.note{color:var(--mut);font-size:13px;margin:8px 0 0}
+.rng{color:var(--mut);font-size:13px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}
+.scrollx{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.seg{display:inline-flex;flex-wrap:wrap;gap:6px}
+.seg button{border-color:var(--line);padding:7px 12px;color:var(--mut)}
+.seg button:hover{color:var(--ink)}
 .seg button.on{background:var(--bg);border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);color:var(--ink);font-weight:700}
-.lbl2{display:none}   /* the phone's labels for the signal and storm menus; a computer keeps its one 'Run' label */
-@media (max-width:760px){
- /* a phone (2026-11-11, user: '23-24 sept then 21 sept, very confusing for readers!' -> Fable's layout review -> 'Just do all fable
-    suggested'): Today puts its two buttons and the run menu on one row, and the menu takes a row of its own when it does not fit
-    (Chinese at 360 px cut the time). A past storm shows its three menus, each with a label beside it, and no fold line (it repeated
-    the menus and only ever started closed on a link) */
- .toolbar{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 10px;align-items:center}
- .toolbar>*{grid-column:1/-1;min-width:0}
- body:not(.pastv) .toolbar{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center}
- body:not(.pastv) .toolbar>*{flex:1 0 100%}
- body:not(.pastv) .toolbar>.viewsel{flex:0 0 auto}
- body:not(.pastv) .toolbar>.runsel{flex:1 1 auto;min-width:auto}
- #viewbtns button{padding:7px 10px}
- .toolbar .lbl{display:none}
- .toolbar .grp{gap:8px}
- .toolbar .sub,.stale{padding-left:0}
- body.pastv .toolbar>.runsel{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 10px;align-items:center}
- body.pastv .toolbar>.runsel>.lbl{display:block;width:auto;font:600 13px/1.2 var(--body);color:var(--mut);white-space:nowrap}
- body.pastv #runlbl{order:5} body.pastv #cyc{order:6}
- #ensbtns{flex-wrap:wrap;max-width:100%} #ensbtns button{flex:none}   /* short names, wrapping: the third forecast was cut to 'Go' with no cue (2026-11-11) */
-}
+.plate{display:inline-flex;align-items:center;justify-content:center;flex:none;width:36px;height:36px;font:700 17px/1 var(--body);font-variant-numeric:tabular-nums}
+.plate.s{width:22px;height:22px;font-size:13px}
+.p1{background:var(--no1);color:#14171a}.p3{background:var(--no3);color:#14171a}.p8{background:var(--no8);color:#fff}.p9{background:var(--no9);color:#fff}.p10{background:var(--no10);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .plate{color:#0e1012}}
+:root[data-theme="dark"] .plate{color:#0e1012}
 
-/* section heads: a plain bold line under an ink rule */
-h2{font:700 22px/1.2 var(--body);letter-spacing:0;margin:30px 0 10px}
-.sech{font:700 17px/1.2 var(--body);letter-spacing:0;text-transform:none;color:var(--ink);margin:34px 0 0;padding:10px 0;border-top:2px solid var(--ink)}
-#status>.sech:first-child{margin-top:18px}
-
-/* the answer and everything that was a box: flat, a hairline between blocks */
-.status{margin:0 0 8px}
-.ans,.tlcard,.bcard,.bmapc,.lv{background:none;border:0;border-radius:0;box-shadow:none}
-.hero{gap:0 44px;margin:0}
-.ans{padding:14px 0 18px;border-top:1px solid var(--line)}
-.hero>.ans:first-child{border-top:0;padding-top:2px}
-@media (min-width:761px){.hero>.ans:nth-child(2){border-top:0;padding-top:2px}}
-.ans .k{font:700 15px/1.3 var(--body);color:var(--mut)}
-.tlcard{padding:2px 0 10px;margin:0}
-.tlcard .k{font:700 15px/1.3 var(--body);color:var(--ink);margin-bottom:8px}
-.bcard{padding:18px 0 14px;margin:0}
-.bcard+.tlcard,.tlcard+.tlcard,.bmapc+.tlcard,.bcard+.bmapc{border-top:1px solid var(--line);padding-top:16px}
-.bcard .bh{font:700 36px/1.12 var(--body);letter-spacing:0;margin:0 0 8px}
-.ans .bh{font:700 36px/1.12 var(--body);letter-spacing:0;margin:6px 0 8px}
-.badge,.hero>.ans+.ans .badge{font:700 36px/1 var(--body);letter-spacing:0;margin:6px 0 8px}
-.iss{font-size:13px}
-.bbar{grid-template-columns:58px 1fr 52px;margin:8px 0}
-.bbar .tr{height:12px;border-radius:0} .bbar .fl{border-radius:0}
-.bbar .pc{font:700 17px/1 var(--body)}
-.gl{font:700 15px/1 var(--body)} .gn{font:700 22px/1 var(--body)} .gh{font:700 15px/1.3 var(--body);letter-spacing:0}
-.gd i{border-radius:0;width:10px;height:10px}
-.lvgrid{gap:12px 28px}
-.lv{border-top:3px solid var(--c);padding:10px 0}
-.lv h3{font:700 17px/1 var(--body)}
-.bmapc{padding:16px 0 8px;margin:0}
-.bmapc .bmh{font-size:15px;font-weight:700}
-.bmapc svg{border-radius:0}
-.kv{border-radius:3px;background:none}
-@media (max-width:760px){.kv{display:block;border:0;padding:0;margin:0 0 3px}}   /* a phone: Expert's values one per line, not boxes that look like buttons (2026-11-11) */
-#easymore .easygo{border-radius:3px;border:1px solid var(--ink);color:var(--ink);font-weight:700;padding:11px 26px}
-.r2rtip{border-radius:3px;box-shadow:0 2px 10px rgba(0,0,0,.16)}
-.tlleg i{border-radius:0}
-.r2rp .t{font:700 13px/1.3 var(--body)}
-.r2rctl .seg button{padding:5px 10px}
-#r2r svg{overflow:visible}
-
-/* map: a plain frame, edge to edge on a phone */
-.mapcard{margin:0}
-.mapbar{margin:2px 0 10px}
-svg{border-radius:0}
-#map{box-shadow:none}
-.scrollx{border-radius:0}
-#showAll{border-radius:3px;box-shadow:none;background:var(--ink);color:var(--bg);font-size:15px;padding:10px 16px}
-#heatBtn,#creBtn{margin-left:8px;font:700 15px/1.2 var(--body);padding:9px 15px;border:1px solid var(--ink);border-radius:3px;background:var(--bg);color:var(--ink);cursor:pointer}
-#heatBtn.on,#creBtn.on{background:var(--ink);color:var(--bg)}
-.mapkey{font-size:15px} .mapkey i{box-shadow:none;border-radius:0;height:4px}
-#maphint{font-size:15px}
-@media (max-width:760px){
- .mapwrap{margin-left:-16px;margin-right:-16px} #map{border-left:0;border-right:0}
- .bmapc svg{width:calc(100% + 32px);max-width:none;margin-left:-16px;border-left:0;border-right:0}
- html.demo .mapwrap{margin-left:0;margin-right:0} html.demo #map{border-left:1px solid var(--line);border-right:1px solid var(--line)}
- html.demo .bmapc svg{width:100%;margin-left:0;border-left:1px solid var(--line);border-right:1px solid var(--line)}
- .mapkey .kh{flex-basis:100%} .mapbar label.note{padding:8px 0} #mapnav{justify-content:flex-end}   /* legend heading on its own row, taller tick boxes, move buttons under the map (2026-11-11) */
-}
-html.demo .toolbar{border-top:0;border-bottom:0;padding:4px 0}
-
-/* charts and tables */
-#wisw .seg{border:0}
-.rkold{border-radius:3px;border-width:1px}
-.rktw{border-radius:0;border:0;border-top:2px solid var(--ink)}
-.rkt th{background:none;border-bottom:1px solid var(--ink)}
-.rksg{border-radius:2px}
-.sgdistbox:not(:empty){border:0;border-top:1px solid var(--line);border-radius:0;padding:10px 0}
-footer{font-size:13px;margin-top:40px}
-
-/* ONE FRAME for every page (2026-11-16, user: 'fix the changes fable recommended', the 'vibe-coded' audit of 15 Nov): the same column,
-   body size, title band, page title and menu on all six pages, and one type scale (13, 15, 17, 22 and 36 px, weights 400 and 700).
-   Last, so it wins. */
-.wrap{max-width:1060px}
-body{font-size:16px}
-.mast h1{font:700 17px/1.3 var(--body);letter-spacing:0}
-.mast nav{font-size:15px;font-weight:400}
-.mast nav a[aria-current]{color:var(--ink);font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
-.bcard .bh,.ans .bh,.badge,.hero>.ans+.ans .badge{font:700 36px/1.15 var(--body);letter-spacing:0}
-h2,h3{letter-spacing:0}
-.mast nav a.tour{color:var(--ink);font-weight:400}
-.mast nav a.tour[aria-current]{font-weight:700}
-.toolbar .sub,.iss{font-size:15px;color:var(--ink)}
-body.easy #easymore{text-align:left;margin:16px 0}
-table.cmp th{white-space:nowrap}
-@media (max-width:760px){.mast h1{font:700 16px/21px var(--body)} .bcard .bh,.ans .bh,.badge,.hero>.ans+.ans .badge{font-size:28px}}
-
-/* HEADER (2026-11-17, Fable's layout review P2, adopted): the ink band holds the name, the page links and the language switch; a phone
-   gets a Menu button that opens the links. Under it one research line. Same block on every page. Last, so it wins. */
-.mast{display:block;padding:0;margin:0 0 14px;gap:0}
-.mast .band{display:flex;flex-wrap:nowrap;align-items:center;gap:0 22px;min-height:48px;background:var(--band);color:var(--bandink);
+/* ---- 4. header (2026-11-17, Fable's layout review P2, adopted): the ink band holds the name, the page links and the language switch;
+   a phone gets a Menu button that opens the links. Under it one research line. Same block on every page. ---- */
+.mast{margin:0 0 14px}
+.mast .band{display:flex;align-items:center;gap:0 22px;min-height:48px;background:var(--band);color:var(--bandink);
  box-shadow:0 0 0 100vmax var(--band);clip-path:inset(0 -100vmax)}
-.mast .name{flex:0 1 auto;display:block;margin:0 auto 0 0;padding:12px 0;font:700 17px/1.25 var(--body);letter-spacing:0;color:var(--bandink);
- background:none;box-shadow:none;clip-path:none;text-decoration:none}
-.mast nav{display:flex;flex:none;flex-wrap:nowrap;align-items:stretch;gap:0 22px;padding:0;font-size:15px;font-weight:400}
-.mast nav a{color:var(--bandink);text-decoration:none;padding:14px 0 11px;border-bottom:3px solid transparent;font-weight:400;white-space:nowrap}
-.mast nav a:hover{color:var(--bandink);text-decoration:none;border-bottom-color:#7b8188}
-.mast nav a[aria-current]{color:var(--bandink);font-weight:700;text-decoration:none;border-bottom-color:var(--bandink)}
-.mast nav a.tour{color:var(--bandink)}
-.mast .langsw,.mast .menu{position:static;flex:none;font:400 15px/1.2 var(--body);color:var(--bandink);background:none;border:1px solid #7b8188;border-radius:3px;
+.mast .name{margin:0 auto 0 0;padding:12px 0;font:700 17px/1.25 var(--body);text-wrap:balance}
+.mast nav{display:flex;flex:none;align-items:stretch;gap:0 22px;font-size:15px}
+.mast nav a{color:var(--bandink);text-decoration:none;padding:14px 0 11px;border-bottom:3px solid transparent;white-space:nowrap}
+.mast nav a:hover{border-bottom-color:#7b8188}
+.mast nav a[aria-current]{font-weight:700;border-bottom-color:var(--bandink)}
+.mast .langsw,.mast .menu{flex:none;font:400 15px/1.2 var(--body);color:var(--bandink);background:none;border:1px solid #7b8188;border-radius:3px;
  padding:5px 10px;text-decoration:none;cursor:pointer}
 .mast .menu{display:none}
-.mast .research{margin:0;padding:6px 0;max-width:none;font-size:13px;line-height:1.4;color:var(--ink);background:var(--soft);
+.mast .research{margin:0;padding:6px 0;font-size:13px;line-height:1.4;background:var(--soft);
  box-shadow:0 0 0 100vmax var(--soft);clip-path:inset(0 -100vmax)}
 @media (max-width:860px){
  .mast .band{flex-wrap:wrap;gap:0 10px;min-height:52px}
- .mast .name{font-size:15px;line-height:1.25;max-width:13em;padding:8px 0}
+ .mast .name{font-size:15px;max-width:13em;padding:8px 0}
  .mast nav{display:none;order:9;flex:1 0 100%;flex-direction:column;gap:0;border-top:1px solid #3a3f45}
  .mast.open nav{display:flex}
  .mast nav a{padding:12px 0;border-bottom:1px solid #3a3f45;font-size:17px}
@@ -362,42 +81,171 @@ table.cmp th{white-space:nowrap}
  .mast .menu{display:inline-block}
 }
 
-/* LAYOUT (2026-11-17, user: 'Looks good! adopt it' -> Fable's layout review, P1 to P6): the context line under the header, the run
-   menus behind 'Change storm', and one sheet. Basic and Advanced split the sheet into the numbers (left, 5/12) and the pictures (right,
-   7/12) on a computer; a phone reads headline, board, day strip, map, comparison, trend, facts. Expert keeps one column. Last, so it wins. */
-.ctx{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 16px;margin:0}
-.ctx .what{flex:1 1 320px;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;padding-bottom:10px;font-size:15px}
-.ctx .what>b{font-size:17px} .ctx .what>b:empty{display:none}
-.ctx .sub{flex:1 0 100%;padding:0!important;margin:0;font-size:15px;line-height:1.4;color:var(--ink)}
-.ctx .sub .sl{display:inline}
+/* ---- 5. context line. LAYOUT (2026-11-17, user: 'Looks good! adopt it' -> Fable's layout review, P1 to P6): the context line under
+   the header, the run menus behind 'Change storm', and one sheet. Here: what this page shows, the earlier / later steps, and the
+   Basic / Advanced / Expert switch (the scripts put it in #modeslot). ---- */
+.ctx{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 16px}
+.ctx .what{flex:1 1 320px;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin:12px 0 0;padding-bottom:10px;font-size:15px}
+.ctx .what>b{font-size:17px}
+.ctx .what>b:empty{display:none}
+.ctx .sub{flex:1 0 100%;line-height:1.4}
+#stamp .sl{display:block}
 .tag{font:700 13px/1.2 var(--body);background:var(--ink);color:var(--bg);padding:4px 8px}
 .tag.live{background:none;color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .ctx .step{flex:none;display:flex;gap:6px;padding-bottom:8px}
-.ctx .step button{font:400 15px/1.2 var(--body);padding:7px 11px;border:1px solid var(--line);border-radius:3px;background:var(--bg);color:var(--ink);cursor:pointer}
-.ctx .step button:hover{border-color:var(--ink)} .ctx .step button:disabled{opacity:.4;cursor:default;border-color:var(--line)}
+.ctx .step button{padding:7px 11px}
+.ctx .step button:hover{border-color:var(--ink)}
+.ctx .step button:disabled{opacity:.4;cursor:default;border-color:var(--line)}
 body:not(.basic) .ctx .step .chg{display:none}
 #modeslot{flex:none;align-self:flex-end}
-#modeslot .modesw{display:flex;margin:0;border:0;border-radius:0}
-#modeslot .modesw a{padding:8px 16px;font-size:15px;line-height:1.2;border:1px solid var(--ink);border-bottom:0;margin-left:-1px;color:var(--ink);text-decoration:none;background:var(--bg)}
-#modeslot .modesw a+a{border-left:1px solid var(--ink)}
-#modeslot .modesw a.on{background:var(--ink);color:var(--bg);font-weight:700}
-body.basic .toolbar{display:none} body.basic.tbopen .toolbar{display:flex}
-.toolbar{margin:0 0 10px} .stale{padding-left:0!important;margin:0 0 8px}
+.modesw{display:flex;overflow:hidden}
+.modesw a{padding:8px 16px;font-size:15px;line-height:1.2;border:1px solid var(--ink);border-bottom:0;margin-left:-1px;color:var(--ink);text-decoration:none;background:var(--bg)}
+.modesw a.on{background:var(--ink);color:var(--bg);font-weight:700}
+@media (max-width:860px){
+ .ctx{align-items:center;padding-top:2px}
+ .ctx .what{display:contents} .ctx .tag{order:1} .ctx .what>b{order:2} .ctx .sub{order:4}
+ .ctx .step{order:3;margin-left:auto;padding-bottom:0} .ctx .step button:not(.chg){display:none}
+ #modeslot{order:5;flex:1 0 100%} .modesw{width:100%} .modesw a{flex:1;text-align:center;padding:9px 0}
+}
+@media (max-width:600px){#stamp .sx{display:none} body.basic #stamp:not(:has(.sl:not(.sx))){display:none}}
+
+/* ---- 6. the run menus: no box, two hairlines. Basic and Advanced keep them behind 'Change storm' (body.tbopen) ---- */
+.toolbar{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px 0;margin:0 0 10px}
+body:not(.basic) .toolbar{border-bottom:0}
+.grp{display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-width:0}
+.lbl{flex:none;width:100px;font:700 13px/1.2 var(--body);color:var(--mut)}
+.lbl2{display:none}   /* the phone's labels for the signal and storm menus; a computer keeps its one 'Run' label */
+#ensbtns button.na{opacity:.5}
+#checks{margin:0 0 0 4px}
+@media (max-width:760px){
+ /* a phone (2026-11-11, user: '23-24 sept then 21 sept, very confusing for readers!' -> Fable's layout review -> 'Just do all fable
+    suggested'): Today puts its two buttons and the run menu on one row, and the menu takes a row of its own when it does not fit
+    (Chinese at 360 px cut the time). A past storm shows its three menus, each with a label beside it, and no fold line (it repeated
+    the menus and only ever started closed on a link) */
+ .toolbar{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 10px;align-items:center}
+ .toolbar>*{grid-column:1/-1}
+ body:not(.pastv) .toolbar{display:flex;flex-direction:row;flex-wrap:wrap}
+ body:not(.pastv) .toolbar>*{flex:1 0 100%}
+ body:not(.pastv) .toolbar>.viewsel{flex:0 0 auto}
+ body:not(.pastv) .toolbar>.runsel{flex:1 1 auto;min-width:auto}
+ body.pastv .toolbar>.runsel{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 10px;align-items:center}
+ .toolbar .lbl{display:none}
+ body.pastv .toolbar>.runsel>.lbl{display:block;width:auto;font:700 13px/1.2 var(--body);white-space:nowrap}
+ body.pastv #runlbl{order:5} body.pastv #cyc{order:6}
+ .toolbar select{width:100%}
+ #viewbtns button{padding:7px 10px}
+ #ensbtns{max-width:100%} #ensbtns button{flex:none}   /* short names, wrapping: the third forecast was cut to 'Go' with no cue (2026-11-11) */
+}
+body.basic .toolbar{display:none}   /* after the phone rules above: the same weight as body:not(.pastv) .toolbar, and it must win */
+body.basic.tbopen .toolbar{display:flex}
+.stale{margin:0 0 8px;color:var(--warn);font-weight:700;font-size:15px}
+.hkonow{margin:10px 0 4px;padding:6px 0 6px 12px;border-left:4px solid var(--no3);font-size:15px}
+
+/* ---- 7. the sheet. Basic and Advanced split it into the numbers (left, 5/12) and the pictures (right, 7/12) on a computer; a phone
+   reads headline, board, day strip, map, comparison, trend, facts. Expert keeps one column. ---- */
 .sheet{border-top:3px solid var(--ink);padding-top:18px}
-body:not(.basic) #status>.sech:first-child{border-top:0;margin-top:0}
-@media (min-width:861px){body.basic .sheet{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:40px;align-items:start}}
 .charts>*,.ledger>*{min-width:0}
-/* the answer and the signal board */
-.bhead .bh{display:flex;align-items:center;gap:14px;font:700 36px/1.1 var(--body);letter-spacing:0;color:var(--ink);margin:0}
+.status{margin:0 0 8px}
+@media (min-width:861px){body.basic .sheet{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:40px;align-items:start}}
+@media (max-width:860px){
+ body.basic .sheet{display:flex;flex-direction:column;padding-top:14px}
+ body.basic .ledger,body.basic .charts,body.basic #status,body.basic #cslot,body.basic #cslot2{display:contents}
+ body.basic .bhead{order:1} body.basic .board{order:2} body.basic .tlcard.when{order:3;margin-top:18px}
+ body.basic #bmapbox,body.basic #qmapbox,body.basic #maph,body.basic .mapcard,body.basic #mchart{order:4}
+ body.basic .cmpbox{order:5;margin-top:0} body.basic #cslot2>.tlcard:not(.when){order:6;margin-top:22px}
+ body.basic .facts{order:7;margin-top:0} body.basic .recent{order:8} body.basic #easymore{order:9}
+}
+/* what each level shows. BASIC mode (2026-10-17): body.basic is Basic and Advanced, body.easy is Basic alone, .adv marks Expert's parts.
+   Basic keeps Today / Past storms and the run pickers (2026-11-02, user: 'in easy mode, enable past storms also'); the forecast
+   buttons stay hidden (.adv). These need !important: the scripts write display inline on the same elements. */
+body.basic .adv{display:none!important}
+body.easy .wrap>:not(.mast):not(.ctx):not(.toolbar):not(.sheet):not(#stale):not(.hkonow):not(#easymore){display:none!important}
+body.easy #maph,body.easy .mapcard{display:none!important}
+body.easy #status .tlcard,body.easy #status .sech{display:none!important}
+/* a path is picked (bsel) or HKO's best track is on (btsel): that one chart comes back */
+body.basic.bsel #chead.adv,body.basic.bsel.tab-wi .cbox.adv,body.basic.bsel #cnote.adv,body.basic.bsel:not(.tab-wi) #stationchart.adv{display:block!important}
+body.basic.bsel #tabs.adv{display:flex!important}
+body.btsel #chead.adv,body.btsel .cbox.adv,body.btsel #cnote.adv{display:block!important}
+body.btsel #tabs,body.btsel #wisw,body.btsel #stationchart,body.btsel .mch,body.btsel #bwx{display:none!important}
+.bwx{display:none} body.basic.bsel.tab-wi .bwx{display:block;max-width:70ch}
+/* section heads: a plain bold line under an ink rule */
+.sech{font:700 17px/1.2 var(--body);margin:34px 0 0;padding:10px 0;border-top:2px solid var(--ink)}
+#status>.sech:first-child{margin-top:18px}
+body:not(.basic) #status>.sech:first-child{border-top:0;margin-top:0}
+
+/* ---- 8. the answer (Expert): flat blocks, a hairline between them. The HKO block in the same style as the forecast block (2026-10-17) ---- */
+.hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:0 44px}
+.hero>.ans:only-child{grid-column:1/-1}
+.ans{min-width:0;container-type:inline-size;padding:14px 0 18px;border-top:1px solid var(--line)}
+.hero>.ans:first-child{border-top:0;padding-top:2px}
+@media (min-width:761px){.hero>.ans:nth-child(2){border-top:0;padding-top:2px}}
+@media (max-width:760px){.hero{grid-template-columns:1fr}}
+.ans.na{background:repeating-linear-gradient(45deg,var(--card) 0 8px,var(--soft) 8px 11px)}
+.ans.na .badge,.ans.na .v{color:var(--mut)}
+.ans .k{font:700 15px/1.3 var(--body);color:var(--mut)}
+.ans .v{font-size:15px;font-variant-numeric:tabular-nums}
+.badge,.ans .bh{font:700 36px/1.15 var(--body);margin:6px 0 8px}
+.ans .bh{text-wrap:balance}
+@media (max-width:760px){.badge,.ans .bh{font-size:28px}}
+.iss{margin:4px 0 10px;font-size:15px}
+.bbar{display:grid;grid-template-columns:58px 1fr 52px;gap:10px;align-items:center;margin:8px 0}
+.bbar .tr{height:12px;background:var(--soft);overflow:hidden} .bbar .fl{height:100%;min-width:2px}
+.bbar .pc{font:700 17px/1 var(--body);text-align:right}
+/* the reference stations: a label over its dots, the count beside them */
+.gs{margin:9px 0 0}
+.gl{display:block;margin:0 0 5px;font:700 15px/1 var(--body);color:var(--mut)}
+.gd{display:inline-flex;gap:3px;vertical-align:-1px;margin-right:6px}
+.gd i{width:10px;height:10px;border:1.5px solid var(--ink);opacity:.3}
+.gd i.f{background:var(--ink);opacity:1} .gd i.p{background:var(--mut);opacity:.6}
+.gn{font:700 22px/1 var(--body)}
+.gh{font:700 15px/1.3 var(--body);color:var(--ink);margin:12px 0 4px}   /* "Forecast, at any time from this run onward" over the station counts */
+#galeF>div:not(.gh){margin-top:9px}   /* the rows spaced as in the HKO block */
+.r8{margin:12px 0 0;font-size:15px;line-height:1.45} .r8 .r8s{color:var(--mut);margin-top:3px}   /* the 8-station average and its rank */
+.obs{margin-top:10px!important;font-size:15px!important}
+details.what{margin:12px 0 0;font-size:15px;color:var(--mut)} .what summary{cursor:pointer;color:var(--link);font-weight:700} .what p{margin:8px 0 0;max-width:64ch}
+.mexp{margin:6px 0 2px;font-size:15px;line-height:1.45;color:var(--mut);max-width:62ch} .mexp b{color:var(--ink)}
+/* a strip: the timeline, the day strip, the trend */
+.tlcard{padding:2px 0 10px}
+.tlcard .k{font:700 15px/1.3 var(--body);color:var(--ink);margin-bottom:8px}
+.tlcard+.tlcard,.bmapc+.tlcard{border-top:1px solid var(--line);padding-top:16px}
+.charts .tlcard{padding:0;margin:0 0 24px;border:0}
+#cslot3 .tlcard{margin:4px 0 0;padding:16px 0 0;border-top:1px solid var(--line)}
+.charts .tlcard>.k,#cslot3 .tlcard>.k{margin:0 0 6px}
+#tl svg{border:0;background:transparent}
+#tl .pk{fill:#14171a} #tl .pw{fill:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #tl .pw,:root:not([data-theme="light"]) #tl .pk{fill:#0e1012}}
+:root[data-theme="dark"] #tl .pw,:root[data-theme="dark"] #tl .pk{fill:#0e1012}
+.tlleg{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:13px;color:var(--mut);margin-top:8px}
+.tlleg i{display:inline-block;width:22px;height:10px;margin-right:5px;vertical-align:-1px}
+/* the trend, run to run */
+#r2r{position:relative}
+#r2r svg{border:0;background:none;overflow:visible}
+#r2r circle,#r2r rect.na,#r2r .mk{cursor:pointer}
+.r2rlg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--mut);margin:-2px 0 6px}
+.r2rall .r2rlg .sg{display:none}
+.r2rp{margin:0 0 4px} .r2rp .t{font:700 13px/1.3 var(--body);color:var(--ink);margin:6px 0 0}
+.r2rctl{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:0 0 8px} .r2rctl .seg button{padding:5px 10px;font-size:13px}
+.r2rlgA{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--ink);margin:4px 0 0}
+.r2rlgA svg{vertical-align:middle;margin-right:4px} #r2r .r2rlgA svg{display:inline-block;width:38px;height:12px}
+.r2rallnote{margin:2px 0 0;font-size:13px;color:var(--mut)}
+.r2rtip{position:absolute;z-index:6;pointer-events:none;background:var(--card);border:1px solid var(--line);border-radius:3px;padding:7px 10px;font-size:13px;line-height:1.5;box-shadow:0 2px 10px rgba(0,0,0,.16);white-space:nowrap}
+.r2rtip b{display:block;margin-bottom:2px} .r2rtip i{display:inline-block;width:10px;height:10px;border-radius:0;margin-right:6px;vertical-align:-1px}
+.r2rtip .mu{color:var(--mut)} #r2r .r2rtip svg{display:inline-block;width:16px;height:10px}
+/* numbers per signal */
+details.nums>summary{cursor:pointer;color:var(--link);font-weight:700;font-size:15px;margin:4px 0 12px}
+.lvgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 28px}
+@media (max-width:760px){.lvgrid{grid-template-columns:1fr}}
+.lv{min-width:0;border-top:3px solid var(--c);padding:10px 0}
+.lv h3{margin:0 0 8px;font:700 17px/1 var(--body);color:var(--c)}
+.lv dl{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;margin:0;font-size:15px}
+.lv dt{color:var(--mut)} .lv dd{margin:0;font-variant-numeric:tabular-nums}
+
+/* ---- 9. the signal board (Basic and Advanced): headline, board, facts, comparison, recent storms ---- */
+.bhead .bh{display:flex;align-items:center;gap:14px;font:700 36px/1.1 var(--body)}
 .bhead .bh .plate{width:78px;height:78px;font-size:44px}
-.bhead .iss{margin:10px 0 16px;font-size:15px;color:var(--ink)}
-.plate{display:inline-flex;align-items:center;justify-content:center;flex:none;width:36px;height:36px;font:700 17px/1 var(--body);font-variant-numeric:tabular-nums}
-.plate.s{width:22px;height:22px;font-size:13px}
-.p1{background:var(--no1);color:#14171a}.p3{background:var(--no3);color:#14171a}.p8{background:var(--no8);color:#fff}.p9{background:var(--no9);color:#fff}.p10{background:var(--no10);color:#fff}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .plate{color:#0e1012}}
-:root[data-theme="dark"] .plate{color:#0e1012}
-.board{width:100%;border-collapse:collapse;margin:0}
-.board thead th{font:400 13px/1.3 var(--body);color:var(--mut);text-align:left;padding:0 0 5px;border-bottom:1px solid var(--ink);background:none}
+.bhead .iss{margin:10px 0 16px}
+.board{width:100%;border-collapse:collapse}
+.board thead th{font:400 13px/1.3 var(--body);color:var(--mut);text-align:left;padding:0 0 5px;border-bottom:1px solid var(--ink)}
 .board thead th.r{text-align:right;padding-right:14px}
 .board tbody th,.board td{padding:11px 0;border-bottom:1px solid var(--line);vertical-align:middle;text-align:left;font-weight:400}
 .board tbody th{width:48px}
@@ -405,19 +253,41 @@ body:not(.basic) #status>.sech:first-child{border-top:0;margin-top:0}
 .board .pc small{font-size:15px;margin-left:1px}
 .board .bar{height:8px;background:var(--soft)} .board .bar i{display:block;height:100%}
 .board .win{font-size:15px;line-height:1.3;margin-top:6px} .board .win span{white-space:nowrap} .board .nx{color:var(--mut)}
+@media (max-width:860px){
+ .bhead .bh{font-size:28px;gap:12px} .bhead .bh .plate{width:60px;height:60px;font-size:34px}
+ .board .pc{width:76px;padding-right:12px} .board tbody th{width:46px}
+}
 .facts{margin-top:16px;border-top:1px solid var(--line)}
-.facts .bv{padding:10px 0;margin:0;border-bottom:1px solid var(--line);font-size:15px} .facts .bv:empty{display:none}
+.facts .bv{padding:10px 0;border-bottom:1px solid var(--line);font-size:15px} .facts .bv:empty{display:none}
 .cmpbox{margin-top:20px}
-.cmpbox h2,.figh h2,.recent h2,.when h2{font:700 15px/1.3 var(--body);letter-spacing:0;margin:0;padding:0;border:0}
-.cmpbox .cmp{width:100%}
+.cmpbox h2,.figh h2,.recent h2,.when h2{font:700 15px/1.3 var(--body);margin:0;padding:0;border:0}
 .figh{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:0 0 6px}
 .figh span,.figh a,.howto{font-size:13px;font-weight:400;white-space:nowrap}
-/* the pictures: Basic map, day strip, trend */
-.charts .tlcard{padding:0;margin:0 0 24px;border:0}
-.charts .tlcard>.k{font:700 15px/1.3 var(--body);color:var(--ink);margin:0 0 6px}
-#bmapbox,#qmapbox{margin:0 0 24px;padding:0} #bmapbox:empty{display:none}
+.cmp{border-collapse:collapse;margin:10px 0 2px;font-size:15px;font-variant-numeric:tabular-nums}
+.cmp th{font-weight:700;color:var(--mut);white-space:nowrap}
+.cmp td,.cmp th{padding:3px 0 3px 18px;text-align:right;border-top:1px solid var(--line)}
+.cmp td:first-child,.cmp th:first-child{padding-left:0;text-align:left}
+.cmp tr:first-child th{border-top:0} .cmp tr.me td{font-weight:700} .cmp .note{margin:0}
+.cmpbox .cmp{width:100%}
+/* the quiet day's recent storms, and a picked path's signals (.sigt, after .rc: it changes the same cells) */
+.recent{margin-top:22px}
+.rc{width:100%;border-collapse:collapse;margin-top:6px;font-size:15px}
+.rc th,.rc td{padding:8px 0;border-bottom:1px solid var(--line);text-align:left;font-weight:400;vertical-align:middle}
+.rc thead th{font-size:13px;color:var(--mut);border-bottom:1px solid var(--ink);padding:0 0 5px}
+.rc td:last-child,.rc th:last-child{text-align:right}
+.recent .more{margin:10px 0 0;font-size:15px}
+.sigt td,.sigt th{padding-right:12px;vertical-align:top} .sigt td:last-child,.sigt th:last-child{text-align:left}
+.sigt th:nth-child(2),.sigt th:nth-child(3){width:44%} .sigt td span{white-space:nowrap} .sigt td span:not(.plate){display:block}
+.sigt .hrs{color:var(--mut);font-size:13px} .sigt .nx{color:var(--mut)}
+#easymore{margin:14px 0 0}
+
+/* ---- 10. map. Basic's own map (.bmapc), then the map card of Advanced and Expert: title line, the zoom buttons inside the frame, the
+   key on the map's own ground, the controls under it ---- */
+.bmapc{margin:0 0 24px}
+.bmapc:empty{display:none}
+.bmapc .note{margin:6px 0 0}
 .bmapc .frame{border:1px solid var(--line);background:#e8eff6;position:relative}
-.bmapc .frame svg{display:block;width:100%;height:auto;border:0;border-radius:0;margin:0}
+.bmapc svg{border:0}
 .bmapc .key{background:#fff;color:#14171a;border-top:1px solid #c9ced3;padding:7px 10px;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;font-size:13px;line-height:1.3}
 .bmapc .key i{display:inline-block;width:18px;height:6px;margin-right:5px;vertical-align:middle}
 .bmapc .key .ks{display:inline-flex;flex-wrap:wrap;gap:4px 10px}
@@ -425,67 +295,99 @@ body:not(.basic) #status>.sech:first-child{border-top:0;margin-top:0}
 .bmapc .key .ksh{height:10px;background:#2f5d8a;opacity:.25}
 .bmapc .key .krg{width:11px;height:11px;border-radius:50%;border:2px solid #2e7d32}
 .bmapc .over{position:absolute;left:10px;bottom:10px;background:#fff;color:#14171a;border:1px solid #8a9198;padding:5px 9px;font-size:15px;font-weight:700}
-/* the map card of Advanced: title line, the zoom buttons inside the frame, the key on the map's own ground, the controls under it */
-body.basic #maph{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font:700 15px/1.3 var(--body);letter-spacing:0;margin:0 0 6px;padding:0;border:0;text-transform:none;color:var(--ink)}
+@media (max-width:860px){.bmapc .frame{margin:0 -16px;border-left:0;border-right:0}}
+body.basic #maph{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font:700 15px/1.3 var(--body);margin:0 0 6px;padding:0;border:0}
 .mapcard{display:flex;flex-direction:column;margin:0 0 24px}
-.mapcard>.mapexp{order:1} .mapcard>#crebar{order:2} .mapcard>.mapwrap{order:3} .mapcard>#mapkey{order:4} .mapcard>.mapbar{order:5} .mapcard>#player{order:6} .mapcard>#maphint{order:7}
+.mapcard>#crebar{order:2} .mapcard>.mapwrap{order:3} .mapcard>#mapkey{order:4} .mapcard>.mapbar{order:5} .mapcard>#player{order:6} .mapcard>#maphint{order:7}
+#mapexp{display:none}
 .mapwrap{position:relative}
-#mapnav{position:absolute;top:8px;right:8px;display:flex;flex-direction:column;gap:0;z-index:5;margin:0;padding:0;background:none;border:0}
-#mapnav button{width:38px;height:36px;padding:0;border:1px solid #8a9198;border-radius:0;margin:-1px 0 0;background:#fff;color:#14171a;font-size:19px;line-height:1}
-#mapnav .gap,#mapnav [data-nav=w],#mapnav [data-nav=n],#mapnav [data-nav=s],#mapnav [data-nav=e]{display:none}
+#map text{paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}   /* labels readable over the tracks (2026-10-11) */
+#selbar{position:absolute;top:12px;left:12px;z-index:5}
+#showAll{font:700 15px/1.2 var(--body);padding:10px 16px;border:0;background:var(--ink);color:var(--bg)}
+#showAll:hover{filter:brightness(1.18)} #showAll:focus-visible{outline:3px solid var(--link);outline-offset:2px}
+#heatBtn,#creBtn{margin-left:8px;font:700 15px/1.2 var(--body);padding:9px 15px;border-color:var(--ink)}
+#heatBtn.on,#creBtn.on{background:var(--ink);color:var(--bg)}
+#mapnav{position:absolute;top:8px;right:8px;z-index:5;display:flex;flex-direction:column;align-items:center}
+#mapnav button{flex:none;display:inline-flex;align-items:center;justify-content:center;width:38px;min-width:32px;height:36px;margin:-1px 0 0;padding:0;
+ border:1px solid #8a9198;border-radius:0;background:#fff;color:#14171a;font:700 19px/1 var(--body)}
+#mapnav [data-nav=in],#mapnav [data-nav=out]{font-weight:400}
 #mapnav [data-nav=home]{font-size:12px}
-#mapkey{background:#fff;color:#14171a;border:1px solid var(--line);margin:-1px 0 0;padding:7px 10px;font-size:13px}
-#mapkey .kn{color:#5a6168}
-.mapbar{margin:8px 0 0;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
-#maphint:empty{display:none}
-/* the quiet day's recent storms */
-.recent{margin-top:22px}
-.rc{width:100%;border-collapse:collapse;margin-top:6px;font-size:15px}
-.rc th,.rc td{padding:8px 0;border-bottom:1px solid var(--line);text-align:left;font-weight:400;vertical-align:middle;background:none}
-.rc thead th{font-size:13px;color:var(--mut);border-bottom:1px solid var(--ink);padding:0 0 5px}
-.rc td:last-child,.rc th:last-child{text-align:right}
-.recent .more{margin:10px 0 0;font-size:15px}
-body.easy #easymore{margin:14px 0 0}
-@media (max-width:860px){
- .ctx{align-items:center;padding-top:2px}
- .ctx .what{flex:1 1 60%;padding-bottom:0}
- .ctx .step{padding-bottom:0} .ctx .step button:not(.chg){display:none}
- #modeslot{flex:1 0 100%} #modeslot .modesw{width:100%} #modeslot .modesw a{flex:1;text-align:center;padding:9px 0}
- body.basic .sheet{display:flex;flex-direction:column;padding-top:14px}
- body.basic .ledger,body.basic .charts,body.basic #status,body.basic #cslot,body.basic #cslot2{display:contents}
- body.basic .bhead{order:1} body.basic .board{order:2} body.basic .tlcard.when{order:3;margin-top:18px}
- body.basic #bmapbox,body.basic #qmapbox,body.basic #maph,body.basic .mapcard{order:4}
- body.basic .cmpbox{order:5;margin-top:0} body.basic #cslot2>.tlcard:not(.when){order:6} body.basic .facts{order:7;margin-top:0}
- body.basic .recent{order:8} body.basic #easymore{order:9}
- .bhead .bh{font-size:28px;gap:12px} .bhead .bh .plate{width:60px;height:60px;font-size:34px}
- .board .pc{width:76px;padding-right:12px} .board tbody th{width:46px}
- .bmapc .frame{margin:0 -16px;border-left:0;border-right:0}
+#mapnav button:disabled{opacity:.38;cursor:default}
+#mapnav .gap,#mapnav [data-nav=w],#mapnav [data-nav=n],#mapnav [data-nav=s],#mapnav [data-nav=e]{display:none}
+#mapkey{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;margin:-1px 0 0;padding:7px 10px;border:1px solid var(--line);background:#fff;color:#14171a;font-size:13px}
+#mapkey span{display:inline-flex;align-items:center;gap:7px;white-space:nowrap} #mapkey .kh{font-weight:700}
+#mapkey i{display:inline-block;width:26px;height:4px}
+#mapkey .kdash{height:0;border-top:3px dashed #000} #mapkey .kthin{height:0;border-top:2px dashed #999}
+#mapkey b{font-weight:400}
+.mapbar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:8px 0 0}
+.mapbar .note{margin:0}
+#play{display:none}
+#maphint{font-size:15px} #maphint:empty{display:none}
+@media (max-width:760px){
+ .mapwrap{margin-left:-16px;margin-right:-16px} #map{border-left:0;border-right:0}   /* edge to edge on a phone */
+ #mapkey .kh{flex-basis:100%} .mapbar label.note{padding:8px 0}   /* legend heading on its own row, taller tick boxes (2026-11-11) */
 }
 
-.ctx .what{color:var(--ink)}
-body.easy #easymore .easygo{display:inline;border:0;border-radius:0;padding:0;font-weight:400;color:var(--link);text-decoration:underline}
-#foot{margin-top:28px;border-top:0;font-size:13px} #foot p{margin:0 0 4px}
-@media (max-width:860px){.ctx .what{display:contents} .ctx .tag{order:1} .ctx .what>b{order:2} .ctx .step{order:3;margin-left:auto} .ctx .sub{order:4} #modeslot{order:5}}
+/* ---- 11. member charts: the tabs, the wind index, the station tables, the storm ranking ---- */
+#mchart{margin:0 0 24px} #mchart:empty{display:none}
+#mchart #chead{font:700 15px/1.3 var(--body);margin:0 0 6px;padding:0;border:0}
+#tabs{gap:2px 20px;border-bottom:1px solid var(--line);margin:0 0 14px}
+#tabs button{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;padding:9px 1px;margin-bottom:-1px;color:var(--mut);font-weight:700}
+#tabs button:hover{color:var(--ink)}
+#tabs button.on{color:var(--ink);border-bottom-color:var(--ink)}
+#tabs label{font-size:13px;color:var(--mut)}
+@media (max-width:760px){#tabs{gap:2px 14px} #tabs button{padding:8px 1px}}
+/* the wind-index views (2026-11-04, user: 'no one even sees it now'): a switch on its own row, the chosen view dark */
+#wisw{margin:-4px 0 14px;gap:8px 10px} #wisw .lbl{width:auto;margin-right:2px}
+#wisw .seg button{padding:8px 15px;font-weight:700;color:var(--ink)} #wisw .seg button.on{background:var(--ink);color:var(--card);box-shadow:none}
+/* 2026-10-17: a phone draws the chart at its own width (chart()), its labels haloed where they cross the bars; the MAP fits the
+   screen and keeps its labels at size (2026-10-11) */
+@media (max-width:731px){#chart text{paint-order:stroke;stroke:var(--card);stroke-width:3px;stroke-linejoin:round}}
+.tt-k{fill:#1a1a1a} .tt-w{fill:var(--halo)}
+.kv{display:inline-block;padding:3px 10px;margin:3px 6px 3px 0;border:1px solid var(--line);border-radius:3px;font-size:13px;line-height:1.5}
+@media (max-width:760px){.kv{display:block;border:0;padding:0;margin:0 0 3px}}   /* a phone: Expert's values one per line, not boxes that look like buttons (2026-11-11) */
+#stationchart{overflow-x:auto}
+table.sg{border-collapse:collapse;font-size:13px;margin:4px 0} .sg th,.sg td{border-bottom:1px solid var(--line);padding:3px 8px;text-align:left} .sg td:nth-child(n+2){text-align:right}
+.sgm tr.sgrow{cursor:pointer} .sgm tr.sgrow:hover td,.sgm tr.sgon td{background:var(--soft)}
+.sgdistbox:not(:empty){margin:10px 0 4px;padding:10px 0;border-top:1px solid var(--line);background:var(--card)}
+.sgdist svg{max-width:100%} .sgdh{margin:0 0 4px;font-size:15px;color:var(--mut)} .sgdh b{color:var(--ink)}
+.sghint{font-weight:700;color:var(--ink)} .sgm .dg{color:var(--good);font-weight:700} .sgm .dr{color:var(--bad);font-weight:700}
+table.sgm{border-collapse:collapse;font-size:15px;margin:4px 0;min-width:650px;font-variant-numeric:tabular-nums}
+.sgm th,.sgm td{border-bottom:1px solid var(--line);padding:6px 9px;text-align:right;white-space:nowrap} .sgm th{font-weight:700;color:var(--mut)} .sgm th:first-child,.sgm td:first-child{text-align:left}
+.sgcounts{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+/* the storm ranking */
+.rkrough{font-size:13px;font-weight:700;color:var(--mut);border:1px solid var(--mut);border-radius:0;padding:0 4px;margin-left:4px;vertical-align:1px}
+.rkold{margin-left:10px;border:1px solid var(--link);color:var(--link);background:transparent;padding:6px 13px;font-weight:700}
+.rkold.on{background:var(--link);color:#fff}
+.rk .rkfc{margin:0 0 10px;padding:10px 14px;border:1px solid var(--link);border-radius:0;background:rgba(26,94,168,.08);font-size:15px}
+.rkctl{margin:0 0 8px}
+.rk .mut{color:var(--mut);font-weight:400}
+.rktw{overflow-x:auto;border-top:2px solid var(--ink);background:var(--card)}
+.rkt{border-collapse:collapse;width:100%;min-width:600px;font-variant-numeric:tabular-nums;font-size:15px} .rkt.nar{min-width:0}
+.rkt th,.rkt td{padding:6px 9px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+.rkt th{font-size:13px;color:var(--mut);border-bottom:1px solid var(--ink);white-space:normal;vertical-align:bottom}
+.rkt td.l,.rkt th.l{text-align:left} .rkt.nar td.l{white-space:normal}
+.rkt tr.s10 td{background:rgba(229,115,135,.17)} .rkt tr.s9 td{background:rgba(240,190,60,.2)} .rkt tr.me td{font-weight:700}
+.rkt tr.fc td{background:rgba(26,94,168,.14);font-weight:700;border-top:2px solid var(--link);border-bottom:2px solid var(--link)}
+.rksg{display:inline-block;min-width:40px;padding:0 6px;border-radius:2px;font-size:13px;font-weight:700;line-height:1.7;color:#fff;margin-left:4px}
+.rksg3{background:var(--no3)}.rksg8{background:var(--no8)}.rksg9{background:var(--no9,#8e2a8a)}.rksg10{background:var(--no10)}.rksgf{background:var(--link)}
 
-#tl .pk{fill:#14171a} #tl .pw{fill:#fff}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #tl .pw,:root:not([data-theme="light"]) #tl .pk{fill:#0e1012}}
-:root[data-theme="dark"] #tl .pw,:root[data-theme="dark"] #tl .pk{fill:#0e1012}
-body:not(.basic) .toolbar{border-bottom:0}
-@media (max-width:860px){body.basic #cslot2>.tlcard:not(.when){margin-top:22px}}
-
-html.demo .sheet{display:block!important;border-top:0;padding-top:0} html.demo .ctx{display:none}
-
-#cslot3 .tlcard{margin:4px 0 0;padding:16px 0 0;border:0;border-top:1px solid var(--line)}
-#cslot3 .tlcard>.k{font:700 15px/1.3 var(--body);color:var(--ink);margin:0 0 6px}
+/* ---- 12. footer ---- */
+#foot{margin-top:28px;padding-top:14px;color:var(--mut);font-size:13px}
 #foot p{display:inline-block;margin:0 20px 0 0}
 
-#mchart{margin:0 0 24px} #mchart:empty{display:none}
-#mchart #chead{font:700 15px/1.3 var(--body);letter-spacing:0;margin:0 0 6px;padding:0;border:0}
-@media (max-width:860px){body.basic #mchart{order:4}}
-
-
-
-.sigt td,.sigt th{padding-right:12px;vertical-align:top} .sigt td:last-child,.sigt th:last-child{text-align:left} .sigt th:nth-child(2),.sigt th:nth-child(3){width:44%} .sigt td span{white-space:nowrap} .sigt td span:not(.plate){display:block} .sigt .hrs{color:var(--mut);font-size:13px} .sigt .nx{color:var(--mut)}
+/* ---- 13. the tour's frames (html.demo and html.demo-<part>): each keeps only its part. Last: these rules carry the same weight as
+   the body.basic rules above (.sheet padding, .toolbar) and must win. ---- */
+html.demo .wrap{padding:6px 2px 4px}
+html.demo .ctx,html.demo .sech{display:none}
+html.demo .toolbar{margin:0;border-top:0;border-bottom:0;padding:4px 0}
+html.demo #status,html.demo .mapcard{margin:0}
+html.demo .sheet{display:block!important;border-top:0;padding-top:0}   /* !important: the tour script hides the parts a frame drops with an inline display:none, and the sheet must stay a block */
+html.demo-answer .tlcard,html.demo-timeline .hero{display:none}
+@media (max-width:760px){
+ html.demo .mapwrap{margin-left:0;margin-right:0}
+ html.demo #map,html.demo .bmapc svg{border-left:1px solid var(--line);border-right:1px solid var(--line)}
+}
 </style><link rel="alternate" type="application/rss+xml" title="Hong Kong typhoon signal forecasts" href="../data/feed.xml" id="feedh"><style>html.demo .langsw{display:none}</style></head><body>
 <div class="wrap">
 <header class="mast"><div class="band"><h1 class="name">Hong Kong typhoon signal forecasts</h1><nav aria-label="pages"><a href="index.html" aria-current="page">Forecasts</a><a href="guide.html" class="tour">Tour</a><a href="verify.html">How good is it?</a><a href="ranking.html">Storm ranking</a><a href="ideas.html">Ideas</a></nav><a id="langsw" class="langsw" href="index-zh.html" lang="zh-Hant">中文</a><button class="menu" type="button" aria-expanded="false" onclick="var m=this.closest('.mast');m.classList.toggle('open');this.setAttribute('aria-expanded',m.classList.contains('open'))">Menu</button></div><p class="research">Research output. The Hong Kong Observatory is the only authority for actual signals.</p></header>
