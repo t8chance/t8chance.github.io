@@ -184,6 +184,7 @@ const RX=[
  [/^The site's own forecasts start on (.+)\.$/,(m,a)=>`本網站的實時預報由${ZD(a)}開始。`],
  [/^There are no forecasts for (.+)\.$/,(m,a)=>`${ZD(a).replace(/ – /g,"至").replace(/, /g,"及")}期間沒有預報。`],
  [/^HKO's record runs to (.+)\.$/,(m,a)=>`天文台紀錄截至${ZD(a)}。`],
+ [/^HKO has issued no No\. (\d+) or higher signal since (.+), when these forecasts start, so none of them could come true yet\.$/,(m,a,b)=>`自${ZD(b)}（這些預報的開始日期）起，天文台未曾發出${NO[a]}或更高信號，因此這些預報暫時無從驗證。`],
  [/^No\. (8 and 9|\d+) \((\d+) storms?(; \* = No\. 9)?\)$/,(m,a,n,s)=>`${a==="8 and 9"?"八號及九號":NO[a]}（${n} 個${s?"；* 為九號信號":""}）`],
  [/^No signal \((\d+) storms?\)$/,(m,n)=>`沒有信號（${n} 個）`],
  [/^(· re-forecast from ERA5, one run(?:, [^·]+?)? )?(?:· (\d+) members, no main forecast )?(· From ERA5 and HKO's best track )?· produced (\S+ \S+) (UTC|HKT) \((<1|\d+) h ago\)(?: · past case: (.+?) — (?:HKO No\. (\d+) on (.+?)|no HKO signal) \((a fair test: not used to set up the site|this storm was used to set up the site)\))?( ·)?$/,

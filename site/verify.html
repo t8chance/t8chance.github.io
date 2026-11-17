@@ -398,6 +398,7 @@ b.forEach(x=>x.onclick=()=>{V=x.dataset.v;show()});fb.forEach(x=>x.onclick=()=>{
 <div class="score" id="rcS"></div>
 <h3>By the chance shown</h3>
 <table class="rct" id="rcT"></table>
+<p class="note" id="rcT0" hidden></p>
 <div id="rcF"></div>
 <p class="foot" id="rcN"></p>
 <h3 id="rcCh">Forecasts on the site, day by day</h3>
@@ -417,7 +418,9 @@ b.forEach(x=>x.onclick=()=>{V=x.dataset.v;show()});fb.forEach(x=>x.onclick=()=>{
   $("rcL").innerHTML=["3","8","10"].map(l=>`<button data-l="${l}" class="${l===L?"on":""}">No. ${l}</button>`).join("");
   $("rcS").innerHTML=`<div><span class="n">${o.runs}</span>forecasts</div><div><span class="n">${v.calls}</span>called No. ${L} or higher</div>`
    +`<div class="t-us"><span class="n">${v.hits}</span>came true</div><div class="t-mw"><span class="n">${v.fa}</span>false alarms</div>`;
-  const B=o.bands[L].filter(b=>b.n);
+  const B=o.bands[L].filter(b=>b.n), none=Array.isArray(v.hko_storms)&&!v.hko_storms.length;
+  $("rcT").hidden=none; $("rcT0").hidden=!none;
+  $("rcT0").textContent=none?`HKO has issued no No. ${L} or higher signal since ${day(o.first)}, when these forecasts start, so none of them could come true yet.`:"";
   $("rcT").innerHTML=`<tr><th>Chance shown</th><th>Forecasts</th><th>HKO issued No. ${L} or higher</th></tr>`
    +B.map(b=>`<tr><td>${b.lo===b.hi?b.lo+"%":b.lo+"–"+b.hi+"%"}</td><td>${b.n}</td><td>${b.hits} <span class="note">(${Math.round(100*b.hits/b.n)}%)</span></td></tr>`).join("");
   const F=R.false_alarms.filter(f=>f.ens===E&&String(f.level)===L);
