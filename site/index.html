@@ -6,7 +6,8 @@
  page adds itself count (they are async; the ones written in the page are not). 15 s at most, so a failed file never keeps the page hidden. */
 (function(){var R=document.documentElement, pend=0, ready=false, tm=null, gone=false;
  R.classList.add("loading"); if(/[?&]demo=/.test(location.search))R.classList.add("loading-demo");
- function done(){if(gone)return; gone=true; R.classList.add("loaded"); setTimeout(function(){R.classList.remove("loading","loading-demo","loaded")},220); try{mo.disconnect()}catch(e){}}
+ function done(){if(gone)return; gone=true; R.classList.add("loaded"); if(window.top!==window.self)try{parent.postMessage("hk-ready",location.origin)}catch(e){}   /* the tour waits for its top example */
+  setTimeout(function(){R.classList.remove("loading","loading-demo","loaded")},220); try{mo.disconnect()}catch(e){}}
  function check(){clearTimeout(tm); if(ready&&pend===0)tm=setTimeout(function(){if(pend===0)done()},150)}
  var mo=new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){
   if(n.tagName==="SCRIPT"&&n.async&&n.src&&/\/data\//.test(n.src)){pend++; var f=function(){pend=Math.max(0,pend-1); check()}; n.addEventListener("load",f); n.addEventListener("error",f)}})})});
