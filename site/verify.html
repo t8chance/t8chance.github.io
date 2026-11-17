@@ -380,6 +380,17 @@ b.forEach(x=>x.onclick=()=>{V=x.dataset.v;show()});fb.forEach(x=>x.onclick=()=>{
  .rct td,.rct th{padding:5px 22px 5px 0;border-bottom:1px solid var(--line);text-align:left} .rct td+td,.rct th+th{text-align:right}
  #rcS{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0 24px;max-width:720px} #rcS>div{color:var(--mut);font-size:15px} #rcS .n{display:block;font:700 22px/1.1 var(--body);color:var(--ink)}
  #rcS .t-us .n{color:var(--us)} #rcS .t-mw .n{color:var(--mw)} @media (max-width:700px){#rcS{grid-template-columns:repeat(2,minmax(0,1fr))}}
+ /* the day-by-day calendar (2026-11-17): one row a month, one square a day; the signal colours of the forecast page */
+ :root{--c3:#d98c1a;--c8:#cc2255;--c10:#54278f}
+ @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--c3:#f0a23a;--c8:#f05a82;--c10:#b08ae8}}
+ :root[data-theme="dark"]{--c3:#f0a23a;--c8:#f05a82;--c10:#b08ae8}
+ .rcal{display:grid;grid-template-columns:max-content repeat(31,minmax(0,1fr));gap:2px;max-width:720px;margin:10px 0 8px;align-items:center;font-size:13px}
+ .rcal .m{color:var(--mut);white-space:nowrap;padding-right:6px} .rcal .d{font-size:11px;color:var(--mut);line-height:1}
+ .rcal i,.rcal a{display:block;height:13px;box-sizing:border-box}
+ .rcal .s0,.rckey .s0{background:var(--soft);border:1px solid var(--line)} .rcal .s3,.rckey .s3{background:var(--c3)} .rcal .s8,.rckey .s8{background:var(--c8)} .rcal .s10,.rckey .s10{background:var(--c10)}
+ .rcal .w,.rckey .w{border:1px dashed var(--mut)} .rcal .ww{outline:1px dashed var(--ink);outline-offset:-3px} .rcal .x,.rckey .x{border:1px solid var(--line)}
+ .rcal a:hover,.rcal a:focus-visible{outline:2px solid var(--ink);outline-offset:0}
+ .rckey{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:14px;color:var(--mut);margin:6px 0;max-width:720px} .rckey i{display:inline-block;width:12px;height:12px;vertical-align:-1px;margin-right:6px;box-sizing:border-box}
 </style>
 <h2 id="record">Every forecast, storm or not</h2>
 <p class="lede">The section above follows the storms HKO signalled. This one counts every forecast the site has made, so it also shows the times a forecast called a signal and HKO issued none.</p>
@@ -389,6 +400,11 @@ b.forEach(x=>x.onclick=()=>{V=x.dataset.v;show()});fb.forEach(x=>x.onclick=()=>{
 <table class="rct" id="rcT"></table>
 <div id="rcF"></div>
 <p class="foot" id="rcN"></p>
+<h3 id="rcCh">Forecasts on the site, day by day</h3>
+<p class="note" id="rcCi"></p>
+<div class="rckey" id="rcCk"></div>
+<div class="rcal" id="rcC"></div>
+<p class="foot" id="rcCn"></p>
 <script src="../data/track_record.js"></script>
 <script>
 (function(){const R=window.HKTRACK, $=id=>document.getElementById(id); if(!R){$("rcS").outerHTML='<p class="note">Not available yet.</p>'; return}
@@ -410,8 +426,40 @@ b.forEach(x=>x.onclick=()=>{V=x.dataset.v;show()});fb.forEach(x=>x.onclick=()=>{
   const gp=(o.gaps||[]).map(g=>`${day(g[0])} – ${day(g[1])}`);
   $("rcN").innerHTML=[o.rerun_span?`Re-run forecasts cover ${day(o.rerun_span[0])} – ${day(o.rerun_span[1])}.`:"", `The site's own forecasts start on ${day(o.rerun_span?R.live_from:o.first)}.`,
    gp.length?`There are no forecasts for ${gp.join(", ")}.`:"", `HKO's record runs to ${hk(R.rec_end)}.`, "Forecasts of one storm are not independent of each other."].filter(x=>x).map(x=>`<span>${x}</span>`).join(" ");
+  calDraw();
   document.querySelectorAll("#rcE button").forEach(b=>b.onclick=()=>{E=b.dataset.e; draw()});
   document.querySelectorAll("#rcL button").forEach(b=>b.onclick=()=>{L=b.dataset.l; draw()})};
+ let LNK=false;
+ const ZH=/^zh/.test(document.documentElement.lang||"");
+ function calDraw(){const C=(R.calendar||{})[E], el=$("rcC");
+  for(const id of ["rcCh","rcCi","rcCk","rcC","rcCn"]) $(id).hidden=!C;
+  if(!C) return;
+  const SC={"0":"s0","3":"s3","8":"s8","A":"s10"}, LV={"3":"No. 3","8":"No. 8","A":"No. 10"}, LVZ={"3":"三號","8":"八號","A":"十號"};
+  const now=new Date(), today=now.getUTCFullYear()*1e4+(now.getUTCMonth()+1)*100+now.getUTCDate(); let W=0;
+  let h=`<span class="m"></span>`+Array.from({length:31},(_,k)=>`<span class="d">${[1,10,20,30].includes(k+1)?k+1:""}</span>`).join("");
+  for(const ym of Object.keys(C).sort().reverse()){const s=C[ym], nd=s.length/5, y=ym.slice(0,4), m=+ym.slice(4);
+   h+=`<span class="m">${ZH?`${y}年${m}月`:`${MO[m-1]} ${y}`}</span>`;
+   for(let k=0;k<31;k++){const dd=ym+String(k+1).padStart(2,"0");
+    if(k>=nd||+dd>today){h+=`<i></i>`; continue}
+    const q=s.substr(5*k,5), n=+q[0], w=+q[1], r=+q[2], t=q[3], hr=q[4], D=ZH?`${y}年${m}月${k+1}日`:`${k+1} ${MO[m-1]} ${y}`; W+=w;
+    if(!n&&!w){h+=`<i class="x" title="${ZH?D+"：沒有預報。":D+". No forecast."}"></i>`; continue}
+    const ti=ZH?`${D}：${n?`本網站有 ${n} 次預報${r?`（${r===n?"全部":`其中 ${r} 次`}為重新計算）`:""}。${t==="0"?"當日沒有過半集合預報成員給出任何信號。":`當日過半集合預報成員給出的最高信號為${LVZ[t]}信號。`}`:""}${w?`另有 ${w} 次重新計算已完成，尚未加入。`:""}`
+     :`${D}. ${n?`${n} forecast${n>1?"s":""} on the site${r?` (${r===n?(n>1?"all re-run":"re-run"):r+" re-run"})`:""}. ${t==="0"?"No signal called that day.":`Highest signal called that day is ${LV[t]}.`}`:""}${w?` ${w} finished re-run forecast${w>1?"s":""} not loaded yet.`:""}`;
+    const cls=(n?SC[t]:"w")+(n&&w?" ww":"");
+    h+=n&&LNK?`<a class="${cls}" href="index.html?run=${dd}${["00","06","12","18"][+hr]}&f=${E}" title="${ti}" aria-label="${ti}"></a>`:`<i class="${cls}" title="${ti}"></i>`}}
+  el.innerHTML=h;
+  const RR=E==="ifsens";
+  $("rcCi").textContent=ZH?"每一格代表一日，顏色為當日預報中過半集合預報成員給出的最高信號。"+(LNK?"按日子可開啟當日最後一次預報。":"")
+   :"Each square is a day, coloured by the highest signal more than half the members gave in that day's forecasts."+(LNK?" Click a day to open its last forecast.":"");
+  $("rcCk").innerHTML=[["s0",ZH?"沒有信號":"No signal"],["s3",ZH?"三號":"No. 3"],["s8",ZH?"八號":"No. 8"],["s10",ZH?"十號":"No. 10"],
+   ...(RR?[["w",ZH?"重新計算已完成，尚未加入":"Re-run finished, not loaded yet"]]:[]),["x",ZH?"沒有預報":"No forecast"]].map(([c,l])=>`<span><i class="${c}"></i>${l}</span>`).join("");
+  const I=R.rerun_import, L_=I&&I.loads&&I.loads.length?I.loads[I.loads.length-1]:null;
+  const dt=s_=>{const t=new Date(Date.parse(s_.replace(" ","T")+":00Z")+288e5); return ZH?`${t.getUTCFullYear()}年${t.getUTCMonth()+1}月${t.getUTCDate()}日`:`${t.getUTCDate()} ${MO[t.getUTCMonth()]} ${t.getUTCFullYear()}`};
+  const nx=L_?new Date(Date.parse(L_.t.replace(" ","T")+":00Z")+(I.every_days||7)*864e5).toISOString().slice(0,16).replace("T"," "):null;
+  $("rcCn").innerHTML=!RR?"":(ZH?["重新計算完成的預報每星期加入本網站一次。", L_?`最近一次於${dt(L_.t)}加入 ${L_.n} 次預報。`:"", nx?`下一次預計約於${dt(nx)}。`:"",
+     W?`另有 ${W} 次已完成的重新計算預報，將於下一次加入。`:"", I&&I.done&&I.queue?`重新計算已完成 ${I.queue} 個起報時間中的 ${I.done} 個。`:""]
+   :["Finished re-run forecasts are added to the site once a week.", L_?`The last load, on ${dt(L_.t)}, added ${L_.n} forecast${L_.n===1?"":"s"}.`:"", nx?`The next is due about ${dt(nx)}.`:"",
+     W?`${W} finished re-run forecast${W>1?"s":""} wait for the next load.`:"", I&&I.done&&I.queue?`The re-run has finished ${I.done} of ${I.queue} run times.`:""]).filter(x=>x).map(x=>`<span>${x}</span>`).join(ZH?"":" ")}
  draw()})();
 </script>
 

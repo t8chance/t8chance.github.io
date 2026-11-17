@@ -777,9 +777,10 @@ function heatCPA(t){let b=[1e18,t.pts[0][0],t.pts[0][1]];
  for(let i=0;i<t.pts.length-1;i++){const a=t.pts[i],c=t.pts[i+1]; for(let f=0;f<=1.0001;f+=.05){const lo=a[0]+f*(c[0]-a[0]),la=a[1]+f*(c[1]-a[1]),d=dist(lo,la); if(d<b[0])b=[d,lo,la]}}
  return b}
 function heatAt(HD,m,sig,dx,dy){const v=HD.m[String(m)]; if(!v)return 0; const A=v[sig], i0=HD.shifts.indexOf(0), r=Math.hypot(dx,dy); if(r>50)return null;
+ const tm=(TR&&TR.tracks||[]).find(x=>x.m===m), c0=tm&&tm["p"+sig]!=null?+tm["p"+sig]:A[0][i0];
  let ang=Math.atan2(dy,dx)*180/Math.PI; if(ang<0)ang+=360;
  const a=ang/30, k0=Math.floor(a)%12, k1=(k0+1)%12, fa=a-Math.floor(a), q=r/10, j0=Math.min(Math.floor(q),5), j1=Math.min(j0+1,5), fr=q-j0;
- const val=(k,j)=>j===0?A[0][i0]:A[k%6][HD.shifts.indexOf(k<6?j*10:-j*10)];
+ const val=(k,j)=>j===0?c0:A[k%6][HD.shifts.indexOf(k<6?j*10:-j*10)];
  return (1-fa)*(1-fr)*val(k0,j0)+fa*(1-fr)*val(k1,j0)+(1-fa)*fr*val(k0,j1)+fa*fr*val(k1,j1)}
 const heatLv=(p3,p8,p10)=>p10>=.4?10:p8>=.3?8:p3>=.3?3:0;
 
@@ -1170,6 +1171,7 @@ function load(){
    +` · produced ${new Date(g.getTime()+288e5).toISOString().slice(0,16).replace("T"," ")} HKT (${hrs<1?"<1 h":Math.round(hrs)+" h"} ago)`
    +((NR=>NR?` · <span class="nextrun">next run ${fmtc(NR.c)} expected about ${hktS(NR.t)} HKT${Date.now()>NR.t+36e5?" (running late)":""}</span>`:"")(RECENT(cyc)&&LIVEF.includes(ens)&&cyc===cycles.find(c=>(HK[c]||{})[ens])?nextRun(ens):null))
    +(cyc===cycles[0]&&hrs>18?` — <b style="color:var(--no8)">this copy is behind</b>`:"")
+   +(d.rerun?`<span> · worked out again in 2026 from ECMWF's stored forecast (not on the site at the time)</span>`:"")
    +(pastOf(cyc)?` · past case: ${pastOf(cyc)}${cyc<"2025"?" (this storm was used to set up the site)":" (a fair test: not used to set up the site)"}`:"")
 ;}
  else $("#stamp").textContent="";
@@ -1178,7 +1180,8 @@ function load(){
     return P.includes(" / ")&&w?`For ${nm_}, ${w[0].toLowerCase()+w.slice(1)}`:w}).filter(Boolean):[];
   const NR=RECENT(cyc)&&cyc===cycles.find(c=>(HK[c]||{})[ens])?nextRun(ens):null;
   $("#stamp").innerHTML=[...ps.map(x=>`<span class="sl">${x}</span>`), `<span class="sl">From the ${FCN[ens]||ens} forecast.</span>`,
-   P?"":`<span class="sl">Updated ${t.getUTCDate()} ${MON[t.getUTCMonth()]} ${z(t.getUTCHours())}:${z(t.getUTCMinutes())} (Hong Kong time).</span>`,
+   d.rerun?`<span class="sl">This forecast was not on the site at the time. It was added later, made the same way from ECMWF's stored forecast.</span>`:"",
+   P||d.rerun?"":`<span class="sl">Updated ${t.getUTCDate()} ${MON[t.getUTCMonth()]} ${z(t.getUTCHours())}:${z(t.getUTCMinutes())} (Hong Kong time).</span>`,
    ens==="ifsens"&&/^(06|18)$/.test(cyc.slice(8,10))?`<span class="sl">This update looks 6 days ahead.</span>`:"",
    NR?`<span class="sl">The next update is expected about ${hktS(NR.t)} (Hong Kong time).</span>`:""].filter(Boolean).join(" ")+(ens==="deepmind"?DMCITE(d):"")}
  if(!d){
