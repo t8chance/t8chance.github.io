@@ -485,8 +485,8 @@ function hkoNow(){const box=document.getElementById("hkonow"); if(!box||window.H
   const t=w.issueTime?Date.parse(w.issueTime):NaN, x=isNaN(t)?null:new Date(t+288e5), p=n=>String(n).padStart(2,"0");
   const hm=x?`${p(x.getUTCHours())}:${p(x.getUTCMinutes())}`:"";
   box.style.borderLeftColor=SIGV[s[0]]||"var(--no3)";
-  box.innerHTML=ZHPG?`香港天文台的<b>${s[2]}</b>現正生效${x?`（${x.getUTCMonth()+1}月${x.getUTCDate()}日 ${hm} 發出）`:""}。 <a href="https://www.hko.gov.hk/tc/index-zh.html">香港天文台網頁</a>`
-   :`The Hong Kong Observatory has the <b>${s[1]}</b> in force${x?` (issued ${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][x.getUTCDay()]} ${x.getUTCDate()} ${MON[x.getUTCMonth()]} ${hm})`:""}. <a href="https://www.hko.gov.hk/en/index-zh.html">HKO website</a>`;
+  box.innerHTML=ZHPG?`香港天文台的<b>${s[2]}</b>現正生效${x?`（${x.getUTCMonth()+1}月${x.getUTCDate()}日 ${hm} 發出）`:""}。 <a href="https://www.hko.gov.hk/tc/index.html">香港天文台網頁</a>`
+   :`The Hong Kong Observatory has the <b>${s[1]}</b> in force${x?` (issued ${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][x.getUTCDay()]} ${x.getUTCDate()} ${MON[x.getUTCMonth()]} ${hm})`:""}. <a href="https://www.hko.gov.hk/en/index.html">HKO website</a>`;
   box.style.display=""}).catch(()=>{})}
 setTimeout(hkoNow,0); setInterval(hkoNow,6e5);
 {const fh=document.getElementById("feedh"); if(fh&&ZHPG){fh.href="../data/feed-zh.xml"; fh.title="香港熱帶氣旋警告信號預測"}}
@@ -1018,21 +1018,23 @@ function unavailable(){const other=Object.keys(MODES).find(k=>k!==mode);
  $("#status").innerHTML=`<div class="ans"><div class="k">${MODEN[mode]}</div><div class="badge" style="color:var(--mut)">unavailable</div>`
   +`<div class="v">no ${MODEN[mode]} run for ${NOSAME}</div><div class="note">pick a run in the menu above, or switch back to ${MODEN[other]}</div></div>`;
  TR=null; MC=null; allH=null; if(allPlaying)allStop(); $("#map").innerHTML=""; $("#chart").innerHTML=""; $("#cnote").textContent=""; $("#tabs").innerHTML=""; syncPlayer();
- $("#map").style.display="none"; $("#chart").style.display="none"}
+ $("#map").style.display="none"; $("#chart").style.display="none"; TLA=null; sheetMove()}
 function sigTable(t){const T0_=T0(), DW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], p2=n=>String(n).padStart(2,"0");
  const f=h=>{const d=new Date(T0_+Math.round(h*60)*6e4+288e5); return `${DW[d.getUTCDay()]} ${d.getUTCDate()} ${MON[d.getUTCMonth()]} ${p2(d.getUTCHours())}:${p2(d.getUTCMinutes())}`};
  const runs=[]; memberSignal(t).forEach(p=>{const h=labH(p[0]), v=p[1], r=runs[runs.length-1]; if(r&&r.g===v&&Math.abs(r.b-h)<1e-6)r.b=h+3; else runs.push({g:v,a:h,b:h+3})});
- const M=runs.filter(r=>r.g>=1), c=casesOf(cyc).find(x=>(HKOSEQ[x]||[]).length), tU=x=>Date.parse(x+":00Z");
- const HS=c?HKOSEQ[c].map(([a,b,g])=>({g,a:(tU(a)-T0_)/36e5,b:(tU(b)-T0_)/36e5})):[];
- const nth=arr=>{const n={}; return new Map(arr.map(r=>{n[r.g]=(n[r.g]||0)+1; return [r.g+"#"+n[r.g],r]}))}, mm=nth(M), hm=nth(HS);
- const st=r=>r?Math.min(r.m?r.m.a:1e9,r.h?r.h.a:1e9):0;
- const rows=[...new Set([...mm.keys(),...hm.keys()])].map(k=>({g:+k.split("#")[0],m:mm.get(k),h:hm.get(k)})).sort((x,y)=>st(x)-st(y));
+ const M=runs.filter(r=>r.g>=1), tU=x=>Date.parse(x+":00Z");
+ const HS=casesOf(cyc).flatMap(x=>(HKOSEQ[x]||[]).map(([a,b,g])=>({g,a:(tU(a)-T0_)/36e5,b:(tU(b)-T0_)/36e5}))).sort((x,y)=>x.a-y.a);
+ const used=new Set(), rows=M.map(m=>{let best=-1, bs=-Infinity; HS.forEach((h,j)=>{if(used.has(j)||h.g!==m.g)return;
+   const ov=Math.min(m.b,h.b)-Math.max(m.a,h.a), gap=Math.abs((m.a+m.b)/2-(h.a+h.b)/2), sc=ov>0?1e6+ov:-gap; if((ov>0||gap<=36)&&sc>bs){bs=sc; best=j}});
+  if(best>=0)used.add(best); return {g:m.g,m,h:best>=0?HS[best]:null}});
+ HS.forEach((h,j)=>{if(!used.has(j))rows.push({g:h.g,m:null,h})});
+ const st=r=>Math.min(r.m?r.m.a:1e9,r.h?r.h.a:1e9); rows.sort((x,y)=>st(x)-st(y));
  const cell=r=>r?`<span>${f(r.a)}</span> <span>to ${f(r.b)}</span> <span class="hrs">${Math.round(r.b-r.a)} h</span>`:`<span class="nx">–</span>`;
  if(!rows.length)return `<p class="note">This path gives no signal.</p>`;
  return `<table class="rc sigt"><thead><tr><th>Signal</th><th>This path</th>${HS.length?`<th>HKO issued</th>`:""}</tr></thead><tbody>`
   +rows.map(r=>`<tr><td><span class="plate s p${r.g}" title="No. ${r.g}">${r.g}</span></td><td>${cell(r.m)}</td>${HS.length?`<td>${cell(r.h)}</td>`:""}</tr>`).join("")
   +`</tbody></table><p class="note">${M.length?"":"This path gives no signal. "}Times along a path are in steps of 3 hours.</p>`}
-function sheetMove(){const c1=$("#cslot"), c2=$("#cslot2"), c3=$("#cslot3"), st=$("#status"); if(!c1||!c2||!c3||!st)return; c1.innerHTML=""; c2.innerHTML=""; c3.innerHTML=""; if(!BASIC||window.HK_DEMO)return;
+function sheetMove(){const c1=$("#cslot"), c2=$("#cslot2"), c3=$("#cslot3"), st=$("#status"); if(!c1||!c2||!c3||!st)return; c1.innerHTML=""; c2.innerHTML=""; c3.innerHTML=""; if(!BASIC||window.HK_DEMO){quietMap(); return}
  ["#bmapbox","#qmapbox"].forEach(q=>{const x=st.querySelector(q); if(x)c1.appendChild(x)});
  const w=st.querySelector(".tlcard.when"); if(w)c2.appendChild(w);
  st.querySelectorAll(".tlcard").forEach(x=>c3.appendChild(x));
@@ -1309,7 +1311,7 @@ function drawTL(a){if(a)TLA=a;a=TLA;const box=document.getElementById("tl");if(!
  const LVs=[["No3","No. 3",3,"var(--no3)"],["No8","No. 8",8,"var(--no8)"],["No10","No. 10",10,"var(--no10)"]];
  const W=Math.max(300,Math.round(box.getBoundingClientRect().width)), ph=W<560, LW=ph?50:74, R=W-2, fz=ph?11:12, cw=fz*.6;
  let lo=Infinity,hi=-Infinity;const ext=(p,q)=>{if(p<lo)lo=p;if(q>hi)hi=q};
- LVs.forEach(([sg,,L])=>{const x=E&&E[sg];GS(x).forEach(g=>ext(tU(g.start[0]),tU(g.end[2])));if(x&&x.det)ext(tU(x.det[0]),tU(x.det[1]));
+ LVs.forEach(([sg,,L])=>{const x=E&&E[sg];GS(x).forEach(g=>ext(tU(g.start[0]),tU(g.end[2])));if(x&&x.det&&!CP)ext(tU(x.det[0]),tU(x.det[1]));
   hcases.forEach(c=>{const y=HKOEV[c]["L"+L];if(y)ext(tU(y[0]),tU(y[1]))})});
  const card=box.parentNode;
  const hd=card.previousElementSibling&&card.previousElementSibling.classList.contains("sech")?card.previousElementSibling:null;
@@ -1324,7 +1326,7 @@ function drawTL(a){if(a)TLA=a;a=TLA;const box=document.getElementById("tl");if(!
  let s="", grid="", y=0;
  const rect=(x0,x1,y0,h,st,tip)=>{s+=`<rect x="${x0.toFixed(1)}" y="${y0}" width="${Math.max(x1-x0,2).toFixed(1)}" height="${h}" rx="3" style="${st}">${tip?`<title>${tip}</title>`:""}</rect>`};
  const txt=(x,y0,t,st,anc)=>{s+=`<text x="${x.toFixed(1)}" y="${y0}" font-size="${fz}" text-anchor="${anc||"start"}" style="${st||"fill:var(--mut)"}">${t}</text>`};
- const side=(x0,x1,y0,t,st)=>{const w=t.length*cw+(/^zh/.test(document.documentElement.lang||"")?fz*2:0);
+ const side=(x0,x1,y0,t,st)=>{const w=t.length*cw+(/^zh/.test(document.documentElement.lang||"")?fz*2:0);   /* the Chinese page writes 'h' as 小時, two characters wider */ st+=";paint-order:stroke;stroke:var(--card);stroke-width:4px;stroke-linejoin:round";
   if(x1+6+w<=R)txt(x1+6,y0,t,st);else if(x0-6-w>=LW)txt(x0-6,y0,t,st,"end");else txt(R,y0,t,st,"end")};
  const AX=34;
  for(let d=Math.floor((lo+8*H)/(24*H))*24*H-8*H; d<hi; d+=24*H){const a0=Math.max(d,lo), a1=Math.min(d+24*H,hi), w=X(a1)-X(a0);
