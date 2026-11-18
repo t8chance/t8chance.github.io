@@ -407,6 +407,7 @@ b.forEach(x=>x.onclick=()=>{V=x.dataset.v;show()});fb.forEach(x=>x.onclick=()=>{
 <div class="rcal" id="rcC"></div>
 <p class="foot" id="rcCn"></p>
 <script src="../data/track_record.js"></script>
+<script src="../data/pubruns.js"></script>
 <script>
 (function(){const R=window.HKTRACK, $=id=>document.getElementById(id); if(!R){$("rcS").outerHTML='<p class="note">Not available yet.</p>'; return}
  const EN={ifsens:"ECMWF physics (IFS)",aifsens:"ECMWF AI (AIFS)",deepmind:"Google DeepMind (AI)"}, MO=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -449,11 +450,12 @@ b.forEach(x=>x.onclick=()=>{V=x.dataset.v;show()});fb.forEach(x=>x.onclick=()=>{
     const ti=ZH?`${D}：${n?`本網站有 ${n} 次預報${r?`（${r===n?"全部":`其中 ${r} 次`}為重新計算）`:""}。${t==="0"?"當日沒有過半集合預報成員給出任何信號。":`當日過半集合預報成員給出的最高信號為${LVZ[t]}信號。`}`:""}${w?`另有 ${w} 次重新計算已完成，尚未加入。`:""}`
      :`${D}. ${n?`${n} forecast${n>1?"s":""} on the site${r?` (${r===n?(n>1?"all re-run":"re-run"):r+" re-run"})`:""}. ${t==="0"?"No signal called that day.":`Highest signal called that day is ${LV[t]}.`}`:""}${w?` ${w} finished re-run forecast${w>1?"s":""} not loaded yet.`:""}`;
     const cls=(n?SC[t]:"w")+(n&&w?" ww":"");
-    h+=n&&LNK?`<a class="${cls}" href="index-zh.html?run=${dd}${["00","06","12","18"][+hr]}&f=${E}" title="${ti}" aria-label="${ti}"></a>`:`<i class="${cls}" title="${ti}"></i>`}}
+    const pr=!LNK&&window.HKPUB?(window.HKPUB[E]||[]).filter(c=>c.startsWith(dd)):[], run=LNK?`${dd}${["00","06","12","18"][+hr]}`:pr.length?pr[pr.length-1]:null;
+    h+=n&&run?`<a class="${cls}" href="index-zh.html?run=${run}&f=${E}" title="${ti}" aria-label="${ti}"></a>`:`<i class="${cls}" title="${ti}"></i>`}}
   el.innerHTML=h;
   const RR=E==="ifsens";
-  $("rcCi").textContent=ZH?"每一格代表一日，顏色為當日預報中過半集合預報成員給出的最高信號。"+(LNK?"按日子可開啟當日最後一次預報。":"")
-   :"Each square is a day, coloured by the highest signal more than half the members gave in that day's forecasts."+(LNK?" Click a day to open its last forecast.":"");
+  $("rcCi").textContent=ZH?"每一格代表一日，顏色為當日預報中過半集合預報成員給出的最高信號。"+(LNK?"按日子可開啟當日最後一次預報。":window.HKPUB?"按日子可開啟當日預報。過往熱帶氣旋期間及最近數日的預報可以開啟。":"")
+   :"Each square is a day, coloured by the highest signal more than half the members gave in that day's forecasts."+(LNK?" Click a day to open its last forecast.":window.HKPUB?" Click a day to open its forecast. The days around past storms and the last few days can be opened.":"");
   $("rcCk").innerHTML=[["s0",ZH?"沒有信號":"No signal"],["s3",ZH?"三號":"No. 3"],["s8",ZH?"八號":"No. 8"],["s10",ZH?"十號":"No. 10"],
    ...(RR?[["w",ZH?"重新計算已完成，尚未加入":"Re-run finished, not loaded yet"]]:[]),["x",ZH?"沒有預報":"No forecast"]].map(([c,l])=>`<span><i class="${c}"></i>${l}</span>`).join("");
   const I=R.rerun_import, L_=I&&I.loads&&I.loads.length?I.loads[I.loads.length-1]:null;

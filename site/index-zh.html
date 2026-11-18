@@ -466,7 +466,7 @@ html.demo-answer .tlcard,html.demo-timeline .hero{display:none}
  <p class="note mapexp" id="mapexp"></p>
  
  <div class="mapwrap"><div class="scrollx"><svg id="map" viewBox="0 0 1000 600" tabindex="0" aria-label="Forecast map"></svg></div>
-  <div id="selbar" style="display:none"><button id="showAll" title="back to every member of this run">← Back to all members</button><button id="heatBtn" type="button" style="display:none" title="the signal this member would give if its centre passed up to 50 km from where it does">Where it passes</button></div></div>   
+  <div id="selbar" style="display:none"><button id="showAll" title="back to every member of this run">← Back to all members</button><button id="heatBtn" type="button" style="display:none" title="the signal this member would give if its whole path were moved up to 50 km">Where it passes</button></div></div>   
  <div class="mapnav" id="mapnav" role="group" aria-label="Move and zoom the map"><button type="button" data-nav="in" title="Zoom in" aria-label="Zoom in">+</button><button type="button" data-nav="out" title="Zoom out" aria-label="Zoom out">−</button><span class="gap"></span><button type="button" data-nav="w" title="Move west" aria-label="Move west">←</button><button type="button" data-nav="n" title="Move north" aria-label="Move north">↑</button><button type="button" data-nav="s" title="Move south" aria-label="Move south">↓</button><button type="button" data-nav="e" title="Move east" aria-label="Move east">→</button><span class="gap"></span><button type="button" data-nav="home" title="Back to the starting view" aria-label="Back to the starting view">↺</button></div>
  <div class="bar" id="player" style="display:none;margin:8px 0 0">
   <button id="play" title="play this member's storm through time">Play</button>
@@ -1468,7 +1468,8 @@ function stationDots(s,X,Y,span){if(!TR||!GA||span>14)return;
    nm.textContent=SGN[i][1]; fo.textContent=w.fv!=null?`F${beaufort(w.fv)}`:{"<53":"≤F7","73–78":"F8–9","98–108":"F10–11","118+":"F12"}[w.text]||"";
    tx.appendChild(nm); tx.appendChild(fo); s.appendChild(tx)}});
  if(span<5){const lg=el("g",{"pointer-events":"none"});
-  WCAT.forEach(([c,t],k)=>{lg.appendChild(el("circle",{cx:14,cy:40+16*k,r:5,fill:c,stroke:"#222","stroke-width":1}));const tx=el("text",{x:24,y:44+16*k,fill:"#111","font-size":11});tx.textContent=t;lg.appendChild(tx)});
+  const bl=s.querySelector("[data-btlg]"), y0=bl?(+bl.getAttribute("y"))+(+bl.getAttribute("height"))+16:(sel!==null||BT?74:20);
+  WCAT.forEach(([c,t],k)=>{lg.appendChild(el("circle",{cx:14,cy:y0+16*k,r:5,fill:c,stroke:"#222","stroke-width":1}));const tx=el("text",{x:24,y:y0+4+16*k,fill:"#111","font-size":11});tx.textContent=t;lg.appendChild(tx)});
   s.appendChild(lg)}}
 function diffCell(fv,fb,hk){if(hk==null)return ""; hk=Math.round(hk); const sg=d=>d>0?`+${d}`:d<0?`−${-d}`:"0", c=d=>d<0?"dr":d>0?"dg":"";
  if(fv!=null){const d=fv-hk; return `<span class="${c(d)}">${sg(d)}</span>`}
@@ -1817,6 +1818,7 @@ function drawMap(){
    +(r===52?` <b>Deterministic run:</b> ECMWF's main forecast, made once in finer detail.`:r===51?` <b>Control run:</b> the one path started without any change.`:"");
   $("#detBtn").title=r===51?"the AI ensemble's unperturbed member (51) on its own -- the site has no separate deterministic AI run":"ECMWF's main forecast, made once in finer detail than the members, shown on its own: track, time bar, charts"}
  if(sel!==null&&allH!==null){allH=null; if(allPlaying)allStop()}
+ let HFM=null;
  if(HEAT&&sel!==null){const HD=heatData(), t=TR.tracks.find(x=>x.m===sel);
   if(HD&&t&&HD.m[String(sel)]){const [cd,lon0,lat0]=heatCPA(t), kx=1/(111.32*Math.cos(lat0*Math.PI/180)), ky=1/110.57, st=2.5, g=el("g",{"pointer-events":"none",opacity:.55,"shape-rendering":"crispEdges"});
    for(let dx=-50+st/2;dx<50;dx+=st)for(let dy=-50+st/2;dy<50;dy+=st){if(Math.hypot(dx,dy)>50)continue;
@@ -1826,29 +1828,32 @@ function drawMap(){
    s.appendChild(g);
    const rx=X(lon0+50*kx)-X(lon0), ry=Y(lat0-50*ky)-Y(lat0);
    s.appendChild(el("ellipse",{cx:X(lon0),cy:Y(lat0),rx:rx,ry:ry,fill:"none",stroke:"#222","stroke-width":1.2,"stroke-dasharray":"5 4","pointer-events":"none"}));
+   {const mk=el("mask",{id:"hfm",maskUnits:"userSpaceOnUse",x:-1e4,y:-1e4,width:2e4,height:2e4}); mk.appendChild(el("rect",{x:-1e4,y:-1e4,width:2e4,height:2e4,fill:"#fff"}));
+    mk.appendChild(el("ellipse",{cx:X(lon0),cy:Y(lat0),rx:rx,ry:ry,fill:"#4d4d4d"})); s.appendChild(mk); HFM="url(#hfm)"}
    const hov=el("ellipse",{cx:X(lon0),cy:Y(lat0),rx:rx,ry:ry,fill:"#000","fill-opacity":0,"pointer-events":"fill"});
    hov.onmousemove=ev=>{const pt=s.createSVGPoint(); pt.x=ev.clientX; pt.y=ev.clientY; const q=pt.matrixTransform(s.getScreenCTM().inverse());
     const lon=lo0+q.x/W*(lo1-lo0), lat=la0+(H-q.y)/H*(la1-la0), dx=(lon-lon0)/kx, dy=(lat-lat0)/ky, P=["3","8","10"].map(k=>heatAt(HD,sel,k,dx,dy));
-    if(P[0]==null)return; $("#maphint").textContent=`If the centre passed here, the chances would be No. 3 ${Math.round(100*P[0])}%, No. 8 ${Math.round(100*P[1])}% and No. 10 ${Math.round(100*P[2])}%.`};
-   hov.onmouseleave=()=>{$("#maphint").textContent="The shaded circle shows the signal this member would give if its centre passed there instead, up to 50 km from its closest approach. Hover over it to see the chances."};
+    if(P[0]==null)return; $("#maphint").textContent=`If its path were moved to pass here, the chances would be No. 3 ${Math.round(100*P[0])}%, No. 8 ${Math.round(100*P[1])}% and No. 10 ${Math.round(100*P[2])}%.`};
+   hov.onmouseleave=()=>{$("#maphint").textContent="Each spot in the shaded circle shows the signal this member would give if its whole path were moved to pass closest to Hong Kong there, up to 50 km from where it does. Hover over it to see the chances."};
    s.appendChild(hov);
-   $("#maphint").textContent="The shaded circle shows the signal this member would give if its centre passed there instead, up to 50 km from its closest approach. Hover over it to see the chances."}}
+   $("#maphint").textContent="Each spot in the shaded circle shows the signal this member would give if its whole path were moved to pass closest to Hong Kong there, up to 50 km from where it does. Hover over it to see the chances."}}
  TR.tracks.filter(t=>(!only||t.ca[0]<150)&&(sel===null||t.m===sel)&&(!isDet(t)||sel===null||sel===t.m)&&(sel!==null||!BIN||BIN.ms.has(t.m))&&!(BASIC&&isDet(t))&&(isDet(t)||sel===t.m||!!BIN||t.m===DEFM()||!weakT(t))).sort((a,b)=>{if(byI)return (isDet(a)-isDet(b))||pk(a)-pk(b);const A=tierOf(a),B=tierOf(b);return (isDet(a)-isDet(b))||A[0]-B[0]||A[1]-B[1]}).forEach(t=>{
   const top=sel===null&&t.m===DEFM(), on=sel===t.m, d=t.pts.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join(" ");
-  if(top||on)s.appendChild(el("path",{fill:"none",stroke:"#fff","stroke-width":(on?7:5.5),d:d,"stroke-linejoin":"round"}));
+  if(top||on){const hp=el("path",{fill:"none",stroke:"#fff","stroke-width":(on?7:5.5),d:d,"stroke-linejoin":"round"}); if(on&&HFM)hp.setAttribute("mask",HFM); s.appendChild(hp)}
   const det=isDet(t), SQ=!byI&&(!det||on)?sqOf(t):null, sq=SQ&&SQ.length;
   if(sq){const hAt=i=>t.wf&&t.wf[i]?t.wf[i][0]:labH(t.pts[i][3]), SB=SQ.map(p=>labH(p[0]));
    for(let i=0;i<t.pts.length-1;i++){const a=t.pts[i], b=t.pts[i+1], ha=hAt(i), hb=hAt(i+1), dh=hb-ha||1;
     const cuts=[ha,...SB.filter(h=>h>ha+1e-6&&h<hb-1e-6),hb];
     for(let k=0;k<cuts.length-1;k++){const f0=(cuts[k]-ha)/dh, f1=(cuts[k+1]-ha)/dh, lv=sigAt(t,cuts[k]+1e-3,SQ);
-     s.appendChild(el("line",{x1:X(a[0]+(b[0]-a[0])*f0),y1:Y(a[1]+(b[1]-a[1])*f0),x2:X(a[0]+(b[0]-a[0])*f1),y2:Y(a[1]+(b[1]-a[1])*f1),stroke:SIGC[lv],
-       "stroke-width":on?4.4:top?3:lv>=3?2.2:1.5,"stroke-linecap":"round",opacity:lv===0&&!on&&!top?.4:.95,"pointer-events":"none"}))}}}
+     {const ln=el("line",{x1:X(a[0]+(b[0]-a[0])*f0),y1:Y(a[1]+(b[1]-a[1])*f0),x2:X(a[0]+(b[0]-a[0])*f1),y2:Y(a[1]+(b[1]-a[1])*f1),stroke:SIGC[lv],
+       "stroke-width":on?4.4:top?3:lv>=3?2.2:1.5,"stroke-linecap":"round",opacity:lv===0&&!on&&!top?.4:.95,"pointer-events":"none"}); if(on&&HFM)ln.setAttribute("mask",HFM); s.appendChild(ln)}}}}
   if(det&&!on){s.appendChild(el("path",{fill:"none",stroke:"#fff","stroke-width":6,d:d,opacity:.9,"stroke-linejoin":"round"}));
    const L=t.pts[t.pts.length-1], clash=Math.abs(Y(L[1])-hy)<22&&X(L[0])<hx&&X(L[0])+100>hx-6, lb=el("text",{x:X(L[0])+(clash?-4:6),y:Y(L[1])+(clash?20:-6),fill:"#000","font-size":11,"font-weight":700,"pointer-events":"none"});lb.textContent="deterministic";s.appendChild(lb)}
-  if(byI)t.pts.slice(0,-1).forEach((p,i)=>{const q=t.pts[i+1];s.appendChild(el("line",{x1:X(p[0]),y1:Y(p[1]),x2:X(q[0]),y2:Y(q[1]),stroke:CLSC[clsOf(p[2])],
-    "stroke-width":on?3.6:det?2.8:top?3:1.8,"stroke-linecap":"round",opacity:.95,"pointer-events":"none"}))});
+  if(byI)t.pts.slice(0,-1).forEach((p,i)=>{const q=t.pts[i+1], ln=el("line",{x1:X(p[0]),y1:Y(p[1]),x2:X(q[0]),y2:Y(q[1]),stroke:CLSC[clsOf(p[2])],
+    "stroke-width":on?3.6:det?2.8:top?3:1.8,"stroke-linecap":"round",opacity:.95,"pointer-events":"none"}); if(on&&HFM)ln.setAttribute("mask",HFM); s.appendChild(ln)});
   const path=el("path",{fill:"none",stroke:on?"#111":det?"#000":TIERC[tierOf(t)[0]],"stroke-width":on?3.6:det?2.8:(top?3:1+2.2*tierOf(t)[1]),d:d,
     "stroke-dasharray":det&&!on?"9 4":"","stroke-linejoin":"round",opacity:(tierOf(t)[0]===0&&!top&&!on&&!det)?.45:.95});
+  if(on&&HFM)path.setAttribute("mask",HFM);
   if(byI||sq){path.setAttribute("stroke-opacity",0);path.setAttribute("stroke-width",8);path.setAttribute("pointer-events","stroke")}
   const clickLine=ev=>{if(moved)return;
    if(on&&t.wf){const pt=s.createSVGPoint();pt.x=ev.clientX;pt.y=ev.clientY;const q=pt.matrixTransform(s.getScreenCTM().inverse());
@@ -1898,7 +1903,7 @@ if(false&&!byI&&W>=820){const lx=W-222, items=[[1,"No. 1"],[3,"No. 3"],[8,"No. 8
   else TRU.track.slice(0,-1).forEach((p,i)=>{const q=TRU.track[i+1], g=sigIn(TRU,isoH(p[3]),isoH(q[3]));
    s.appendChild(el("line",{x1:X(p[0]),y1:Y(p[1]),x2:X(q[0]),y2:Y(q[1]),stroke:SIGC[g]||SIGC[0],"stroke-width":4,"stroke-linecap":"round","pointer-events":"none"}))});
   TRU.track.forEach(p=>s.appendChild(el("circle",{cx:X(p[0]),cy:Y(p[1]),r:2.4,fill:"#000","pointer-events":"none"})));
-  const lg=el("rect",{x:8,y:sel!==null||BT?60:8,width:330,height:22,rx:0,fill:"#fff",opacity:.9,stroke:"#999","stroke-width":.6});s.appendChild(lg);
+  const lg=el("rect",{x:8,y:sel!==null||BT?60:8,width:330,height:22,rx:0,fill:"#fff",opacity:.9,stroke:"#999","stroke-width":.6,"data-btlg":1});s.appendChild(lg);
   const lt=el("text",{x:16,y:sel!==null||BT?75:23,fill:"#000","font-size":11.5,"font-weight":600});lt.textContent=BT?"HKO best track, coloured by the signal HKO had up":`Dashed line, ${TRU.source.split(" (")[0]}`;s.appendChild(lt);
   const hasC=TRU.track.some(p=>p[5]>0), lc=hasC?el("text",{x:16,y:(sel!==null||BT?75:23)+16,fill:"#000","font-size":W<500?10.5:11.5}):null;
   if(lc){lc.textContent="Circles show gale (green), storm (orange) and hurricane (red) winds"; s.appendChild(lc); lg.setAttribute("height",38)}
