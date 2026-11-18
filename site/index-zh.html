@@ -466,7 +466,7 @@ html.demo-answer .tlcard,html.demo-timeline .hero{display:none}
  <p class="note mapexp" id="mapexp"></p>
  
  <div class="mapwrap"><div class="scrollx"><svg id="map" viewBox="0 0 1000 600" tabindex="0" aria-label="Forecast map"></svg></div>
-  <div id="selbar" style="display:none"><button id="showAll" title="back to every member of this run">← Back to all members</button><button id="heatBtn" type="button" style="display:none" title="the signal this member would give if its whole path were moved up to 50 km">Where it passes</button></div></div>   
+  <div id="selbar" style="display:none"><button id="showAll" title="back to every member of this run">← Back to all members</button><button id="heatBtn" type="button" style="display:none" title="the signal this member would give if its whole path were moved up to 50 km">If the path shifts</button></div></div>   
  <div class="mapnav" id="mapnav" role="group" aria-label="Move and zoom the map"><button type="button" data-nav="in" title="Zoom in" aria-label="Zoom in">+</button><button type="button" data-nav="out" title="Zoom out" aria-label="Zoom out">−</button><span class="gap"></span><button type="button" data-nav="w" title="Move west" aria-label="Move west">←</button><button type="button" data-nav="n" title="Move north" aria-label="Move north">↑</button><button type="button" data-nav="s" title="Move south" aria-label="Move south">↓</button><button type="button" data-nav="e" title="Move east" aria-label="Move east">→</button><span class="gap"></span><button type="button" data-nav="home" title="Back to the starting view" aria-label="Back to the starting view">↺</button></div>
  <div class="bar" id="player" style="display:none;margin:8px 0 0">
   <button id="play" title="play this member's storm through time">Play</button>
@@ -1056,7 +1056,7 @@ function head(){
  $("#zoomBtn").onclick=e=>{view=view==="region"?"hk":"region";VB=BASIC&&view==="hk"?[113.55,114.75,21.95,22.75]:VIEWS[view].slice();
  HOME=VB.slice();e.target.textContent=view==="region"?"zoom to Hong Kong":"zoom out";drawMap()};
  $("#heatBtn").onclick=()=>{if(HEAT){HEAT=false; drawMap(); return}
- heatLoad(ok=>{if(!ok){$("#maphint").textContent="There is no 'where it passes' map for this run yet."; return}
+ heatLoad(ok=>{if(!ok){$("#maphint").textContent="There is no shifted-path map for this run yet."; return}
   const t=TR&&TR.tracks.find(x=>x.m===sel); if(!t||!heatData().m[String(sel)]){$("#maphint").textContent="This member gives no signal anywhere within 50 km of its path."; return}
   HEAT=true; const c=heatCPA(t), w=4.6, h=(VB[3]-VB[2])*w/(VB[1]-VB[0]); VB=[c[1]-w/2,c[1]+w/2,c[2]-h/2,c[2]+h/2]; drawMap()})};
 
@@ -1777,7 +1777,7 @@ function drawMap(){
  if(sel!==null&&BT)btOff();
  $("#selbar").style.display=sel!==null||BIN||BT?"":"none"; syncNav();
  
- if(sel===null)HEAT=false; {const hb=$("#heatBtn"); if(hb){hb.style.display=sel!==null&&!BT&&!WH()&&!MIX&&(!PUB||((HK[cyc]||{})[ens]||{}).heat)?"":"none"; hb.classList.toggle("on",HEAT)}}
+ if(sel===null)HEAT=false; {const hb=$("#heatBtn"); if(hb){hb.style.display=sel!==null&&!BT&&!WH()&&!MIX&&(!PUB||(!BASIC&&((HK[cyc]||{})[ens]||{}).heat))?"":"none";   /* public: Expert only (2026-11-18, user: 'Show in expert please') */ hb.classList.toggle("on",HEAT)}}
  {const b=$("#btBtn"), T_=truthNow(); if(b){b.style.display=T_&&T_.track&&T_.track.length>1&&!WH()?"":"none"; b.classList.toggle("on",BT)}}
  if(WH()){
   $("#selbar").style.display="none"; $("#detBtn").style.display="none"; $("#mapexp").innerHTML="";
