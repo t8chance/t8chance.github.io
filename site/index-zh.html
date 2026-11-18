@@ -834,6 +834,14 @@ function heatLoad(cb){const k=HEATK(); if((window.HKHEAT||{})[k]){cb(true);retur
 function heatCPA(t){let b=[1e18,t.pts[0][0],t.pts[0][1]];
  for(let i=0;i<t.pts.length-1;i++){const a=t.pts[i],c=t.pts[i+1]; for(let f=0;f<=1.0001;f+=.05){const lo=a[0]+f*(c[0]-a[0]),la=a[1]+f*(c[1]-a[1]),d=dist(lo,la); if(d<b[0])b=[d,lo,la]}}
  return b}
+function heatAnchor(t){
+ const P=(t.pts||[]).map(p=>[labH(p[3]),p[0],p[1]]).filter(p=>isFinite(p[0])).sort((x,y)=>x[0]-y[0]);
+ const at=h=>{for(let i=0;i<P.length;i++){const x=P[i],y=P[i+1]; if(h===x[0])return [x[1],x[2]]; if(y&&h>x[0]&&h<y[0]){const f=(h-x[0])/(y[0]-x[0]); return [x[1]+f*(y[1]-x[1]),x[2]+f*(y[2]-x[2])]}} return null};
+ const lv=tierOf(t)[0], order=[{0:"3",3:"8",8:"10",9:"10",10:"10"}[lv]||"3"]; if(lv>=3){const own=lv>=9?"10":String(lv); if(!order.includes(own))order.push(own)}
+ for(const sig of order){const S=t["s"+sig]||[]; if(!S.length)continue; const mx=Math.max(...S.map(x=>+x[1]||0)); if(!(mx>=.05))continue;
+  let best=null; for(const [k,v] of S){if((+v||0)<mx-.005)continue; const q=at(labH(k)); if(!q)continue; const d=dist(q[0],q[1]); if(!best||d<best[0])best=[d,q[0],q[1]]}
+  if(best)return best}
+ return heatCPA(t)}
 function heatAt(HD,m,sig,dx,dy){const v=HD.m[String(m)]; if(!v)return 0; const A=v[sig], i0=HD.shifts.indexOf(0), r=Math.hypot(dx,dy); if(r>50)return null;
  const tm=(TR&&TR.tracks||[]).find(x=>x.m===m), c0=tm&&tm["p"+sig]!=null?+tm["p"+sig]:A[0][i0];
  let ang=Math.atan2(dy,dx)*180/Math.PI; if(ang<0)ang+=360;
@@ -1062,7 +1070,7 @@ function head(){
  $("#heatBtn").onclick=()=>{if(HEAT){HEAT=false; drawMap(); return}
  heatLoad(ok=>{if(!ok){$("#maphint").textContent="There is no shifted-path map for this run yet."; return}
   const t=TR&&TR.tracks.find(x=>x.m===sel); if(!t||!heatData().m[String(sel)]){$("#maphint").textContent="This member gives no signal anywhere within 50 km of its path."; return}
-  HEAT=true; const c=heatCPA(t), w=4.6, h=(VB[3]-VB[2])*w/(VB[1]-VB[0]); VB=[c[1]-w/2,c[1]+w/2,c[2]-h/2,c[2]+h/2]; drawMap()})};
+  HEAT=true; const c=heatAnchor(t), w=4.6, h=(VB[3]-VB[2])*w/(VB[1]-VB[0]); VB=[c[1]-w/2,c[1]+w/2,c[2]-h/2,c[2]+h/2]; drawMap()})};
 
 $("#showAll").onclick=()=>{if(MIX){closePath();return} btOff();sel=null;selH=null;BIN=null;drawMap();chart()};
  $("#only150").onchange=drawMap;
@@ -1824,7 +1832,7 @@ function drawMap(){
  if(sel!==null&&allH!==null){allH=null; if(allPlaying)allStop()}
  let HFM=null;
  if(HEAT&&sel!==null){const HD=heatData(), t=TR.tracks.find(x=>x.m===sel);
-  if(HD&&t&&HD.m[String(sel)]){const [cd,lon0,lat0]=heatCPA(t), kx=1/(111.32*Math.cos(lat0*Math.PI/180)), ky=1/110.57, st=2.5, g=el("g",{"pointer-events":"none",opacity:.55,"shape-rendering":"crispEdges"});
+  if(HD&&t&&HD.m[String(sel)]){const [cd,lon0,lat0]=heatAnchor(t), kx=1/(111.32*Math.cos(lat0*Math.PI/180)), ky=1/110.57, st=2.5, g=el("g",{"pointer-events":"none",opacity:.55,"shape-rendering":"crispEdges"});
    for(let dx=-50+st/2;dx<50;dx+=st)for(let dy=-50+st/2;dy<50;dy+=st){if(Math.hypot(dx,dy)>50)continue;
     const lv=heatLv(heatAt(HD,sel,"3",dx,dy),heatAt(HD,sel,"8",dx,dy),heatAt(HD,sel,"10",dx,dy));
     const x0=X(lon0+(dx-st/2)*kx), x1=X(lon0+(dx+st/2)*kx), y0=Y(lat0+(dy+st/2)*ky), y1=Y(lat0+(dy-st/2)*ky);
@@ -1837,10 +1845,10 @@ function drawMap(){
    const hov=el("ellipse",{cx:X(lon0),cy:Y(lat0),rx:rx,ry:ry,fill:"#000","fill-opacity":0,"pointer-events":"fill"});
    hov.onmousemove=ev=>{const pt=s.createSVGPoint(); pt.x=ev.clientX; pt.y=ev.clientY; const q=pt.matrixTransform(s.getScreenCTM().inverse());
     const lon=lo0+q.x/W*(lo1-lo0), lat=la0+(H-q.y)/H*(la1-la0), dx=(lon-lon0)/kx, dy=(lat-lat0)/ky, P=["3","8","10"].map(k=>heatAt(HD,sel,k,dx,dy));
-    if(P[0]==null)return; $("#maphint").textContent=`If its path were moved to pass here, the chances would be No. 3 ${Math.round(100*P[0])}%, No. 8 ${Math.round(100*P[1])}% and No. 10 ${Math.round(100*P[2])}%.`};
-   hov.onmouseleave=()=>{$("#maphint").textContent="Each spot in the shaded circle shows the signal this member would give if its whole path were moved to pass closest to Hong Kong there, up to 50 km from where it does. Hover over it to see the chances."};
+    if(P[0]==null)return; $("#maphint").textContent=`If its path were moved so this part passed here, the chances would be No. 3 ${Math.round(100*P[0])}%, No. 8 ${Math.round(100*P[1])}% and No. 10 ${Math.round(100*P[2])}%.`};
+   hov.onmouseleave=()=>{$("#maphint").textContent="The circle sits where this member's chance of the next signal is highest. Each spot in it shows the signal the member would give if its whole path were moved so this part passed through that spot, up to 50 km away. Hover over it to see the chances."};
    s.appendChild(hov);
-   $("#maphint").textContent="Each spot in the shaded circle shows the signal this member would give if its whole path were moved to pass closest to Hong Kong there, up to 50 km from where it does. Hover over it to see the chances."}}
+   $("#maphint").textContent="The circle sits where this member's chance of the next signal is highest. Each spot in it shows the signal the member would give if its whole path were moved so this part passed through that spot, up to 50 km away. Hover over it to see the chances."}}
  TR.tracks.filter(t=>(!only||t.ca[0]<150)&&(sel===null||t.m===sel)&&(!isDet(t)||sel===null||sel===t.m)&&(sel!==null||!BIN||BIN.ms.has(t.m))&&!(BASIC&&isDet(t))&&(isDet(t)||sel===t.m||!!BIN||t.m===DEFM()||!weakT(t))).sort((a,b)=>{if(byI)return (isDet(a)-isDet(b))||pk(a)-pk(b);const A=tierOf(a),B=tierOf(b);return (isDet(a)-isDet(b))||A[0]-B[0]||A[1]-B[1]}).forEach(t=>{
   const top=sel===null&&t.m===DEFM(), on=sel===t.m, d=t.pts.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join(" ");
   if(top||on){const hp=el("path",{fill:"none",stroke:"#fff","stroke-width":(on?7:5.5),d:d,"stroke-linejoin":"round"}); if(on&&HFM)hp.setAttribute("mask",HFM); s.appendChild(hp)}
