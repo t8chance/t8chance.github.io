@@ -109,8 +109,10 @@ svg{display:block;width:100%;height:auto;background:var(--card);border:1px solid
 #stamp .sl{display:block}
 .tag{font:700 13px/1.2 var(--body);background:var(--ink);color:var(--bg);padding:4px 8px}
 .tag.live{background:none;color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
-.ctx .step{flex:none;display:flex;gap:6px;padding-bottom:8px}
-.ctx .step button{padding:7px 11px}
+.ctx .step{flex:none;display:flex;gap:6px;padding-bottom:0;margin-bottom:-1px}   /* level with the view tabs (2026-11-18, user: 'These two not level, hurts my eye'):
+   on the same line as the tabs, the buttons' bottom edge on the hairline itself, 36 px tall so their tops meet the tabs' (35 px + that 1 px) */
+.ctx .step button{padding:8px 11px}
+@media (min-width:861px){.ctx .step button,.ctx .step button:hover,.ctx .step button:disabled{border-bottom-color:transparent;background-clip:padding-box;border-radius:3px 3px 0 0}}   /* the line below is their bottom edge, as for the tabs (Advanced's line is dark) */
 .ctx .step button:hover{border-color:var(--ink)}
 .ctx .step button:disabled{opacity:.4;cursor:default;border-color:var(--line)}
 body:not(.sheetv) .ctx .step .chg{display:none}
@@ -121,7 +123,7 @@ body:not(.sheetv) .ctx .step .chg{display:none}
 @media (max-width:860px){
  .ctx{align-items:center;padding-top:2px}
  .ctx .what{display:contents} .ctx .tag{order:1} .ctx .what>b{order:2} .ctx .sub{order:4}
- .ctx .step{order:3;margin-left:auto;padding-bottom:0} .ctx .step button:not(.chg){display:none}
+ .ctx .step{order:3;margin-left:auto;padding-bottom:0;margin-bottom:0} .ctx .step button:not(.chg){display:none}
  #modeslot{order:5;flex:1 0 100%} .modesw{width:100%} .modesw a{flex:1;text-align:center;padding:9px 0}
 }
 @media (max-width:600px){#stamp .sx{display:none} body.basic #stamp:not(:has(.sl:not(.sx))){display:none}}
