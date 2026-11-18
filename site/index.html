@@ -113,7 +113,7 @@ svg{display:block;width:100%;height:auto;background:var(--card);border:1px solid
 .ctx .step button{padding:7px 11px}
 .ctx .step button:hover{border-color:var(--ink)}
 .ctx .step button:disabled{opacity:.4;cursor:default;border-color:var(--line)}
-body:not(.basic) .ctx .step .chg{display:none}
+body:not(.sheetv) .ctx .step .chg{display:none}
 #modeslot{flex:none;align-self:flex-end}
 .modesw{display:flex;overflow:hidden}
 .modesw a{padding:8px 16px;font-size:15px;line-height:1.2;border:1px solid var(--ink);border-bottom:0;margin-left:-1px;color:var(--ink);text-decoration:none;background:var(--bg)}
@@ -153,8 +153,12 @@ body:not(.basic) .toolbar{border-bottom:0}
  #viewbtns button{padding:7px 10px}
  #ensbtns{max-width:100%} #ensbtns button{flex:none}   /* short names, wrapping: the third forecast was cut to 'Go' with no cue (2026-11-11) */
 }
-body.basic .toolbar{display:none}   /* after the phone rules above: the same weight as body:not(.pastv) .toolbar, and it must win */
-body.basic.tbopen .toolbar{display:flex}
+body.sheetv .toolbar{display:none}   /* after the phone rules above: the same weight as body:not(.pastv) .toolbar, and it must win */
+body.sheetv.tbopen .toolbar{display:flex}
+/* Expert (2026-11-18, user: 'why layout of expert is different, this is inconsistent'): the same sheet as Advanced; its forecast row stays
+   in view under the context line (layout review: 'Expert only, as a second row of the context line'), the menus open with Change storm */
+body.sheetv:not(.basic) .toolbar{display:flex}
+body.sheetv:not(.basic):not(.tbopen) .toolbar>.viewsel,body.sheetv:not(.basic):not(.tbopen) .toolbar>.runsel{display:none}
 .stale{margin:0 0 8px;color:var(--warn);font-weight:700;font-size:15px}
 .hkonow{margin:10px 0 4px;padding:6px 0 6px 12px;border-left:4px solid var(--no3);font-size:15px}
 
@@ -163,15 +167,22 @@ body.basic.tbopen .toolbar{display:flex}
 .sheet{border-top:3px solid var(--ink);padding-top:18px}
 .charts>*,.ledger>*{min-width:0}
 .status{margin:0 0 8px}
-@media (min-width:861px){body.basic .sheet{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:40px;align-items:start}}
+@media (min-width:861px){body.sheetv .sheet{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:40px;align-items:start}}
 @media (max-width:860px){
- body.basic .sheet{display:flex;flex-direction:column;padding-top:14px}
- body.basic .ledger,body.basic .charts,body.basic #status,body.basic #cslot,body.basic #cslot2{display:contents}
- body.basic .bhead{order:1} body.basic .board{order:2} body.basic .tlcard.when{order:3;margin-top:18px}
- body.basic #bmapbox,body.basic #qmapbox,body.basic #maph,body.basic .mapcard,body.basic #mchart{order:4}
- body.basic .cmpbox{order:5;margin-top:0} body.basic #cslot2>.tlcard:not(.when){order:6;margin-top:22px}
- body.basic .facts{order:7;margin-top:0} body.basic .recent{order:8} body.basic #easymore{order:9}
+ body.sheetv .sheet{display:flex;flex-direction:column;padding-top:14px}
+ body.sheetv .ledger,body.sheetv .charts,body.sheetv #status,body.sheetv #cslot,body.sheetv #cslot2{display:contents}
+ body.sheetv .bhead{order:1} body.sheetv .board{order:2} body.sheetv .tlcard.when{order:3;margin-top:18px}
+ body.sheetv #bmapbox,body.sheetv #qmapbox,body.sheetv #maph,body.sheetv .mapcard,body.sheetv #mchart{order:4}
+ body.sheetv .cmpbox{order:5;margin-top:0} body.sheetv #cslot2>.tlcard:not(.when){order:6;margin-top:22px}
+ body.sheetv .facts{order:7;margin-top:0} body.sheetv .recent{order:8} body.sheetv #easymore{order:9}
 }
+/* Expert's bands under the trend (2026-11-18): the station winds beside what HKO issued and recorded, on the sheet's 5 / 7 grid */
+#xbands:empty{display:none}
+#xbands{margin:26px 0 0;border-top:3px solid var(--ink);padding-top:18px}
+#xbands .xband{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:40px;align-items:start}
+#xbands .xband>div:empty{display:none} #xbands .xband>div:only-child{grid-column:1/-1}
+@media (max-width:860px){#xbands .xband{display:block}}
+
 /* what each level shows. BASIC mode (2026-10-17): body.basic is Basic and Advanced, body.easy is Basic alone, .adv marks Expert's parts.
    Basic keeps Today / Past storms and the run pickers (2026-11-02, user: 'in easy mode, enable past storms also'); the forecast
    buttons stay hidden (.adv). These need !important: the scripts write display inline on the same elements. */
@@ -313,7 +324,7 @@ details.nums>summary{cursor:pointer;color:var(--link);font-weight:700;font-size:
 .bmapc .key .krg{width:11px;height:11px;border-radius:50%;border:2px solid #2e7d32}
 .bmapc .over{position:absolute;left:10px;bottom:10px;background:#fff;color:#14171a;border:1px solid #8a9198;padding:5px 9px;font-size:15px;font-weight:700}
 @media (max-width:860px){.bmapc .frame{margin:0 -16px;border-left:0;border-right:0}}
-body.basic #maph{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font:700 15px/1.3 var(--body);margin:0 0 6px;padding:0;border:0}
+body.sheetv #maph{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font:700 15px/1.3 var(--body);margin:0 0 6px;padding:0;border:0}
 .mapcard{display:flex;flex-direction:column;margin:0 0 24px}
 .mapcard>#crebar{order:2} .mapcard>.mapwrap{order:3} .mapcard>#mapkey{order:4} .mapcard>.mapbar{order:5} .mapcard>#player{order:6} .mapcard>#maphint{order:7}
 #mapexp{display:none}
@@ -460,6 +471,7 @@ html.demo-answer .tlcard,html.demo-timeline .hero{display:none}
  </div>
  <div id="cslot2"></div></div></div>
  <div id="cslot3"></div>
+ <div id="xbands"></div>
 
  <h2 class="sech adv mch">Member charts</h2>
  <h2 id="chead">Most threatening member</h2>
@@ -720,6 +732,8 @@ const BASIC=(()=>{const qs=new URLSearchParams(location.search); if(qs.get("demo
 const EASY=BASIC&&(()=>{const qs=new URLSearchParams(location.search); if(qs.get("demo"))return false; const q=qs.get("mode"); if(q)return q==="easy";
  try{return localStorage.getItem("hk_mode")==="easy"}catch(e){return false}})();
 {const c0=OPEN(); if(c0){cyc=c0; ens=DEFE(c0)||ens; mode=modeOf(ens)||mode}}
+const SHEETV=BASIC||!/[?&]demo=/.test(location.search); if(SHEETV)document.body.classList.add("sheetv");
+if(SHEETV&&!BASIC){const mh=$("#maph"); if(mh) mh.innerHTML=`<span>Possible paths of the storm</span><a class="howto" href="guide.html?mode=advanced">How to read this map</a>`}
 if(BASIC){document.body.classList.add("basic");
  if(EASY){document.body.classList.add("easy"); const st=$("#status"); if(st){const m=document.createElement("p"); m.id="easymore";
   m.innerHTML=`<a href="#" class="easygo">See the details</a>`; st.after(m); m.querySelector("a").onclick=e=>{e.preventDefault(); try{localStorage.setItem("hk_mode","basic")}catch(x){}
@@ -1046,7 +1060,7 @@ $("#showAll").onclick=()=>{if(MIX){closePath();return} btOff();sel=null;selH=nul
  $("#detBtn").onclick=()=>{const r=refM(); if(r===null)return; sel=(sel===r?null:r);selH=null;drawMap();chart()};
  drawTabs();
 }
-function unavailable(){const other=Object.keys(MODES).find(k=>k!==mode);
+function unavailable(){{const xbd=document.getElementById("xbands"); if(xbd)xbd.innerHTML=""}const other=Object.keys(MODES).find(k=>k!==mode);
  $("#stamp").innerHTML=`<b>${mode==="ai"?"AI mode":"EC mode"}</b> · no run for ${NOSAME}`;
  $("#status").innerHTML=`<div class="ans"><div class="k">${MODEN[mode]}</div><div class="badge" style="color:var(--mut)">unavailable</div>`
   +`<div class="v">no ${MODEN[mode]} run for ${NOSAME}</div><div class="note">pick a run in the menu above, or switch back to ${MODEN[other]}</div></div>`;
@@ -1067,7 +1081,7 @@ function sigTable(t){const T0_=T0(), DW=["Sun","Mon","Tue","Wed","Thu","Fri","Sa
  return `<table class="rc sigt"><thead><tr><th>Signal</th><th>This path</th>${HS.length?`<th>HKO issued</th>`:""}</tr></thead><tbody>`
   +rows.map(r=>`<tr><td><span class="plate s p${r.g}" title="No. ${r.g}">${r.g}</span></td><td>${cell(r.m)}</td>${HS.length?`<td>${cell(r.h)}</td>`:""}</tr>`).join("")
   +`</tbody></table><p class="note">${M.length?"":"This path gives no signal. "}Times along a path are in steps of 3 hours.</p>`}
-function sheetMove(){const c1=$("#cslot"), c2=$("#cslot2"), c3=$("#cslot3"), st=$("#status"); if(!c1||!c2||!c3||!st)return; c1.innerHTML=""; c2.innerHTML=""; c3.innerHTML=""; if(!BASIC||window.HK_DEMO){quietMap(); return}
+function sheetMove(){const c1=$("#cslot"), c2=$("#cslot2"), c3=$("#cslot3"), st=$("#status"); if(!c1||!c2||!c3||!st)return; c1.innerHTML=""; c2.innerHTML=""; c3.innerHTML=""; if(!SHEETV||window.HK_DEMO){quietMap(); return}
  ["#bmapbox","#qmapbox"].forEach(q=>{const x=st.querySelector(q); if(x)c1.appendChild(x)});
  const w=st.querySelector(".tlcard.when"); if(w)c2.appendChild(w);
  st.querySelectorAll(".tlcard").forEach(x=>c3.appendChild(x));
@@ -1087,9 +1101,9 @@ function areaMap(bx,over){if(!bx)return;
  const sv=bx.querySelector("svg"), {X,Y,hx,hy}=mapBase(sv,[104.4,124.0,14.6,30.0]);
  sv.appendChild(el("circle",{cx:hx,cy:hy,r:6,fill:"#f2c200",stroke:"#333","stroke-width":1.2}));
  const t=el("text",{x:hx+9,y:hy+4,fill:"#111","font-size":12,"font-weight":600,stroke:"#fff","stroke-width":3,"paint-order":"stroke"}); t.textContent="Hong Kong"; sv.appendChild(t)}
-const noStorm=(d,txt)=>(BASIC?`<div class="bhead"><div class="bh"><span>No storm near Hong Kong</span></div>${issuedDiv(d,cyc)}</div><div class="facts"><div class="bv">${txt}</div></div>${recentStorms()}${EASY?`<div class="bmapc quiet" id="qmapbox"></div>`:cmpBox()}`
+const noStorm=(d,txt)=>(SHEETV?`<div class="bhead"><div class="bh"><span>No storm near Hong Kong</span></div>${issuedDiv(d,cyc)}</div><div class="facts"><div class="bv">${txt}</div></div>${recentStorms()}${EASY?`<div class="bmapc quiet" id="qmapbox"></div>`:cmpBox()}`
  :`<h2 class="sech">The forecast</h2><div class="ans"><div class="k">Expected signal</div><div class="badge" style="color:var(--mut)">No storm near Hong Kong</div>${issuedDiv(d,cyc)}<div class="v">${txt}</div><div class="note" id="qclose"></div>${cmpBlock()}</div>`)
- +(window.HK_DEMO||EASY?"":BASIC?r2rCardB():r2rCard());
+ +(window.HK_DEMO||EASY?"":BASIC?r2rCardB():SHEETV?r2rCard().replace('<h2 class="sech">Trend</h2>',""):r2rCard());
 const passOf=(d,one,km)=>one?`closest approach <b>about ${KM10(km)} km</b>`:`<b>${d.within_150km}</b> of ${d.members} members pass within 150 km · <b>${d.within_500km}</b> within 500 km${km!=null?` · deterministic run about ${KM10(km)} km`:""}`;
 function fillDetCa(){const n=document.getElementById("passn"), d=(HK[cyc]||{})[ens]; if(!n||!d||!TR)return; const one=(d.members||0)<=1;
  if(!one&&ens!=="ifsens"&&ens!=="tigge")return; const R=refOf(TR,cyc+"_"+ens); if(R)n.innerHTML=passOf(d,one,R.ca[0])}
@@ -1217,6 +1231,7 @@ function load(){
    ens==="ifsens"&&/^(06|18)$/.test(cyc.slice(8,10))?`<span class="sl">This update looks 6 days ahead.</span>`:"",
    NR?`<span class="sl">The next update is expected about ${hktS(NR.t)} (Hong Kong time).</span>`:""].filter(Boolean).join(" ")+(ens==="deepmind"?DMCITE(d):"")}
  if(!d){
+  {const xbd=document.getElementById("xbands"); if(xbd)xbd.innerHTML=""}
   const hh=cyc.slice(8,10), last=cycles.find(c=>(HK[c]||{})[ens]), near=cycles.filter(c=>(HK[c]||{})[ens]).sort((a,b)=>Math.abs(tUcy(a)-tUcy(cyc))-Math.abs(tUcy(b)-tUcy(cyc)))[0];
   const eta=last&&cyc>last&&LIVEF.includes(ens)?etaOf(ens,cyc):null;
   const why=ens==="ifsens"&&(hh==="06"||hh==="18")&&cyc<"2026101906"?"Until 19 Oct 2026 this site ran ECMWF's physics ensemble only at 00Z and 12Z (at 06Z and 18Z ECMWF runs it 6 days ahead only)."
@@ -1232,7 +1247,7 @@ function load(){
   [...document.querySelectorAll(".mapbar,#mapkey,#mapnav,#maph,#chead,#tabs,.sech.mch"),$("#chart")&&$("#chart").closest(".scrollx")].forEach(e=>{if(e)e.style.display="none"});
   $("#map").style.display="none"; TR=null; MC=null; sel=null; selH=null; syncPlayer(); $("#selbar").style.display="none";
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";$("#maphint").textContent="";drawR2R();return}
- if(d.quiet){$("#status").innerHTML=noStorm(d,"No storm is forecast to come within 800 km of Hong Kong."); sheetMove();
+ if(d.quiet){$("#xbands").innerHTML=""; $("#status").innerHTML=noStorm(d,"No storm is forecast to come within 800 km of Hong Kong."); sheetMove();
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";
   drawR2R(); quietPaths();return}
  const src=(d.sources||[]).includes("s1")?"s1":"s1", MJ=Math.floor((d.members||51)/2)+1;
@@ -1261,7 +1276,7 @@ function load(){
  const sm=s=>`<br><span class="note" style="margin:0">${s}</span>`, cell=(sg,f)=>{const x=E&&E[sg];return x&&x.n?f(x):"–"};
  const one=(d.members||0)<=1, clsL=s=>s>=10?10:s>=8?8:3, colL={3:"var(--no3)",8:"var(--no8)",10:"var(--no10)"};
  const pass=passOf(d,one,one?d.min_dist_km:d.det_ca_km);
- let tb="";
+ let tb="", xb="";
  if(!d.quiet){
   const x=topL&&E&&E[topL[0]]&&E[topL[0]].n?E[topL[0]]:null;
   const pcA=sg=>one?(nOf(sg)?100:0):Math.round(100*nOf(sg)/(d.members||50)), noneA=100-Math.max(...LV.map(([sg])=>pcA(sg)));
@@ -1295,11 +1310,13 @@ function load(){
    if(x_&&x_.det) rows.push(["deterministic",`${hkS(x_.det[0])} → ${hkS(x_.det[1])} · ${x_.det[2]}&nbsp;h`]);
    hcases.forEach(c=>{const y=HKOEV[c]["L"+L];rows.push([`HKO ${c.split(" ")[0]}`,y?`<b>${hkS(y[0])} → ${hkS(y[1])}</b> · ${Math.round(y[2])}&nbsp;h`:"not issued"])});
    return `<div class="lv" style="--c:${col}"><h3>${lab}</h3><dl>${rows.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl></div>`};
+  xb=`<div class="xband"><div>${ansW}</div><div>${hkoS}${hkoW}</div></div>`;
   tb=`<h2 class="sech">The forecast</h2><div class="hero">${ansS}${hkoS}${ansW}${hkoS?hkoW||"<div></div>":""}</div><h2 class="sech">When</h2><div class="tlcard"><div class="k">Timeline · Hong Kong time</div><div id="tl"></div></div>`
    +(window.HK_DEMO?"":r2rCard())
    +`<details class="nums"><summary>Numbers per signal</summary><div class="lvgrid">${LV.map(card).join("")}</div>`
    +(E?"":`<p class="note">start, end and hours: not in this run's data</p>`)
    +`<p class="note">times HKT${one?"":", median over the members giving the signal (10–90% below)"}`+`</p></details>`;
+  xb+=tb.slice(tb.indexOf('<details class="nums">'));
  }
  GA={members:d.members||0,one};
  const basicCard=()=>{const M=d.members||50, pc=sg=>one?(nOf(sg)?100:0):Math.round(100*nOf(sg)/M);
@@ -1314,8 +1331,9 @@ function load(){
    +`<div class="facts"><div class="bv" id="bclose"></div>${obsHTML("bv")}</div>`
    +`<div class="tlcard when"><div class="figh"><h2>When each signal is expected</h2><span>Hong Kong time</span></div><div id="tl"></div></div>`
    +`<div class="bmapc" id="bmapbox" data-top="${topL?topL[2]:0}"></div>`
-   +(EASY?"":r2rCardB())};
- $("#status").innerHTML=BASIC?basicCard():tb||`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">none</div>${issuedDiv(d,cyc)}<div class="note">${pass}</div></div>`; sheetMove();
+   +(EASY?"":BASIC?r2rCardB():r2rCard().replace('<h2 class="sech">Trend</h2>',""))};
+ $("#xbands").innerHTML=SHEETV&&!BASIC?xb:"";
+ $("#status").innerHTML=SHEETV?basicCard():tb||`<div class="ans"><div class="k">Highest signal</div><div class="badge" style="color:var(--mut)">none</div>${issuedDiv(d,cyc)}<div class="note">${pass}</div></div>`; sheetMove();
  drawTL({E,one,members:d.members||0,MJ,hcases,init:Date.UTC(+cyc.slice(0,4),+cyc.slice(4,6)-1,+cyc.slice(6,8),+cyc.slice(8,10))});
  drawR2R();
  const key=cyc+"_"+ens;
