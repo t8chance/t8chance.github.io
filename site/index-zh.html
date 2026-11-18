@@ -177,6 +177,14 @@ body.sheetv:not(.basic):not(.tbopen) .toolbar>.viewsel,body.sheetv:not(.basic):n
  body.sheetv .facts{order:7;margin-top:0} body.sheetv .recent{order:8} body.sheetv #easymore{order:9}
 }
 /* Expert's bands under the trend (2026-11-18): the station winds beside what HKO issued and recorded, on the sheet's 5 / 7 grid */
+/* Expert's map spans the whole width under the board and the time strip (2026-11-18, user: 'for expert the map is way too small' ->
+   'Expert only'): on a computer the right column holds the time strip, the map takes its own full-width rows; a phone is one column anyway */
+@media (min-width:861px){
+ body.sheetv:not(.basic) .charts{display:contents}
+ body.sheetv:not(.basic) .ledger{grid-column:1;grid-row:1} body.sheetv:not(.basic) #cslot{grid-column:2;grid-row:1}
+ body.sheetv:not(.basic) #cslot2:empty{display:none}
+ body.sheetv:not(.basic) #maph{grid-column:1/-1;grid-row:2;margin-top:24px} body.sheetv:not(.basic) .mapcard{grid-column:1/-1;grid-row:3}
+}
 #xbands:empty{display:none}
 #xbands{margin:26px 0 0;border-top:3px solid var(--ink);padding-top:18px}
 #xbands .xband{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:40px;align-items:start}
@@ -1083,7 +1091,7 @@ function sigTable(t){const T0_=T0(), DW=["Sun","Mon","Tue","Wed","Thu","Fri","Sa
   +`</tbody></table><p class="note">${M.length?"":"This path gives no signal. "}Times along a path are in steps of 3 hours.</p>`}
 function sheetMove(){const c1=$("#cslot"), c2=$("#cslot2"), c3=$("#cslot3"), st=$("#status"); if(!c1||!c2||!c3||!st)return; c1.innerHTML=""; c2.innerHTML=""; c3.innerHTML=""; if(!SHEETV||window.HK_DEMO){quietMap(); return}
  ["#bmapbox","#qmapbox"].forEach(q=>{const x=st.querySelector(q); if(x)c1.appendChild(x)});
- const w=st.querySelector(".tlcard.when"); if(w)c2.appendChild(w);
+ const w=st.querySelector(".tlcard.when"); if(w)(BASIC?c2:c1).appendChild(w);
  st.querySelectorAll(".tlcard").forEach(x=>c3.appendChild(x));
  const ap=$("#allPast"); if(ap)ap.onclick=e=>{e.preventDefault(); const pb=$("#viewbtns [data-v=past]"); document.body.classList.add("tbopen"); if(pb)pb.click()};
  quietMap()}
@@ -1221,7 +1229,7 @@ function load(){
    +(pastOf(cyc)?` · past case: ${pastOf(cyc)}${cyc<"2025"?" (this storm was used to set up the site)":" (a fair test: not used to set up the site)"}`:"")
 ;}
  else $("#stamp").textContent="";
- if(BASIC&&d&&d.generated){const t=new Date(Date.parse(d.generated.replace(" ","T")+":00Z")+8*36e5), z=n=>String(n).padStart(2,"0");
+ if(SHEETV&&d&&d.generated){ /* Expert too (2026-11-18, user on Expert's one-line stamp: 'Are these really necessary? (a fair test: not used to set up the site) so much garbage!') */ const t=new Date(Date.parse(d.generated.replace(" ","T")+":00Z")+8*36e5), z=n=>String(n).padStart(2,"0");
   const P=pastOf(cyc), ps=P?P.split(" / ").map(x=>{const [nm_,h]=x.split(" — "), w=!h?"":/^no HKO signal/.test(h)?"HKO issued no signal.":h.replace(/^HKO /,"HKO issued ")+".";
     return P.includes(" / ")&&w?`For ${nm_}, ${w[0].toLowerCase()+w.slice(1)}`:w}).filter(Boolean):[];
   const NR=RECENT(cyc)&&cyc===cycles.find(c=>(HK[c]||{})[ens])?nextRun(ens):null;
@@ -1229,7 +1237,7 @@ function load(){
    d.rerun?`<span class="sl">This forecast was not on the site at the time. It was added later, made the same way from ECMWF's stored forecast.</span>`:"",
    P||d.rerun?"":`<span class="sl">Updated ${t.getUTCDate()} ${MON[t.getUTCMonth()]} ${z(t.getUTCHours())}:${z(t.getUTCMinutes())} (Hong Kong time).</span>`,
    ens==="ifsens"&&/^(06|18)$/.test(cyc.slice(8,10))?`<span class="sl">This update looks 6 days ahead.</span>`:"",
-   NR?`<span class="sl">The next update is expected about ${hktS(NR.t)} (Hong Kong time).</span>`:""].filter(Boolean).join(" ")+(ens==="deepmind"?DMCITE(d):"")}
+   NR?`<span class="sl">The next update is expected about ${hktS(NR.t)} (Hong Kong time).</span>`:""].filter(Boolean).join(ZHPG?"":" ")+(ens==="deepmind"?DMCITE(d):"")}
  if(!d){
   {const xbd=document.getElementById("xbands"); if(xbd)xbd.innerHTML=""}
   const hh=cyc.slice(8,10), last=cycles.find(c=>(HK[c]||{})[ens]), near=cycles.filter(c=>(HK[c]||{})[ens]).sort((a,b)=>Math.abs(tUcy(a)-tUcy(cyc))-Math.abs(tUcy(b)-tUcy(cyc)))[0];
