@@ -432,8 +432,10 @@ html.demo .wrap{padding:6px 2px 4px}
 html.demo .ctx,html.demo .sech{display:none}
 html.demo .toolbar{margin:0;border-top:0;border-bottom:0;padding:4px 0}
 html.demo #status,html.demo .mapcard{margin:0}
-html.demo .sheet{display:block!important;border-top:0;padding-top:0}   /* !important: the tour script hides the parts a frame drops with an inline display:none, and the sheet must stay a block */
-html.demo-answer .tlcard,html.demo-timeline .hero{display:none}
+html.demo .sheet{display:block!important;border-top:0;padding-top:0}   /* !important: the sheet must stay a block */
+html.demo .dhide{display:none!important}   /* the parts a tour frame drops (the tour script tags them); a redraw cannot bring them back */
+html.demo-answer .tlcard,html.demo-headline .tlcard,html.demo-timeline .hero{display:none}
+html.demo-headline #status .hero>.ans~*,html.demo-headline #status>.hero~*{display:none!important}   /* Expert: the bars, not the station rows */
 @media (max-width:760px){
  html.demo .mapwrap{margin-left:0;margin-right:0}
  html.demo #map,html.demo .bmapc svg{border-left:1px solid var(--line);border-right:1px solid var(--line)}
@@ -2147,16 +2149,17 @@ if(tab==="wi"){const dd=line((TRU.wi||[]).map(([z,v])=>[isoH(z),v]));
   const cmp=wiCmp(wpk[1]);
   $("#cnote").innerHTML=`Peak <b>${Math.round(wpk[1])} km/h</b>, around ${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getUTCDay()]} ${d.getUTCDate()} ${MON[d.getUTCMonth()]} ${z(d.getUTCHours())}:00 (Hong Kong time)`+(cmp?` · ${cmp}`:"")+(truthNow()?" · dashed line: what Hong Kong really had":"")}
 }
-const DEMO=(location.search.match(/[?&]demo=(play|member|map|stations|toolbar|answer|timeline|stationtable)\b/)||[])[1]||"";
+const DEMO=(location.search.match(/[?&]demo=(play|member|map|stations|toolbar|answer|headline|timeline|stationtable)\b/)||[])[1]||"";
 if(DEMO){window.HK_DEMO=DEMO; document.documentElement.classList.add("demo","demo-"+DEMO);
- const KEEP={toolbar:[".toolbar"],answer:["#status"],timeline:["#status"],stationtable:["#chead","#tabs","#stationchart","#cnote"]}[DEMO]||[".mapcard"];
- const W=document.querySelector(".wrap"); [...document.body.children].forEach(c=>{if(c!==W&&c.tagName!=="SCRIPT")c.style.display="none"});
- if(W)[...W.children].forEach(c=>{if(!KEEP.some(k=>c.matches(k)||c.querySelector(k)))c.style.display="none"});
- {const sh=document.querySelector(".sheet"); if(sh)[...sh.children].forEach(c=>{if(!KEEP.some(k=>c.matches(k)||c.querySelector(k)))c.style.display="none"})}
+ const KEEP={toolbar:[".toolbar"],answer:["#status"],headline:["#status"],timeline:["#status"],stationtable:["#chead","#tabs","#stationchart","#cnote"]}[DEMO]||[".mapcard"];
+ const hide=c=>c.classList.add("dhide");
+ const W=document.querySelector(".wrap"); [...document.body.children].forEach(c=>{if(c!==W&&c.tagName!=="SCRIPT")hide(c)});
+ if(W)[...W.children].forEach(c=>{if(!KEEP.some(k=>c.matches(k)||c.querySelector(k)))hide(c)});
+ {const sh=document.querySelector(".sheet"); if(sh)[...sh.children].forEach(c=>{if(!KEEP.some(k=>c.matches(k)||c.querySelector(k)))hide(c)})}
  const noLink=e=>{const a=e.target.closest&&e.target.closest("a[href]"); if(a){e.preventDefault(); e.stopPropagation()}};
  addEventListener("click",noLink,true); addEventListener("auxclick",noLink,true);
- if(W&&/^(toolbar|answer|timeline|stationtable)$/.test(DEMO)){W.inert=true; W.style.pointerEvents="none"}
- const post=()=>{try{const b=[...document.querySelectorAll(".wrap>*")].filter(c=>c.style.display!=="none"&&c.getClientRects().length)
+ if(W&&/^(toolbar|answer|headline|timeline|stationtable)$/.test(DEMO)){W.inert=true; W.style.pointerEvents="none"}
+ const post=()=>{try{const b=[...document.querySelectorAll(".wrap>*")].filter(c=>!c.classList.contains("dhide")&&c.getClientRects().length)
    .reduce((m,c)=>Math.max(m,c.getBoundingClientRect().bottom+scrollY),0);
   parent.postMessage({hkDemoH:b>0?Math.ceil(b+4):document.documentElement.scrollHeight},"*")}catch(x){}};
  try{new ResizeObserver(post).observe(document.body)}catch(x){} setTimeout(post,300);
