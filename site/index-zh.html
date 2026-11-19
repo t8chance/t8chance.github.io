@@ -282,6 +282,8 @@ details.nums>summary{cursor:pointer;color:var(--link);font-weight:700;font-size:
 .bhead .bh{display:flex;align-items:center;gap:14px;font:700 36px/1.1 var(--body)}
 .bhead .bh .plate{width:78px;height:78px;font-size:44px}
 .bhead .iss{margin:10px 0 16px}
+.nsnext{margin:-4px 0 16px;font-size:16px;line-height:1.45} .nsnext:empty{display:none} .nsnext p{margin:0}   /* a past storm's run without the storm (2026-11-19) */
+.nsnext button{margin-top:10px;background:var(--ink);border-color:var(--ink);color:var(--card);font-weight:700}
 .board{width:100%;border-collapse:collapse}
 .board thead th{font:400 13px/1.3 var(--body);color:var(--mut);text-align:left;padding:0 0 5px;border-bottom:1px solid var(--ink)}
 .board thead th.r{text-align:right;padding-right:14px}
@@ -557,6 +559,7 @@ function nextRun(e){const last=cycles.find(x=>(HK[x]||{})[e]); if(!last)return n
  let c=step(6); if(e==="ifsens"&&/(06|18)$/.test(c)&&c<"2026101906") c=step(12);
  const t=etaOf(e,c); return t?{c,t}:null}
 const NAv=d=>!!d&&d.ens==="deepmind"&&!!d.quiet;
+const EMPTYR=x=>!!x&&Array.isArray(x.storms)&&!x.storms.length;
 const DEFE=c=>{const a=HK[c]||{}; return a.deepmind&&!a.deepmind.quiet?"deepmind":a.ifsens?"ifsens":a.tigge?"tigge":a.gefs?"gefs":a.era5?"era5":BASIC?null:a.aifsens?"aifsens":a.pangu?"pangu":a.deepmind?"deepmind":null};
 const DEFR=c=>{const a=HK[c]||{}; return !!(a.deepmind&&!a.deepmind.quiet||a.ifsens||a.tigge)};
 const OPEN=()=>{const r=cycles.filter(RECENT), dm=r.find(c=>(HK[c]||{}).deepmind); return dm&&!HK[dm].deepmind.quiet?dm:r.find(c=>(HK[c]||{}).ifsens)||null};
@@ -1034,13 +1037,15 @@ function head(){
   :curY?(curY==="8"&&stormsIn(curY).some(k=>/ — HKO No\. 9 on /.test(LAB[k]||""))?`<option disabled>* HKO issued No. 9</option>`:"")
    +stormsIn(curY).map(k=>`<option value="${k}"${k===curS?" selected":""}>${(curY==="8"&&/ — HKO No\. 9 on /.test(LAB[k]||"")?"*":"")+k}</option>`).join(""):"";
  const runs=curS==="__recent"?rec:curS?ST[curS]:[];
- $("#cyc").innerHTML=runs.map(c=>`<option value="${c}"${c===cyc?" selected":""}>${fmtc(c)}</option>`).join("");
+ const ensAt=c=>{const av=HK[c]||{}; if(!CHOSEN&&DEFE(c))return DEFE(c); return av[ens]?ens:MODES[mode].find(e=>av[e])||ORDER.find(e=>av[e])||ens};
+ $("#cyc").innerHTML=runs.map(c=>`<option value="${c}"${c===cyc?" selected":""}>${fmtc(c)}${curS!=="__recent"&&EMPTYR((HK[c]||{})[ensAt(c)])?" (no storm)":""}</option>`).join("");
  const go=c=>{if(!c)return; cyc=c;NOSAME=null;PICKED=false;sel=null;selH=null; chooseEns(c); head();load()};
  const fam=c=>CHOSEN?MODES[mode].some(e=>(HK[c]||{})[e]):DEFR(c), pick=a=>a&&(a===rec&&!CHOSEN&&OPEN()||a.find(fam)||a[0]);
+ const famS=c=>fam(c)&&(!CHOSEN||(v=>v[ens]?!EMPTYR(v[ens]):MODES[mode].some(e=>v[e]&&!EMPTYR(v[e])))(HK[c]||{}));
  const cMs=c=>Date.UTC(+c.slice(0,4),+c.slice(4,6)-1,+c.slice(6,8),+c.slice(8,10));
  const cpaOf=k=>{const tr=((window.HKTRUTH||{})[k]||{}).track; if(!tr||!tr.length) return null; let b=null,bd=1e9;
   tr.forEach(p=>{const d=Math.hypot((p[0]-114.17)*0.925,p[1]-22.3); if(d<bd){bd=d;b=p[3]}}); return b?Date.parse(String(b).slice(0,16)+":00Z"):null};
- const pickStorm=k=>{const a=ST[k]; if(!a) return null; const t0=cpaOf(k); if(t0==null) return pick(a); const w=t0-48*36e5, pool=a.some(fam)?a.filter(fam):a;
+ const pickStorm=k=>{const a=ST[k]; if(!a) return null; const t0=cpaOf(k); if(t0==null) return pick(a); const w=t0-48*36e5, pool=a.some(famS)?a.filter(famS):a.some(fam)?a.filter(fam):a;
   return pool.reduce((b,c)=>Math.abs(cMs(c)-w)<Math.abs(cMs(b)-w)?c:b)};
  $("#yearSel").onchange=e=>{const y=e.target.value; if(y==="__recent"){pickedStorm=null;go(pick(rec));return} const k=stormsIn(y).find(x=>ST[x].some(fam))||stormsIn(y)[0]; pickedStorm=k; go(pickStorm(k))};
  $("#stormSel").onchange=e=>{const k=e.target.value; if(k==="__recent"){go(pick(rec));return} pickedStorm=k; go(pickStorm(k))};
@@ -1121,8 +1126,28 @@ function areaMap(bx,over){if(!bx)return;
  const sv=bx.querySelector("svg"), {X,Y,hx,hy}=mapBase(sv,[104.4,124.0,14.6,30.0]);
  sv.appendChild(el("circle",{cx:hx,cy:hy,r:6,fill:"#f2c200",stroke:"#333","stroke-width":1.2}));
  const t=el("text",{x:hx+9,y:hy+4,fill:"#111","font-size":12,"font-weight":600,stroke:"#fff","stroke-width":3,"paint-order":"stroke"}); t.textContent="Hong Kong"; sv.appendChild(t)}
-const noStorm=(d,txt)=>(SHEETV?`<div class="bhead"><div class="bh"><span>No storm near Hong Kong</span></div>${issuedDiv(d,cyc)}</div><div class="facts"><div class="bv">${txt}</div></div>${recentStorms()}${EASY?`<div class="bmapc quiet" id="qmapbox"></div>`:cmpBox()}`
- :`<h2 class="sech">The forecast</h2><div class="ans"><div class="k">Expected signal</div><div class="badge" style="color:var(--mut)">No storm near Hong Kong</div>${issuedDiv(d,cyc)}<div class="v">${txt}</div><div class="note" id="qclose"></div>${cmpBlock()}</div>`)
+const nsStorm=()=>{const cs=casesOf(cyc); return cs.includes(pickedStorm)?pickedStorm:cs[0]||null};
+const nsSlot=d=>EMPTYR(d)&&!window.HK_DEMO&&nsStorm()?`<div class="nsnext" id="nsnext"></div>`:"";
+const nsLoad=k=>new Promise(r=>{if((window.HKT||{})[k])return r(); const s=document.createElement("script"); s.src=`../data/tracks_${k}.js`; s.onload=s.onerror=()=>r(); document.head.appendChild(s)});
+function nsHas(k,nm){const T=(window.HKT||{})[k], tr=((window.HKTRUTH||{})[nm]||{}).track; if(!T||!T.tracks||!T.tracks.length)return false;
+ if(!tr||!tr.length||!T.tracks.some(t=>t.pts&&t.pts.length))return true;
+ const y=+k.slice(0,4), mo=+k.slice(4,6), d0=+k.slice(6,8), B={}, p2=n=>String(n).padStart(2,"0"), R=Math.PI/180; tr.forEach(p=>B[String(p[3]).slice(0,13)]=p);
+ const km=(a,b,c,d)=>6371*Math.acos(Math.min(1,Math.sin(b*R)*Math.sin(d*R)+Math.cos(b*R)*Math.cos(d*R)*Math.cos((a-c)*R)));
+ return T.tracks.some(t=>(t.pts||[]).some(p=>{const [dd,hh]=String(p[3]).split(/[ \/]/).map(Number); let m2=mo+(dd<d0?1:0), y2=y; if(m2>12){m2=1;y2++}
+  const q=B[`${y2}-${p2(m2)}-${p2(dd)}T${p2(hh)}`]; return !!q&&km(p[0],p[1],q[0],q[1])<300}))}
+async function nsFill(){const bx=document.getElementById("nsnext"), nm=nsStorm(), c0=cyc, e=ens; if(!bx||!nm)return;
+ const win=PAST.filter(p=>p[2].split(" — ")[0]===nm), runs=Object.keys(HK).filter(c=>win.some(p=>c>=p[0]&&c<=p[1])&&(HK[c]||{})[e]&&!EMPTYR(HK[c][e])).sort();
+ const N=/^Unnamed/.test(nm)?"The storm":nm.replace(/ \d{4}$/,"");
+ if(!runs.length){bx.innerHTML=`<p>${N} is not in any forecast from this model.</p>`; return}
+ const later=runs.filter(c=>c>c0), earlier=runs.filter(c=>c<c0).reverse(); let hit=null, kind="";
+ for(const c of later.slice(0,4)){await nsLoad(c+"_"+e); if(nsHas(c+"_"+e,nm)){hit=c; kind=earlier.length?"next":"first"; break}}
+ if(!hit)for(const c of earlier.slice(0,4)){await nsLoad(c+"_"+e); if(nsHas(c+"_"+e,nm)){hit=c; kind="last"; break}}
+ if(!hit||cyc!==c0||ens!==e||!document.body.contains(bx))return;
+ const at=fmtc(hit);
+ bx.innerHTML=`<p>${kind==="first"?`${N} is not in this forecast yet. It first shows in the forecast from ${at}.`:kind==="next"?`${N} is not in this forecast. The next forecast that has it is from ${at}.`:`${N} is no longer in this forecast. It last shows in the forecast from ${at}.`}</p><button type="button" id="nsgo">See that forecast</button>`;
+ document.getElementById("nsgo").onclick=()=>{cyc=hit; NOSAME=null; PICKED=false; sel=null; selH=null; head(); load(); window.scrollTo(0,0)}}
+const noStorm=(d,txt)=>(SHEETV?`<div class="bhead"><div class="bh"><span>No storm near Hong Kong</span></div>${issuedDiv(d,cyc)}${nsSlot(d)}</div><div class="facts"><div class="bv">${txt}</div></div>${recentStorms()}${EASY?`<div class="bmapc quiet" id="qmapbox"></div>`:cmpBox()}`
+ :`<h2 class="sech">The forecast</h2><div class="ans"><div class="k">Expected signal</div><div class="badge" style="color:var(--mut)">No storm near Hong Kong</div>${issuedDiv(d,cyc)}${nsSlot(d)}<div class="v">${txt}</div><div class="note" id="qclose"></div>${cmpBlock()}</div>`)
  +(window.HK_DEMO||EASY?"":BASIC?r2rCardB():SHEETV?r2rCard().replace('<h2 class="sech">Trend</h2>',""):r2rCard());
 const passOf=(d,one,km)=>one?`closest approach <b>about ${KM10(km)} km</b>`:`<b>${d.within_150km}</b> of ${d.members} members pass within 150 km · <b>${d.within_500km}</b> within 500 km${km!=null?` · deterministic run about ${KM10(km)} km`:""}`;
 function fillDetCa(){const n=document.getElementById("passn"), d=(HK[cyc]||{})[ens]; if(!n||!d||!TR)return; const one=(d.members||0)<=1;
@@ -1263,11 +1288,11 @@ function load(){
   [...document.querySelectorAll(".mapbar,#mapkey,#mapnav,#maph,#chead,#tabs,.sech.mch"),$("#chart")&&$("#chart").closest(".scrollx")].forEach(e=>{if(e)e.style.display="none"});
   $("#map").style.display="none"; TR=null; MC=null; sel=null; selH=null; syncPlayer(); $("#selbar").style.display="none";
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";$("#maphint").textContent="";return}
- if(NAv(d)){$("#status").innerHTML=noStorm(d,"No storm in Google DeepMind's forecast comes within 800 km of Hong Kong. It follows only storms that have already formed, so a storm that forms later will not show here. The ECMWF forecasts include those."); sheetMove();
+ if(NAv(d)){$("#status").innerHTML=noStorm(d,"No storm in Google DeepMind's forecast comes within 800 km of Hong Kong. It follows only storms that have already formed, so a storm that forms later will not show here. The ECMWF forecasts include those."); sheetMove(); nsFill();
   [...document.querySelectorAll(".mapbar,#mapkey,#mapnav,#maph,#chead,#tabs,.sech.mch"),$("#chart")&&$("#chart").closest(".scrollx")].forEach(e=>{if(e)e.style.display="none"});
   $("#map").style.display="none"; TR=null; MC=null; sel=null; selH=null; syncPlayer(); $("#selbar").style.display="none";
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";$("#maphint").textContent="";drawR2R();return}
- if(d.quiet){$("#xbands").innerHTML=""; $("#status").innerHTML=noStorm(d,"No storm is forecast to come within 800 km of Hong Kong."); sheetMove();
+ if(d.quiet){$("#xbands").innerHTML=""; $("#status").innerHTML=noStorm(d,"No storm is forecast to come within 800 km of Hong Kong."); sheetMove(); nsFill();
   ["map","chart"].forEach(i=>$("#"+i).innerHTML="");$("#cnote").textContent="";
   drawR2R(); quietPaths();return}
  const src=(d.sources||[]).includes("s1")?"s1":"s1", MJ=Math.floor((d.members||51)/2)+1;

@@ -33,6 +33,7 @@ function G(s){
  s=zt(s).replace(SAMEDAY,"$1 $2 至 $3").replace(/ \((\d+(?:至\d+)?級(?:或以下)?)\)/g,"（$1）").replace(/ （/g,"（");
  return s}
 const wib=b=>WI[b]||b;
+const ZSN=n=>n==="The storm"?"該熱帶氣旋":G(n);
 const wref=s=>s.replace(/^(\S+) (\d{4}) \((\d+)\)$/,(m,n,y,v)=>`${y}年${STORM[n]||n}（${v}）`);
 const SAMEDAY=/(\d+月\d+日(?:（.）)?) ?(\d\d:\d\d) 至 \1 ?(\d\d:\d\d)/g, cl=s=>s.replace(SAMEDAY,"$1 $2 至 $3");
 const HKTM=new RegExp("\\b(\\d{1,2}) "+M3+" (\\d{2}:\\d{2})\\b","g");
@@ -163,6 +164,12 @@ const ZD=s=>s.replace(/(\d{1,2}) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|De
  .replace(/(\d{1,2}) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{2}:\d{2})/g,(m,d,mo,h)=>`${MONI[mo]}月${d}日 ${h}`);
 const RX=[
  [/^Signals HKO issued for (.+)$/,(m,a)=>`天文台就${G(a)}發出的信號`],
+ [/^(.+) is not in this forecast yet\. It first shows in the forecast from (.+)\.$/,(m,n,dt)=>`本預報中尚未出現${ZSN(n)}，它最早見於${G(dt)}的起報。`],
+ [/^(.+) is not in this forecast\. The next forecast that has it is from (.+)\.$/,(m,n,dt)=>`本預報中沒有出現${ZSN(n)}，它下一次見於${G(dt)}的起報。`],
+ [/^(.+) is no longer in this forecast\. It last shows in the forecast from (.+)\.$/,(m,n,dt)=>`本預報中已沒有出現${ZSN(n)}，它最後見於${G(dt)}的起報。`],
+ [/^(.+) is not in any forecast from this model\.$/,(m,n)=>`此模式的預報均沒有出現${ZSN(n)}。`],
+ [/^See that forecast$/,()=>"查看該預報"],
+ [/^(.+) \(no storm\)$/,(m,a)=>`${G(a)}（沒有熱帶氣旋）`],
  [/^HKO issued No\. (\d+) on (.+)\.$/,(m,n,dt)=>G(`HKO No. ${n} on ${dt}`)+"。"],
  [/^For (.+?), HKO issued (No\. (\d+) on (.+)|no signal)\.$/,(m,s,x,n,dt)=>`${G(s)}：`+(n?G(`HKO No. ${n} on ${dt}`):"天文台沒有發出熱帶氣旋警告信號")+"。"],
  [/^From the (.+) forecast\.$/,(m,f)=>{const n=EX.get(f)||f; return `採用${/^[A-Za-z]/.test(n)?" ":""}${n}${/[A-Za-z)]$/.test(n)?" ":""}預報。`}],
