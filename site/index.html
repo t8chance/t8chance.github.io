@@ -712,6 +712,10 @@ const pastOf=c=>PAST.filter(p=>c>=p[0]&&c<=p[1]).map(p=>p[2]).join(" / ");
 const SKA={"Unnamed storm (Jun) 2025":"TS0625_2025","Unnamed depression (Aug) 2025":"TD0816_2025"};
 const casesOf=c=>PAST.filter(p=>c>=p[0]&&c<=p[1]).map(p=>p[2].split(" — ")[0]);
 const RECENT=c=>(Date.UTC(+cycles[0].slice(0,4),+cycles[0].slice(4,6)-1,+cycles[0].slice(6,8))-Date.UTC(+c.slice(0,4),+c.slice(4,6)-1,+c.slice(6,8)))/864e5<=10;
+const DROPPED={};
+{const W=PAST.map(p=>[p[0],p[1]]); for(const c of Object.keys(HK)){if(RECENT(c)||!W.some(([a,b])=>c>=a&&c<=b))continue; const v=HK[c];
+ for(const e of Object.keys(v))if(EMPTYR(v[e])){delete v[e]; (DROPPED[c]=DROPPED[c]||[]).push(e)}
+ if(!Object.keys(v).length){delete HK[c]; const i=cycles.indexOf(c); if(i>=0)cycles.splice(i,1)}}}
 const el=(t,a={})=>{const e=document.createElementNS("http://www.w3.org/2000/svg",t);for(const k in a)e.setAttribute(k,a[k]);return e};
 const CLSE=[0,22,34,48,64,81,100,400], CLSC=["#c8c8c8","#000","#006400","#00008b","#d62728","#ff69b4","#7b1fa2"];
 const CLSN=["below TD","TD","TS","STS","T","ST","SuperT"];
@@ -2225,7 +2229,8 @@ if(DEMO){window.HK_DEMO=DEMO; document.documentElement.classList.add("demo","dem
  if(parent!==window)setTimeout(tour,600)}
 try{const q=new URLSearchParams(location.search), f=q.get("f"); let r=q.get("run");
  if(r==="storm") r=cycles.find(c=>HK[c].ifsens&&!HK[c].ifsens.quiet)||cycles[0];
- if(r&&HK[r]){cyc=r; if(f&&HK[r][f]){ens=f; mode=modeOf(f)||mode; CHOSEN=true} else if(DEFE(r)){ens=DEFE(r); mode=modeOf(ens)||mode}}}catch(e){}
+ if(r&&!HK[r]&&DROPPED[r]){const w=PAST.filter(p=>r>=p[0]&&r<=p[1]), L=cycles.filter(c=>w.some(p=>c>=p[0]&&c<=p[1])).sort(), a=L.filter(c=>c>r); r=(f&&a.find(c=>HK[c][f]))||a[0]||L[L.length-1]||r}
+ if(r&&HK[r]){cyc=r; if(f&&HK[r][f]){ens=f; mode=modeOf(f)||mode; CHOSEN=true} else{const e2=DEFE(r)||(DROPPED[r]&&ORDER.find(e=>HK[r][e])); if(e2){ens=e2; mode=modeOf(ens)||mode}}}}catch(e){}
 head();load();
 </script><script src="credits.js"></script>
 <script>(function(){var a=document.getElementById("langsw");if(!a)return;if(window.top!==window.self){a.style.display="none";return}a.href=a.getAttribute("href")+location.search+location.hash;a.addEventListener("click",function(){try{localStorage.setItem("hk_lang","zh")}catch(e){}})})();</script></body></html>
