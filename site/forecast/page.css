@@ -1,0 +1,429 @@
+/* The forecast page, one stylesheet. A flat page (look of 2026-11-10): white ground, ink text, hairline rules, square corners, no boxes
+   or shadows, the device's own typeface, one ink title band. HKO's signal colours are the only strong colour.
+   ONE FRAME for every page (2026-11-16, user: 'fix the changes fable recommended', the 'vibe-coded' audit of 15 Nov): the same column,
+   body size, title band, page title and menu on all six pages, and one type scale (13, 15, 17, 22 and 36 px, weights 400 and 700).
+   Order: tokens, base, shared pieces, then the page from top to bottom -- header, context line, run menus, sheet, the answer (Expert),
+   the signal board (Basic and Advanced), map, member charts, footer -- and the tour's frames last. Each part's phone rules sit with
+   the part. Breakpoints: 760 px (a phone) and 860 px (one column, the Menu button). */
+
+/* ---- 1. tokens ---- */
+:root{
+ --bg:#fff;--card:#fff;--soft:#eff0f1;--ink:#14171a;--mut:#5a6168;--line:#d8dbde;--link:#0a55a3;
+ --no1:#c3cad1;--no3:#d98c1a;--no8:#cc2255;--no9:#7f0000;--no10:#54278f;--wib:#e8590c;--wil:#0b7285;
+ --good:#1a7f37;--bad:#c62828;--halo:#fff;--warn:#9a5b00;--band:#14171a;--bandink:#fff;
+ --body:-apple-system,BlinkMacSystemFont,"Helvetica Neue","PingFang HK","Segoe UI","Noto Sans HK","Noto Sans TC","Microsoft JhengHei",Roboto,Arial,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#0e1012;--card:#0e1012;--soft:#1b1e21;--ink:#eceef0;--mut:#9aa1a8;--line:#2c3136;--link:#7db4ff;
+ --no1:#6f7a84;--no3:#f0a23a;--no8:#f05a82;--no9:#ffc6b8;--no10:#b08ae8;--wib:#ffa94d;--wil:#3bc9db;
+ --good:#5cc97a;--bad:#ff7b72;--halo:#0e1012;--warn:#f0b35a;--band:#000;--bandink:#fff;color-scheme:dark}}
+:root[data-theme="dark"]{
+ --bg:#0e1012;--card:#0e1012;--soft:#1b1e21;--ink:#eceef0;--mut:#9aa1a8;--line:#2c3136;--link:#7db4ff;
+ --no1:#6f7a84;--no3:#f0a23a;--no8:#f05a82;--no9:#ffc6b8;--no10:#b08ae8;--wib:#ffa94d;--wil:#3bc9db;
+ --good:#5cc97a;--bad:#ff7b72;--halo:#0e1012;--warn:#f0b35a;--band:#000;--bandink:#fff;color-scheme:dark}   /* the header switch (theme.js, 2026-11-17) */
+
+/* ---- 2. base elements ---- */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+a{color:var(--link);text-underline-offset:2px}
+b,strong{font-weight:700}
+h2{font:700 22px/1.2 var(--body);margin:30px 0 10px;text-wrap:balance}
+:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+select,button{font:400 15px/1.2 var(--body);color:var(--ink);border:1px solid var(--line);border-radius:3px;background:var(--bg);padding:8px 12px;cursor:pointer;max-width:100%}
+select{-webkit-appearance:none;appearance:none;background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%237d8b97' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 11px center/10px 6px;padding-right:32px}
+button:hover,select:hover{border-color:var(--mut)}
+button.on{background:var(--ink);border-color:var(--ink);color:var(--card)}
+button,select,label,input{touch-action:manipulation}   /* no double-tap zoom: quick taps on + / - each count (iOS) */
+input[type=checkbox],input[type=range]{accent-color:var(--ink)}
+svg{display:block;width:100%;height:auto;background:var(--card);border:1px solid var(--line)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---- 3. shared pieces: the column, small print, a row of controls, a switch, a signal plate ---- */
+.wrap{max-width:1060px;margin:0 auto;padding:0 16px 56px}
+.note{color:var(--mut);font-size:13px;margin:8px 0 0}
+.rng{color:var(--mut);font-size:13px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}
+.scrollx{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.seg{display:inline-flex;flex-wrap:wrap;gap:6px}
+.seg button{border-color:var(--line);padding:7px 12px;color:var(--mut)}
+.seg button:hover{color:var(--ink)}
+.seg button.on{background:var(--bg);border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);color:var(--ink);font-weight:700}
+.plate{display:inline-flex;align-items:center;justify-content:center;flex:none;width:36px;height:36px;font:700 17px/1 var(--body);font-variant-numeric:tabular-nums}
+.plate.s{width:22px;height:22px;font-size:13px}
+.p1{background:var(--no1);color:#14171a}.p3{background:var(--no3);color:#14171a}.p8{background:var(--no8);color:#fff}.p9{background:var(--no9);color:#fff}.p10{background:var(--no10);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .plate{color:#0e1012}}
+:root[data-theme="dark"] .plate{color:#0e1012}
+
+/* ---- 4. header (2026-11-17, Fable's layout review P2, adopted): the ink band holds the name, the page links and the language switch;
+   a phone gets a Menu button that opens the links. Under it one research line. Same block on every page. ---- */
+.mast{margin:0 0 14px}
+.mast .band{display:flex;align-items:center;gap:0 22px;min-height:48px;background:var(--band);color:var(--bandink);
+ box-shadow:0 0 0 100vmax var(--band);clip-path:inset(0 -100vmax)}
+.mast .name{margin:0 auto 0 0;padding:12px 0;font:700 17px/1.25 var(--body);text-wrap:balance}
+.mast nav{display:flex;flex:none;align-items:stretch;gap:0 22px;font-size:15px}
+.mast nav a{color:var(--bandink);text-decoration:none;padding:14px 0 11px;border-bottom:3px solid transparent;white-space:nowrap}
+.mast nav a:hover{border-bottom-color:#7b8188}
+.mast nav a[aria-current]{font-weight:700;border-bottom-color:var(--bandink)}
+.mast .langsw,.mast .themesw,.mast .menu{flex:none;font:400 15px/1.2 var(--body);color:var(--bandink);background:none;border:1px solid #7b8188;border-radius:3px;
+ padding:5px 10px;text-decoration:none;cursor:pointer}
+.mast .menu{display:none}
+.mast .research{margin:0;padding:6px 0;font-size:13px;line-height:1.4;background:var(--soft);
+ box-shadow:0 0 0 100vmax var(--soft);clip-path:inset(0 -100vmax)}
+@media (max-width:860px){
+ .mast .band{flex-wrap:wrap;gap:0 10px;min-height:52px}
+ .mast .name{font-size:15px;max-width:13em;padding:8px 0}
+ .mast nav{display:none;order:9;flex:1 0 100%;flex-direction:column;gap:0;border-top:1px solid #3a3f45}
+ .mast.open nav{display:flex}
+ .mast nav a{padding:12px 0;border-bottom:1px solid #3a3f45;font-size:17px}
+ .mast nav a:last-child{border-bottom:0}
+ .mast nav a[aria-current]{border-bottom-color:#3a3f45}
+ .mast .menu{display:inline-block}
+}
+
+/* ---- 5. context line. LAYOUT (2026-11-17, user: 'Looks good! adopt it' -> Fable's layout review, P1 to P6): the context line under
+   the header, the run menus behind 'Change storm', and one sheet. Here: what this page shows, the earlier / later steps, and the
+   Basic / Advanced / Expert switch (the scripts put it in #modeslot). ---- */
+.ctx{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 16px}
+.ctx .what{flex:1 1 320px;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin:12px 0 0;padding-bottom:10px;font-size:15px}
+.ctx .what>b{font-size:17px}
+.ctx .what>b:empty{display:none}
+.ctx .sub{flex:1 0 100%;line-height:1.4}
+#stamp .sl{display:block}
+.tag{font:700 13px/1.2 var(--body);background:var(--ink);color:var(--bg);padding:4px 8px}
+.tag.live{background:none;color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.ctx .step{flex:none;display:flex;gap:6px;padding-bottom:0;margin-bottom:-1px}   /* level with the view tabs (2026-11-18, user: 'These two not level, hurts my eye'):
+   on the same line as the tabs, the buttons' bottom edge on the hairline itself, 36 px tall so their tops meet the tabs' (35 px + that 1 px) */
+.ctx .step button{padding:8px 11px}
+@media (min-width:861px){.ctx .step button,.ctx .step button:hover,.ctx .step button:disabled{border-bottom-color:transparent;background-clip:padding-box;border-radius:3px 3px 0 0}}   /* the line below is their bottom edge, as for the tabs (Advanced's line is dark) */
+.ctx .step button:hover{border-color:var(--ink)}
+.ctx .step button:disabled{opacity:.4;cursor:default;border-color:var(--line)}
+body:not(.sheetv) .ctx .step .chg{display:none}
+#modeslot{flex:none;align-self:flex-end}
+.modesw{display:flex;overflow:hidden}
+.modesw a{padding:8px 16px;font-size:15px;line-height:1.2;border:1px solid var(--ink);border-bottom:0;margin-left:-1px;color:var(--ink);text-decoration:none;background:var(--bg)}
+.modesw a.on{background:var(--ink);color:var(--bg);font-weight:700}
+@media (max-width:860px){
+ .ctx{align-items:center;padding-top:2px}
+ .ctx .what{display:contents} .ctx .tag{order:1} .ctx .what>b{order:2} .ctx .sub{order:4}
+ .ctx .step{order:3;margin-left:auto;padding-bottom:0;margin-bottom:0} .ctx .step button:not(.chg){display:none}
+ #modeslot{order:5;flex:1 0 100%} .modesw{width:100%} .modesw a{flex:1;text-align:center;padding:9px 0}
+}
+@media (max-width:600px){#stamp .sx{display:none} body.basic #stamp:not(:has(.sl:not(.sx))){display:none}}
+
+/* ---- 6. the run menus: no box, two hairlines. Basic and Advanced keep them behind 'Change storm' (body.tbopen) ---- */
+.toolbar{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px 0;margin:0 0 10px}
+body:not(.basic) .toolbar{border-bottom:0}
+.grp{display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-width:0}
+.lbl{flex:none;width:100px;font:700 13px/1.2 var(--body);color:var(--mut)}
+.lbl2{display:none}   /* the phone's labels for the signal and storm menus; a computer keeps its one 'Run' label */
+#ensbtns button.na{opacity:.5}
+#checks{margin:0 0 0 4px}
+@media (max-width:760px){
+ /* a phone (2026-11-11, user: '23-24 sept then 21 sept, very confusing for readers!' -> Fable's layout review -> 'Just do all fable
+    suggested'): Today puts its two buttons and the run menu on one row, and the menu takes a row of its own when it does not fit
+    (Chinese at 360 px cut the time). A past storm shows its three menus, each with a label beside it, and no fold line (it repeated
+    the menus and only ever started closed on a link) */
+ .toolbar{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 10px;align-items:center}
+ .toolbar>*{grid-column:1/-1}
+ body:not(.pastv) .toolbar{display:flex;flex-direction:row;flex-wrap:wrap}
+ body:not(.pastv) .toolbar>*{flex:1 0 100%}
+ body:not(.pastv) .toolbar>.viewsel{flex:0 0 auto}
+ body:not(.pastv) .toolbar>.runsel{flex:1 1 auto;min-width:auto}
+ body.pastv .toolbar>.runsel{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 10px;align-items:center}
+ .toolbar .lbl{display:none}
+ body.pastv .toolbar>.runsel>.lbl{display:block;width:auto;font:700 13px/1.2 var(--body);white-space:nowrap}
+ body.pastv #runlbl{order:5} body.pastv #cyc{order:6}
+ .toolbar select{width:100%}
+ #viewbtns button{padding:7px 10px}
+ #ensbtns{max-width:100%} #ensbtns button{flex:none}   /* short names, wrapping: the third forecast was cut to 'Go' with no cue (2026-11-11) */
+}
+body.sheetv .toolbar{display:none}   /* after the phone rules above: the same weight as body:not(.pastv) .toolbar, and it must win */
+body.sheetv.tbopen .toolbar{display:flex}
+/* Expert (2026-11-18, user: 'why layout of expert is different, this is inconsistent'): the same sheet as Advanced; its forecast row stays
+   in view under the context line (layout review: 'Expert only, as a second row of the context line'), the menus open with Change storm */
+body.sheetv:not(.basic) .toolbar{display:flex}
+body.sheetv:not(.basic):not(.tbopen) .toolbar>.viewsel,body.sheetv:not(.basic):not(.tbopen) .toolbar>.runsel{display:none}
+.stale{margin:0 0 8px;color:var(--warn);font-weight:700;font-size:15px}
+.hkonow{margin:10px 0 4px;padding:6px 0 6px 12px;border-left:4px solid var(--no3);font-size:15px}
+
+/* ---- 7. the sheet. Basic and Advanced split it into the numbers (left, 5/12) and the pictures (right, 7/12) on a computer; a phone
+   reads headline, board, day strip, map, comparison, trend, facts. Expert keeps one column. ---- */
+.sheet{border-top:3px solid var(--ink);padding-top:18px}
+.charts>*,.ledger>*{min-width:0}
+.status{margin:0 0 8px}
+@media (min-width:861px){body.sheetv .sheet{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:40px;align-items:start}}
+@media (max-width:860px){
+ body.sheetv .sheet{display:flex;flex-direction:column;padding-top:14px}
+ body.sheetv .ledger,body.sheetv .charts,body.sheetv #status,body.sheetv #cslot,body.sheetv #cslot2{display:contents}
+ body.sheetv .bhead{order:1} body.sheetv .board{order:2} body.sheetv .tlcard.when{order:3;margin-top:18px}
+ body.sheetv #bmapbox,body.sheetv #qmapbox,body.sheetv #maph,body.sheetv .mapcard,body.sheetv #mchart{order:4}
+ body.sheetv .cmpbox{order:5;margin-top:0} body.sheetv #cslot2>.tlcard:not(.when){order:6;margin-top:22px}
+ body.sheetv .facts{order:7;margin-top:0} body.sheetv .recent{order:8} body.sheetv #easymore{order:9}
+}
+/* Expert's bands under the trend (2026-11-18): the station winds beside what HKO issued and recorded, on the sheet's 5 / 7 grid */
+/* Expert's map spans the whole width under the board and the time strip (2026-11-18, user: 'for expert the map is way too small' ->
+   'Expert only'): on a computer the right column holds the time strip, the map takes its own full-width rows; a phone is one column anyway */
+@media (min-width:861px){
+ body.sheetv:not(.basic) .charts{display:contents}
+ body.sheetv:not(.basic) .ledger{grid-column:1;grid-row:1} body.sheetv:not(.basic) #cslot{grid-column:2;grid-row:1}
+ body.sheetv:not(.basic) #cslot2:empty{display:none}
+ body.sheetv:not(.basic) #maph{grid-column:1/-1;grid-row:2;margin-top:24px} body.sheetv:not(.basic) .mapcard{grid-column:1/-1;grid-row:3}
+}
+#xbands:empty{display:none}
+#xbands{margin:26px 0 0;border-top:3px solid var(--ink);padding-top:18px}
+#xbands .xband{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:40px;align-items:start}
+#xbands .xband>div:empty{display:none} #xbands .xband>div:only-child{grid-column:1/-1}
+@media (max-width:860px){#xbands .xband{display:block}}
+
+/* what each level shows. BASIC mode (2026-10-17): body.basic is Basic and Advanced, body.easy is Basic alone, .adv marks Expert's parts.
+   Basic keeps Today / Past storms and the run pickers (2026-11-02, user: 'in easy mode, enable past storms also'); the forecast
+   buttons stay hidden (.adv). These need !important: the scripts write display inline on the same elements. */
+body.basic .adv{display:none!important}
+body.easy .wrap>:not(.mast):not(.ctx):not(.toolbar):not(.sheet):not(#stale):not(.hkonow):not(#easymore){display:none!important}
+body.easy #maph,body.easy .mapcard{display:none!important}
+body.easy #status .tlcard,body.easy #status .sech{display:none!important}
+/* a path is picked (bsel) or HKO's best track is on (btsel): that one chart comes back */
+body.basic.bsel #chead.adv,body.basic.bsel.tab-wi .cbox.adv,body.basic.bsel #cnote.adv,body.basic.bsel:not(.tab-wi) #stationchart.adv{display:block!important}
+body.basic.bsel #tabs.adv{display:flex!important}
+body.btsel #chead.adv,body.btsel .cbox.adv,body.btsel #cnote.adv{display:block!important}
+body.btsel #tabs,body.btsel #wisw,body.btsel #stationchart,body.btsel .mch,body.btsel #bwx{display:none!important}
+.bwx{display:none} body.basic.bsel.tab-wi .bwx{display:block;max-width:70ch}
+/* section heads: a plain bold line under an ink rule */
+.sech{font:700 17px/1.2 var(--body);margin:34px 0 0;padding:10px 0;border-top:2px solid var(--ink)}
+#status>.sech:first-child{margin-top:18px}
+body:not(.basic) #status>.sech:first-child{border-top:0;margin-top:0}
+
+/* ---- 8. the answer (Expert): flat blocks, a hairline between them. The HKO block in the same style as the forecast block (2026-10-17) ---- */
+.hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:0 44px}
+.hero>.ans:only-child{grid-column:1/-1}
+.ans{min-width:0;container-type:inline-size;padding:14px 0 18px;border-top:1px solid var(--line)}
+.hero>.ans:first-child{border-top:0;padding-top:2px}
+@media (min-width:761px){.hero>.ans:nth-child(2){border-top:0;padding-top:2px}}
+@media (max-width:760px){.hero{grid-template-columns:1fr}}
+.ans.na{background:repeating-linear-gradient(45deg,var(--card) 0 8px,var(--soft) 8px 11px)}
+.ans.na .badge,.ans.na .v{color:var(--mut)}
+.ans .k{font:700 15px/1.3 var(--body);color:var(--mut)}
+.ans .v{font-size:15px;font-variant-numeric:tabular-nums}
+.badge,.ans .bh{font:700 36px/1.15 var(--body);margin:6px 0 8px}
+.ans .bh{text-wrap:balance}
+@media (max-width:760px){.badge,.ans .bh{font-size:28px}}
+.iss{margin:4px 0 10px;font-size:15px}
+.bbar{display:grid;grid-template-columns:58px 1fr 52px;gap:10px;align-items:center;margin:8px 0}
+.bbar .tr{height:12px;background:var(--soft);overflow:hidden} .bbar .fl{height:100%;min-width:2px}
+.bbar .pc{font:700 17px/1 var(--body);text-align:right}
+/* the reference stations: a label over its dots, the count beside them */
+.gs{margin:9px 0 0}
+.gl{display:block;margin:0 0 5px;font:700 15px/1 var(--body);color:var(--mut)}
+.gd{display:inline-flex;gap:3px;vertical-align:-1px;margin-right:6px}
+.gd i{width:10px;height:10px;border:1.5px solid var(--ink);opacity:.3}
+.gd i.f{background:var(--ink);opacity:1} .gd i.p{background:var(--mut);opacity:.6}
+.gn{font:700 22px/1 var(--body)}
+.gh{font:700 15px/1.3 var(--body);color:var(--ink);margin:12px 0 4px}   /* "Forecast, at any time from this run onward" over the station counts */
+#galeF>div:not(.gh){margin-top:9px}   /* the rows spaced as in the HKO block */
+.r8{margin:12px 0 0;font-size:15px;line-height:1.45} .r8 .r8s{color:var(--mut);margin-top:3px}   /* the 8-station average and its rank */
+.obs{margin-top:10px!important;font-size:15px!important}
+details.what{margin:12px 0 0;font-size:15px;color:var(--mut)} .what summary{cursor:pointer;color:var(--link);font-weight:700} .what p{margin:8px 0 0;max-width:64ch}
+.mexp{margin:6px 0 2px;font-size:15px;line-height:1.45;color:var(--mut);max-width:62ch} .mexp b{color:var(--ink)}
+/* a strip: the timeline, the day strip, the trend */
+.tlcard{padding:2px 0 10px}
+.tlcard .k{font:700 15px/1.3 var(--body);color:var(--ink);margin-bottom:8px}
+.tlcard+.tlcard,.bmapc+.tlcard{border-top:1px solid var(--line);padding-top:16px}
+.charts .tlcard{padding:0;margin:0 0 24px;border:0}
+#cslot3 .tlcard{margin:4px 0 0;padding:16px 0 0;border-top:1px solid var(--line)}
+.charts .tlcard>.k,#cslot3 .tlcard>.k{margin:0 0 6px}
+#tl svg{border:0;background:transparent}
+#tl .pk{fill:#14171a} #tl .pw{fill:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #tl .pw,:root:not([data-theme="light"]) #tl .pk{fill:#0e1012}}
+:root[data-theme="dark"] #tl .pw,:root[data-theme="dark"] #tl .pk{fill:#0e1012}
+.tlleg{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:13px;color:var(--mut);margin-top:8px}
+.tlleg i{display:inline-block;width:22px;height:10px;margin-right:5px;vertical-align:-1px}
+/* the trend, run to run */
+#r2r{position:relative}
+#r2r svg{border:0;background:none;overflow:visible}
+#r2r circle,#r2r rect.na,#r2r .mk{cursor:pointer}
+.r2rlg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--mut);margin:-2px 0 6px}
+.r2rall .r2rlg .sg{display:none}
+.r2rp{margin:0 0 4px} .r2rp .t{font:700 13px/1.3 var(--body);color:var(--ink);margin:6px 0 0}
+.r2rctl{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:0 0 8px} .r2rctl .seg button{padding:5px 10px;font-size:13px}
+.r2rlgA{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--ink);margin:4px 0 0}
+.r2rlgA svg{vertical-align:middle;margin-right:4px} #r2r .r2rlgA svg{display:inline-block;width:38px;height:12px}
+.r2rallnote{margin:2px 0 0;font-size:13px;color:var(--mut)}
+.r2rtip{position:absolute;z-index:6;pointer-events:none;background:var(--card);border:1px solid var(--line);border-radius:3px;padding:7px 10px;font-size:13px;line-height:1.5;box-shadow:0 2px 10px rgba(0,0,0,.16);white-space:nowrap}
+.r2rtip b{display:block;margin-bottom:2px} .r2rtip i{display:inline-block;width:10px;height:10px;border-radius:0;margin-right:6px;vertical-align:-1px}
+.r2rtip .mu{color:var(--mut)} #r2r .r2rtip svg{display:inline-block;width:16px;height:10px}
+/* numbers per signal */
+details.nums>summary{cursor:pointer;color:var(--link);font-weight:700;font-size:15px;margin:4px 0 12px}
+.lvgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 28px}
+@media (max-width:760px){.lvgrid{grid-template-columns:1fr}}
+.lv{min-width:0;border-top:3px solid var(--c);padding:10px 0}
+.lv h3{margin:0 0 8px;font:700 17px/1 var(--body);color:var(--c)}
+.lv dl{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;margin:0;font-size:15px}
+.lv dt{color:var(--mut)} .lv dd{margin:0;font-variant-numeric:tabular-nums}
+
+/* ---- 9. the signal board (Basic and Advanced): headline, board, facts, comparison, recent storms ---- */
+.bhead .bh{display:flex;align-items:center;gap:14px;font:700 36px/1.1 var(--body)}
+.bhead .bh .plate{width:78px;height:78px;font-size:44px}
+.bhead .iss{margin:10px 0 16px}
+.nsnext{margin:-4px 0 16px;font-size:16px;line-height:1.45} .nsnext:empty{display:none} .nsnext p{margin:0}   /* a past storm's run without the storm (2026-11-19) */
+.nsnext #nsgo{margin-top:10px;background:var(--ink);border-color:var(--ink);color:var(--card);font-weight:700}
+.nsnext .nsalt{margin-top:14px} .nsbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}   /* the same run time in other forecasts (2026-11-19) */
+.board{width:100%;border-collapse:collapse}
+.board thead th{font:400 13px/1.3 var(--body);color:var(--mut);text-align:left;padding:0 0 5px;border-bottom:1px solid var(--ink)}
+.board thead th.r{text-align:right;padding-right:14px}
+.board tbody th,.board td{padding:11px 0;border-bottom:1px solid var(--line);vertical-align:middle;text-align:left;font-weight:400}
+.board tbody th{width:48px}
+.board .pc{width:84px;text-align:right;font:700 28px/1 var(--body);padding-right:14px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.board .pc small{font-size:15px;margin-left:1px}
+.board .bar{height:8px;background:var(--soft)} .board .bar i{display:block;height:100%}
+.board .win{font-size:15px;line-height:1.3;margin-top:6px} .board .win span{white-space:nowrap} .board .nx{color:var(--mut)}
+@media (max-width:860px){
+ .bhead .bh{font-size:28px;gap:12px} .bhead .bh .plate{width:60px;height:60px;font-size:34px}
+ .board .pc{width:76px;padding-right:12px} .board tbody th{width:46px}
+}
+.facts{margin-top:16px;border-top:1px solid var(--line)}
+.facts .bv{padding:10px 0;border-bottom:1px solid var(--line);font-size:15px} .facts .bv:empty{display:none}
+.cmpbox{margin-top:20px}
+.cmpbox h2,.figh h2,.recent h2,.when h2{font:700 15px/1.3 var(--body);margin:0;padding:0;border:0}
+.figh{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:0 0 6px}
+.figh span,.figh a,.howto{font-size:13px;font-weight:400;white-space:nowrap}
+.cmp{border-collapse:collapse;margin:10px 0 2px;font-size:15px;font-variant-numeric:tabular-nums}
+.cmp th{font-weight:700;color:var(--mut);white-space:nowrap}
+.cmp td,.cmp th{padding:3px 0 3px 18px;text-align:right;border-top:1px solid var(--line)}
+.cmp td:first-child,.cmp th:first-child{padding-left:0;text-align:left}
+.cmp tr:first-child th{border-top:0} .cmp tr.me td{font-weight:700} .cmp .note{margin:0}
+.cmpbox .cmp{width:100%}
+/* the quiet day's recent storms, and a picked path's signals (.sigt, after .rc: it changes the same cells) */
+.recent{margin-top:22px}
+.rc{width:100%;border-collapse:collapse;margin-top:6px;font-size:15px}
+.rc th,.rc td{padding:8px 0;border-bottom:1px solid var(--line);text-align:left;font-weight:400;vertical-align:middle}
+.rc thead th{font-size:13px;color:var(--mut);border-bottom:1px solid var(--ink);padding:0 0 5px}
+.rc td:last-child,.rc th:last-child{text-align:right}
+.recent .more{margin:10px 0 0;font-size:15px}
+.sigt td,.sigt th{padding-right:12px;vertical-align:top} .sigt td:last-child,.sigt th:last-child{text-align:left}
+.sigt th:nth-child(2),.sigt th:nth-child(3){width:44%} .sigt td span{white-space:nowrap} .sigt td span:not(.plate){display:block}
+.sigt .hrs{color:var(--mut);font-size:13px} .sigt .nx{color:var(--mut)}
+#easymore{margin:14px 0 0}
+
+/* ---- 10. map. Basic's own map (.bmapc), then the map card of Advanced and Expert: title line, the zoom buttons inside the frame, the
+   key on the map's own ground, the controls under it ---- */
+.bmapc{margin:0 0 24px}
+.bmapc:empty{display:none}
+.bmapc .note{margin:6px 0 0}
+.bmapc .frame{border:1px solid var(--line);background:#e8eff6;position:relative}
+.bmapc svg{border:0}
+.bmapc .key{background:#fff;color:#14171a;border-top:1px solid #c9ced3;padding:7px 10px;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;font-size:13px;line-height:1.3}
+.bmapc .key i{display:inline-block;width:18px;height:6px;margin-right:5px;vertical-align:middle}
+.bmapc .key .ks{display:inline-flex;flex-wrap:wrap;gap:4px 10px}
+.bmapc .key .kln{height:0;width:22px;border-top:3px solid #14171a}
+.bmapc .key .ksh{height:10px;background:#2f5d8a;opacity:.25}
+.bmapc .key .krg{width:11px;height:11px;border-radius:50%;border:2px solid #2e7d32}
+.bmapc .over{position:absolute;left:10px;bottom:10px;background:#fff;color:#14171a;border:1px solid #8a9198;padding:5px 9px;font-size:15px;font-weight:700}
+@media (max-width:860px){.bmapc .frame{margin:0 -16px;border-left:0;border-right:0}}
+body.sheetv #maph{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font:700 15px/1.3 var(--body);margin:0 0 6px;padding:0;border:0}
+.mapcard{display:flex;flex-direction:column;margin:0 0 24px}
+.mapcard>#crebar{order:2} .mapcard>.mapwrap{order:3} .mapcard>#mapkey{order:4} .mapcard>.mapbar{order:5} .mapcard>#player{order:6} .mapcard>#maphint{order:7}
+#mapexp{display:none}
+.mapwrap{position:relative}
+#map text{paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}   /* labels readable over the tracks (2026-10-11) */
+#selbar{position:absolute;top:12px;left:12px;z-index:5}
+#showAll{font:700 15px/1.2 var(--body);padding:10px 16px;border:0;background:var(--ink);color:var(--bg)}
+#showAll:hover{filter:brightness(1.18)} #showAll:focus-visible{outline:3px solid var(--link);outline-offset:2px}
+#heatBtn,#creBtn{margin-left:8px;font:700 15px/1.2 var(--body);padding:9px 15px;border-color:var(--ink)}
+#heatBtn.on,#creBtn.on{background:var(--ink);color:var(--bg)}
+#mapnav{position:absolute;top:8px;right:8px;z-index:5;display:flex;flex-direction:column;align-items:center}
+#mapnav button{flex:none;display:inline-flex;align-items:center;justify-content:center;width:38px;min-width:32px;height:36px;margin:-1px 0 0;padding:0;
+ border:1px solid #8a9198;border-radius:0;background:#fff;color:#14171a;font:700 19px/1 var(--body)}
+#mapnav [data-nav=in],#mapnav [data-nav=out]{font-weight:400}
+#mapnav [data-nav=home]{font-size:12px}
+#mapnav button:disabled{opacity:.38;cursor:default}
+#mapnav .gap,#mapnav [data-nav=w],#mapnav [data-nav=n],#mapnav [data-nav=s],#mapnav [data-nav=e]{display:none}
+#mapkey{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;margin:-1px 0 0;padding:7px 10px;border:1px solid var(--line);background:#fff;color:#14171a;font-size:13px}
+#mapkey span{display:inline-flex;align-items:center;gap:7px;white-space:nowrap} #mapkey .kh{font-weight:700}
+#mapkey i{display:inline-block;width:26px;height:4px}
+#mapkey .kdash{height:0;border-top:3px dashed #000} #mapkey .kthin{height:0;border-top:2px dashed #999}
+#mapkey b{font-weight:400}
+.mapbar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:8px 0 0}
+.mapbar .note{margin:0}
+#play{display:none}
+#maphint{font-size:15px} #maphint:empty{display:none}
+@media (max-width:760px){
+ .mapwrap{margin-left:-16px;margin-right:-16px} #map{border-left:0;border-right:0}   /* edge to edge on a phone */
+ #mapkey .kh{flex-basis:100%} .mapbar label.note{padding:8px 0}   /* legend heading on its own row, taller tick boxes (2026-11-11) */
+}
+
+/* ---- 11. member charts: the tabs, the wind index, the station tables, the storm ranking ---- */
+#mchart{margin:0 0 24px} #mchart:empty{display:none}
+#mchart #chead{font:700 15px/1.3 var(--body);margin:0 0 6px;padding:0;border:0}
+#tabs{gap:2px 20px;border-bottom:1px solid var(--line);margin:0 0 14px}
+#tabs button{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;padding:9px 1px;margin-bottom:-1px;color:var(--mut);font-weight:700}
+#tabs button:hover{color:var(--ink)}
+#tabs button.on{color:var(--ink);border-bottom-color:var(--ink)}
+#tabs label{font-size:13px;color:var(--mut)}
+@media (max-width:760px){#tabs{gap:2px 14px} #tabs button{padding:8px 1px}}
+/* the wind-index views (2026-11-04, user: 'no one even sees it now'): a switch on its own row, the chosen view dark */
+#wisw{margin:-4px 0 14px;gap:8px 10px} #wisw .lbl{width:auto;margin-right:2px}
+#wisw .seg button{padding:8px 15px;font-weight:700;color:var(--ink)} #wisw .seg button.on{background:var(--ink);color:var(--card);box-shadow:none}
+/* 2026-10-17: a phone draws the chart at its own width (chart()), its labels haloed where they cross the bars; the MAP fits the
+   screen and keeps its labels at size (2026-10-11) */
+@media (max-width:731px){#chart text{paint-order:stroke;stroke:var(--card);stroke-width:3px;stroke-linejoin:round}}
+.tt-k{fill:#1a1a1a} .tt-w{fill:var(--halo)}
+.kv{display:inline-block;padding:3px 10px;margin:3px 6px 3px 0;border:1px solid var(--line);border-radius:3px;font-size:13px;line-height:1.5}
+@media (max-width:760px){.kv{display:block;border:0;padding:0;margin:0 0 3px}}   /* a phone: Expert's values one per line, not boxes that look like buttons (2026-11-11) */
+#stationchart{overflow-x:auto}
+table.sg{border-collapse:collapse;font-size:13px;margin:4px 0} .sg th,.sg td{border-bottom:1px solid var(--line);padding:3px 8px;text-align:left} .sg td:nth-child(n+2){text-align:right}
+.sgm tr.sgrow{cursor:pointer} .sgm tr.sgrow:hover td,.sgm tr.sgon td{background:var(--soft)}
+.sgdistbox:not(:empty){margin:10px 0 4px;padding:10px 0;border-top:1px solid var(--line);background:var(--card)}
+.sgdist svg{max-width:100%} .sgdh{margin:0 0 4px;font-size:15px;color:var(--mut)} .sgdh b{color:var(--ink)}
+.sghint{font-weight:700;color:var(--ink)} .sgm .dg{color:var(--good);font-weight:700} .sgm .dr{color:var(--bad);font-weight:700}
+table.sgm{border-collapse:collapse;font-size:15px;margin:4px 0;min-width:650px;font-variant-numeric:tabular-nums}
+.sgm th,.sgm td{border-bottom:1px solid var(--line);padding:6px 9px;text-align:right;white-space:nowrap} .sgm th{font-weight:700;color:var(--mut)} .sgm th:first-child,.sgm td:first-child{text-align:left}
+.sgcounts{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+/* the storm ranking */
+.rkrough{font-size:13px;font-weight:700;color:var(--mut);border:1px solid var(--mut);border-radius:0;padding:0 4px;margin-left:4px;vertical-align:1px}
+.rkold{margin-left:10px;border:1px solid var(--link);color:var(--link);background:transparent;padding:6px 13px;font-weight:700}
+.rkold.on{background:var(--link);color:#fff}
+.rk .rkfc{margin:0 0 10px;padding:10px 14px;border:1px solid var(--link);border-radius:0;background:rgba(26,94,168,.08);font-size:15px}
+.rkctl{margin:0 0 8px}
+.rk .mut{color:var(--mut);font-weight:400}
+.rktw{overflow-x:auto;border-top:2px solid var(--ink);background:var(--card)}
+.rkt{border-collapse:collapse;width:100%;min-width:600px;font-variant-numeric:tabular-nums;font-size:15px} .rkt.nar{min-width:0}
+.rkt th,.rkt td{padding:6px 9px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+.rkt th{font-size:13px;color:var(--mut);border-bottom:1px solid var(--ink);white-space:normal;vertical-align:bottom}
+.rkt td.l,.rkt th.l{text-align:left} .rkt.nar td.l{white-space:normal}
+.rkt tr.s10 td{background:rgba(229,115,135,.17)} .rkt tr.s9 td{background:rgba(240,190,60,.2)} .rkt tr.me td{font-weight:700}
+.rkt tr.fc td{background:rgba(26,94,168,.14);font-weight:700;border-top:2px solid var(--link);border-bottom:2px solid var(--link)}
+.rksg{display:inline-block;min-width:40px;padding:0 6px;border-radius:2px;font-size:13px;font-weight:700;line-height:1.7;color:#fff;margin-left:4px}
+.rksg3{background:var(--no3)}.rksg8{background:var(--no8)}.rksg9{background:var(--no9,#8e2a8a)}.rksg10{background:var(--no10)}.rksgf{background:var(--link)}
+
+/* ---- 12. footer ---- */
+#foot{margin-top:28px;padding-top:14px;color:var(--mut);font-size:13px}
+#foot p{display:inline-block;margin:0 20px 0 0}
+
+/* ---- 12b. the loading screen (2026-11-17): over the whole page until the forecast is drawn (the script in <head>) */
+#loadscr{display:none}
+html.loading #loadscr{display:flex;position:fixed;inset:0;z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+ background:var(--bg);color:var(--ink);text-align:center;padding:16px;transition:opacity .2s}
+html.loading.loaded #loadscr{opacity:0}
+html.loading body{overflow:hidden}
+#loadscr .ln{font:700 22px/1.25 var(--body)} #loadscr .lm{color:var(--mut);font-size:16px}
+#loadscr .lb{width:160px;height:3px;background:var(--line);overflow:hidden;position:relative}
+#loadscr .lb i{position:absolute;top:0;left:-40%;width:40%;height:100%;background:var(--ink);animation:ldbar 1.1s ease-in-out infinite}
+@keyframes ldbar{to{left:100%}}
+@media (prefers-reduced-motion:reduce){#loadscr .lb i{animation:none;left:0;width:100%;opacity:.35}}
+html.loading-demo #loadscr .ln{display:none}   /* the tour's frames: the message only */
+html[lang^="zh"] #loadscr .en,html:not([lang^="zh"]) #loadscr .zh{display:none}
+
+/* ---- 13. the tour's frames (html.demo and html.demo-<part>): each keeps only its part. Last: these rules carry the same weight as
+   the body.basic rules above (.sheet padding, .toolbar) and must win. ---- */
+html.demo .wrap{padding:6px 2px 4px}
+html.demo .ctx,html.demo .sech{display:none}
+html.demo .toolbar{margin:0;border-top:0;border-bottom:0;padding:4px 0}
+html.demo #status,html.demo .mapcard{margin:0}
+html.demo .sheet{display:block!important;border-top:0;padding-top:0}   /* !important: the sheet must stay a block */
+html.demo .dhide{display:none!important}   /* the parts a tour frame drops (the tour script tags them); a redraw cannot bring them back */
+html.demo-answer .tlcard,html.demo-headline .tlcard,html.demo-timeline .hero{display:none}
+html.demo-headline #status .hero>.ans~*,html.demo-headline #status>.hero~*{display:none!important}   /* Expert: the bars, not the station rows */
+@media (max-width:760px){
+ html.demo .mapwrap{margin-left:0;margin-right:0}
+ html.demo #map,html.demo .bmapc svg{border-left:1px solid var(--line);border-right:1px solid var(--line)}
+}
