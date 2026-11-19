@@ -283,7 +283,8 @@ details.nums>summary{cursor:pointer;color:var(--link);font-weight:700;font-size:
 .bhead .bh .plate{width:78px;height:78px;font-size:44px}
 .bhead .iss{margin:10px 0 16px}
 .nsnext{margin:-4px 0 16px;font-size:16px;line-height:1.45} .nsnext:empty{display:none} .nsnext p{margin:0}   /* a past storm's run without the storm (2026-11-19) */
-.nsnext button{margin-top:10px;background:var(--ink);border-color:var(--ink);color:var(--card);font-weight:700}
+.nsnext #nsgo{margin-top:10px;background:var(--ink);border-color:var(--ink);color:var(--card);font-weight:700}
+.nsnext .nsalt{margin-top:14px} .nsbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}   /* the same run time in other forecasts (2026-11-19) */
 .board{width:100%;border-collapse:collapse}
 .board thead th{font:400 13px/1.3 var(--body);color:var(--mut);text-align:left;padding:0 0 5px;border-bottom:1px solid var(--ink)}
 .board thead th.r{text-align:right;padding-right:14px}
@@ -1138,14 +1139,18 @@ function nsHas(k,nm){const T=(window.HKT||{})[k], tr=((window.HKTRUTH||{})[nm]||
 async function nsFill(){const bx=document.getElementById("nsnext"), nm=nsStorm(), c0=cyc, e=ens; if(!bx||!nm)return;
  const win=PAST.filter(p=>p[2].split(" — ")[0]===nm), runs=Object.keys(HK).filter(c=>win.some(p=>c>=p[0]&&c<=p[1])&&(HK[c]||{})[e]&&!EMPTYR(HK[c][e])).sort();
  const N=/^Unnamed/.test(nm)?"The storm":nm.replace(/ \d{4}$/,"");
- if(!runs.length){bx.innerHTML=`<p>${N} is not in any forecast from this model.</p>`; return}
  const later=runs.filter(c=>c>c0), earlier=runs.filter(c=>c<c0).reverse(); let hit=null, kind="";
  for(const c of later.slice(0,4)){await nsLoad(c+"_"+e); if(nsHas(c+"_"+e,nm)){hit=c; kind=earlier.length?"next":"first"; break}}
  if(!hit)for(const c of earlier.slice(0,4)){await nsLoad(c+"_"+e); if(nsHas(c+"_"+e,nm)){hit=c; kind="last"; break}}
- if(!hit||cyc!==c0||ens!==e||!document.body.contains(bx))return;
- const at=fmtc(hit);
- bx.innerHTML=`<p>${kind==="first"?`${N} is not in this forecast yet. It first shows in the forecast from ${at}.`:kind==="next"?`${N} is not in this forecast. The next forecast that has it is from ${at}.`:`${N} is no longer in this forecast. It last shows in the forecast from ${at}.`}</p><button type="button" id="nsgo">See that forecast</button>`;
- document.getElementById("nsgo").onclick=()=>{cyc=hit; NOSAME=null; PICKED=false; sel=null; selH=null; head(); load(); window.scrollTo(0,0)}}
+ const alt=[]; for(const x of ORDER.filter(x=>x!==e&&(HK[c0]||{})[x]&&!EMPTYR(HK[c0][x])).slice(0,4)){await nsLoad(c0+"_"+x); if(nsHas(c0+"_"+x,nm))alt.push(x)}
+ if(cyc!==c0||ens!==e||!document.body.contains(bx))return;
+ const at=hit?fmtc(hit):"", main=!runs.length?`${N} is not in any forecast from this model.`:!hit?""
+  :kind==="first"?`${N} is not in this forecast yet. It first shows in the forecast from ${at}.`:kind==="next"?`${N} is not in this forecast. The next forecast that has it is from ${at}.`:`${N} is no longer in this forecast. It last shows in the forecast from ${at}.`;
+ if(!main&&!alt.length)return;
+ bx.innerHTML=(main?`<p>${main}</p>`:"")+(hit?`<button type="button" id="nsgo">See that forecast</button>`:"")
+  +(alt.length?`<p class="nsalt">${alt.length>1?`Other forecasts from the same time have ${N.replace(/^The /,"the ")}.`:`Another forecast from the same time has ${N.replace(/^The /,"the ")}.`}</p><div class="nsbtns">${alt.map(x=>`<button type="button" data-e="${x}">${FCN[x]||x}</button>`).join("")}</div>`:"");
+ const g=document.getElementById("nsgo"); if(g)g.onclick=()=>{cyc=hit; NOSAME=null; PICKED=false; sel=null; selH=null; head(); load(); window.scrollTo(0,0)};
+ bx.querySelectorAll(".nsbtns button").forEach(b=>b.onclick=()=>{ens=b.dataset.e; mode=modeOf(ens)||mode; NOSAME=null; PICKED=true; CHOSEN=true; sel=null; selH=null; head(); load(); window.scrollTo(0,0)})}
 const noStorm=(d,txt)=>(SHEETV?`<div class="bhead"><div class="bh"><span>No storm near Hong Kong</span></div>${issuedDiv(d,cyc)}${nsSlot(d)}</div><div class="facts"><div class="bv">${txt}</div></div>${recentStorms()}${EASY?`<div class="bmapc quiet" id="qmapbox"></div>`:cmpBox()}`
  :`<h2 class="sech">The forecast</h2><div class="ans"><div class="k">Expected signal</div><div class="badge" style="color:var(--mut)">No storm near Hong Kong</div>${issuedDiv(d,cyc)}${nsSlot(d)}<div class="v">${txt}</div><div class="note" id="qclose"></div>${cmpBlock()}</div>`)
  +(window.HK_DEMO||EASY?"":BASIC?r2rCardB():SHEETV?r2rCard().replace('<h2 class="sech">Trend</h2>',""):r2rCard());
