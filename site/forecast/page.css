@@ -102,6 +102,10 @@ body:not(.sheetv) .ctx .step .chg{display:none}
 .modesw{display:flex;overflow:hidden}
 .modesw a{padding:8px 16px;font-size:15px;line-height:1.2;border:1px solid var(--ink);border-bottom:0;margin-left:-1px;color:var(--ink);text-decoration:none;background:var(--bg)}
 .modesw a.on{background:var(--ink);color:var(--bg);font-weight:700}
+/* hover fill (2026-11-21, user: 'make the colour change a bit when user's mouse is on top of it'): the run steps (Earlier / Later / Past
+   storm), the Basic / Advanced / Expert switch and the forecast buttons (#ensbtns) turn light grey under the mouse. Mouse only
+   (hover:hover), so a tap on a phone leaves no colour stuck on. Not on the chosen one or a disabled one. */
+@media (hover:hover){.ctx .step button:not(:disabled):hover,.modesw a:not(.on):hover,#ensbtns button:not(.on):hover{background-color:var(--soft)}}
 @media (max-width:860px){
  .ctx{align-items:center;padding-top:2px}
  .ctx .what{display:contents} .ctx .tag{order:1} .ctx .what>b{order:2} .ctx .sub{order:4}
