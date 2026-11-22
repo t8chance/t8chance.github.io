@@ -32,7 +32,7 @@ function drawBasicMap(bx,T,R,k){
   `<span><i class="kln"></i>${ens==="deepmind"?"ECMWF physics main forecast":ai?"Control run of the AI model":ens==="pangu"?"This forecast":"ECMWF's main forecast"}</span>`,
   sh.some(x=>x!=null)?`<span><i class="ksh"></i>Seven in ten forecasts</span>`:"",
   OB&&!OB.none&&OB.gale>0?`<span><i class="krg"></i>Gale, storm and hurricane winds on HKO's best track at the start</span>`:""].filter(Boolean);
- bx.innerHTML=`<div class="figh"><h2>Expected path of the storm</h2><a class="howto" href="guide.html?mode=easy#e2">How to read this map</a></div><div class="frame"><svg></svg><div class="key">${KL.join("")}</div></div>`;
+ bx.innerHTML=`<div class="figh"><h2>Expected path of the storm</h2><a class="howto" href="guide.html?mode=easy#e2">Don't know how to use the map? Read the guide</a></div><div class="frame"><svg></svg><div class="key">${KL.join("")}</div></div>`;
  const s=bx.querySelector("svg"), {W,H,X,Y,hx,hy,lo0,lo1,la0,la1}=mapBase(s,[cx-w/2,cx+w/2,cy-h/2,cy+h/2]), pr=r=>r/110.57*(H/(la1-la0));
  const g=el("g",{opacity:.2,fill:"#2f5d8a"});
  R.pts.forEach((p,i)=>{if(sh[i]==null)return; const x0=X(p[0]),y0=Y(p[1]),r0=pr(sh[i]); g.appendChild(el("circle",{cx:x0,cy:y0,r:r0}));

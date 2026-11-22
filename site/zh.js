@@ -78,7 +78,7 @@ const EX=new Map(Object.entries({
  "HKO issued no signal.":"天文台沒有發出熱帶氣旋警告信號。","Chance":"機會率","Expected, Hong Kong time":"預計時段（香港時間）","Not expected":"預計不會發出",
  "When each signal is expected":"各信號預計生效的時段","Hong Kong time":"香港時間","Most likely hours":"大部分預報預計的時段","Earliest start to latest end":"最早開始至最遲結束",
  "Lighter, fewer than half the members":"較淺色：少於一半集合預報成員","No timing in this forecast":"此預報沒有時段資料","Compared with other forecasts":"與其他預報比較",
- "Possible paths of the storm":"熱帶氣旋的可能路徑","How to read this map":"如何閱讀這幅地圖","The area this forecast watches":"本預報涵蓋的範圍","No storm within 800 km":"香港 800 公里範圍內沒有熱帶氣旋",
+ "Possible paths of the storm":"熱帶氣旋的可能路徑","Don't know how to use the map? Read the guide":"不清楚如何使用地圖？請參閱使用指南","The area this forecast watches":"本預報涵蓋的範圍","No storm within 800 km":"香港 800 公里範圍內沒有熱帶氣旋",
  "Signal expected in Hong Kong as the storm passes":"熱帶氣旋經過時預計香港生效的信號","ECMWF physics main forecast":"ECMWF 物理模式確定性預報","Control run of the AI model":"人工智能模式的控制預報",
  "This forecast":"本預報","Seven in ten forecasts":"七成集合預報成員預測的中心位置範圍","Gale, storm and hurricane winds on HKO's best track at the start":"預報開始時天文台最佳路徑上的烈風、暴風及颶風範圍",
  "Zoom to Hong Kong":"放大至香港一帶","Play":"播放","Pause":"暫停","Play all members":"同步播放所有預測路徑","Other storms":"其他熱帶氣旋","Within 150 km only":"只顯示距離香港 150 公里內的預測路徑",

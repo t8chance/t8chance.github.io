@@ -70,7 +70,7 @@ const EASY=BASIC&&(()=>{const qs=new URLSearchParams(location.search); if(qs.get
  try{return localStorage.getItem("hk_mode")==="easy"}catch(e){return false}})();
 {const c0=OPEN(); if(c0){cyc=c0; ens=DEFE(c0)||ens; mode=modeOf(ens)||mode}}
 const SHEETV=BASIC||!/[?&]demo=/.test(location.search); if(SHEETV)document.body.classList.add("sheetv");
-if(SHEETV&&!BASIC){const mh=$("#maph"); if(mh) mh.innerHTML=`<span>Possible paths of the storm</span><a class="howto" href="guide-zh.html?mode=advanced">How to read this map</a>`}
+if(SHEETV&&!BASIC){const mh=$("#maph"); if(mh) mh.innerHTML=`<span>Possible paths of the storm</span><a class="howto" href="guide-zh.html?mode=advanced">Don't know how to use the map? Read the guide</a>`}
 if(BASIC){document.body.classList.add("basic");
  if(EASY){document.body.classList.add("easy"); const st=$("#status"); if(st){const m=document.createElement("p"); m.id="easymore";
   m.innerHTML=`<a href="#" class="easygo">See the details</a>`; st.after(m); m.querySelector("a").onclick=e=>{e.preventDefault(); try{localStorage.setItem("hk_mode","basic")}catch(x){}
@@ -79,7 +79,7 @@ if(BASIC){document.body.classList.add("basic");
   $("#chart")&&$("#chart").closest(".scrollx"),$("#stationchart"),$("#cnote")].forEach(e=>e&&e.classList.add("adv"));
  {const rl=$("#runlbl"), cy=$("#cyc"); if(rl) rl.textContent="Forecast from"; if(cy) cy.title="3. when the forecast started (Hong Kong time)"}
  const ds=$(".mast .disc"); if(ds) ds.textContent="Chances of tropical cyclone warning signals for Hong Kong, from computer forecasts. Research output — the Hong Kong Observatory is the only authority for actual signals.";
- $("#maphint").textContent="Tap or click a path to see its signals and how windy Hong Kong gets along it."; {const mh=$("#maph"); if(mh) mh.innerHTML=`<span>Possible paths of the storm</span><a class="howto" href="guide-zh.html?mode=basic#b4">How to read this map</a>`}   /* the reading note is in the tour now (2026-11-17, layout review P5) */ const sa=$("#showAll"); if(sa) sa.textContent="← All paths"; const cb=$("#chart")&&$("#chart").closest(".scrollx"); if(cb) cb.classList.add("cbox"); const kh=$("#mapkey .kh"); if(kh) kh.textContent="Signal expected along each path"; const kn=$("#mapkey .kn"); if(kn) kn.classList.add("adv"); const ap=$("#allPlay"); if(ap) ap.textContent="Play"}
+ $("#maphint").textContent="Tap or click a path to see its signals and how windy Hong Kong gets along it."; {const mh=$("#maph"); if(mh) mh.innerHTML=`<span>Possible paths of the storm</span><a class="howto" href="guide-zh.html?mode=basic#b4">Don't know how to use the map? Read the guide</a>`}   /* the reading note is in the tour now (2026-11-17, layout review P5) */ const sa=$("#showAll"); if(sa) sa.textContent="← All paths"; const cb=$("#chart")&&$("#chart").closest(".scrollx"); if(cb) cb.classList.add("cbox"); const kh=$("#mapkey .kh"); if(kh) kh.textContent="Signal expected along each path"; const kn=$("#mapkey .kn"); if(kn) kn.classList.add("adv"); const ap=$("#allPlay"); if(ap) ap.textContent="Play"}
 if(BASIC&&!/[?&]demo=/.test(location.search)){const mc=$(".mapcard"); if(mc){const bx=document.createElement("div"); bx.id="mchart"; mc.after(bx);
  [$(".sech.mch"),$("#chead"),$("#tabs"),$("#wisw"),$("#chart")&&$("#chart").closest(".scrollx"),$("#stationchart"),$("#cnote"),$("#bwx")].forEach(e=>{if(e)bx.appendChild(e)})}}
 window._defHint=$("#maphint").innerHTML;
