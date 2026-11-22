@@ -411,6 +411,8 @@ const BX=[
  [/^On HKO's best track, the storm came closest to Hong Kong on <b>(.+?)<\/b>, about <b>([\d,]+) km<\/b> away\.$/,(m,d,n)=>`根據天文台最佳路徑，熱帶氣旋於<b>${G(d)}</b>最接近香港，當時距離約 <b>${n} 公里</b>。`],
  [/^When this forecast started, the storm was an? (.+?) on HKO's best track, with sustained winds of about <b>(\d+) km\/h<\/b> near its centre(?: and gale winds out to about <b>([\d,]+) km<\/b>)?\.$/,
   (m,c,v,g)=>`本預報起報時，根據天文台最佳路徑，熱帶氣旋為${ZCL[c]||c}，中心附近最高持續風速約每小時 <b>${v} 公里</b>`+(g?`，烈風範圍伸展至距離中心約 <b>${g} 公里</b>`:"")+"。"],
+ [/^When this forecast started, HKO had (.+?) as an? (.+?), with winds of about <b>(\d+) km\/h<\/b> near its centre\.$/,
+  (m,n,c,v)=>`本預報起報時，根據天文台最佳路徑，${n==="the storm"?"熱帶氣旋":G(n)}為${ZCL[c]||c}，中心附近最高持續風速約每小時 <b>${v} 公里</b>。`],
  [/^On HKO's best track the storm peaked as an? (.+?) of about <b>(\d+) km\/h<\/b> on <b>(.+?)<\/b>(?:, and came closest to Hong Kong, about <b>([\d,]+) km<\/b> away, on <b>(.+?)<\/b>)?\.$/,
   (m,c,v,t1,d,t2)=>`根據天文台最佳路徑，熱帶氣旋於 <b>${G(t1)}</b> 達到最高峰，為${ZCL[c]||c}，中心附近最高持續風速約每小時 <b>${v} 公里</b>`+(d?`，並於 <b>${G(t2)}</b> 最接近香港，相距約 <b>${d} 公里</b>`:"")+"。"],
  [/^When this forecast started, the storm was not yet on HKO's best track, which begins on <b>(.+?)<\/b>\.$/,(m,t)=>`本預報起報時，熱帶氣旋尚未出現在天文台最佳路徑上。最佳路徑由 <b>${G(t)}</b>（香港時間）開始。`],

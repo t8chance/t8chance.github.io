@@ -34,10 +34,10 @@ function load(){
   const P=pastOf(cyc), ps=P?P.split(" / ").map(x=>{const [nm_,h]=x.split(" — "), w=!h?"":/^no HKO signal/.test(h)?"HKO issued no signal.":h.replace(/^HKO /,"HKO issued ")+".";
     return P.includes(" / ")&&w?`For ${nm_}, ${w[0].toLowerCase()+w.slice(1)}`:w}).filter(Boolean):[];
   const NR=RECENT(cyc)&&cyc===cycles.find(c=>(HK[c]||{})[ens])?nextRun(ens):null;
-  $("#stamp").innerHTML=[...ps.map(x=>`<span class="sl">${x}</span>`), `<span class="sl">From the ${FCN[ens]||ens} forecast.</span>`,
+  $("#stamp").innerHTML=[...ps.map(x=>`<span class="sl">${x}</span>`), EASY?"":`<span class="sl">From the ${FCN[ens]||ens} forecast.</span>`,
    d.rerun?`<span class="sl">This forecast was not on the site at the time. It was added later, made the same way from ECMWF's stored forecast.</span>`:"",
-   P||d.rerun?"":`<span class="sl">Updated ${t.getUTCDate()} ${MON[t.getUTCMonth()]} ${z(t.getUTCHours())}:${z(t.getUTCMinutes())} (Hong Kong time).</span>`,
-   ens==="ifsens"&&/^(06|18)$/.test(cyc.slice(8,10))?`<span class="sl">This update looks 6 days ahead.</span>`:"",
+   P||d.rerun||EASY?"":`<span class="sl">Updated ${t.getUTCDate()} ${MON[t.getUTCMonth()]} ${z(t.getUTCHours())}:${z(t.getUTCMinutes())} (Hong Kong time).</span>`,
+   !EASY&&ens==="ifsens"&&/^(06|18)$/.test(cyc.slice(8,10))?`<span class="sl">This update looks 6 days ahead.</span>`:"",
    NR?`<span class="sl">The next update is expected about ${hktS(NR.t)} (Hong Kong time).</span>`:""].filter(Boolean).join(ZHPG?"":" ")+(ens==="deepmind"?DMCITE(d):"")}
  if(!d){
   {const xbd=document.getElementById("xbands"); if(xbd)xbd.innerHTML=""}

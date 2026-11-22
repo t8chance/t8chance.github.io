@@ -120,6 +120,8 @@ function obsAt(h){const TRU=truthNow(); if(!TRU||!TRU.track||!TRU.track.length) 
 function obsLine(){const o=obsAt(0); if(!o) return "";
  if(o.none) return o.before?`When this forecast started, the storm was not yet on HKO's best track, which begins on <b>${hktS(Date.parse(o.first+":00Z"))}</b>.`
   :"When this forecast started, HKO's best track for this storm had already ended.";
+ if(typeof EASY!=="undefined"&&EASY){const T=truthNow(), k=Object.keys(window.HKTRUTH||{}).find(x=>window.HKTRUTH[x]===T)||"", nm=/^Unnamed/.test(k)?"":k.replace(/ \d{4}$/,"");
+  return `When this forecast started, HKO had ${nm||"the storm"} as ${o.cls[0]==="a"?"an":"a"} ${o.cls}, with winds of about <b>${obsK(o.v)} km/h</b> near its centre.`}
  return `When this forecast started, the storm was ${o.cls[0]==="a"?"an":"a"} ${o.cls} on HKO's best track, with sustained winds of about <b>${obsK(o.v)} km/h</b> near its centre`
   +(o.gale>0?` and gale winds out to about <b>${obs10(o.gale)} km</b>`:"")+"."}
 const obsHTML=c=>{const t=obsLine(); return t?`<div class="${c} obs">${t}</div>`:""};
