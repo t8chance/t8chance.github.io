@@ -10,7 +10,9 @@ if(DEMO){window.HK_DEMO=DEMO; document.documentElement.classList.add("demo","dem
  if(W&&/^(toolbar|answer|headline|timeline|stationtable)$/.test(DEMO)){W.inert=true; W.style.pointerEvents="none"}
  const post=()=>{try{const b=[...document.querySelectorAll(".wrap>*")].filter(c=>!c.classList.contains("dhide")&&c.getClientRects().length)
    .reduce((m,c)=>Math.max(m,c.getBoundingClientRect().bottom+scrollY),0);
-  parent.postMessage({hkDemoH:b>0?Math.ceil(b+4):document.documentElement.scrollHeight},"*")}catch(x){}};
+  const xw=[...document.querySelectorAll(".wrap *")].filter(e=>e.scrollWidth>e.clientWidth+2&&e.getClientRects().length&&!e.closest(".dhide")&&/auto|scroll/.test(getComputedStyle(e).overflowX))
+   .reduce((m,e)=>Math.max(m,e.scrollWidth-e.clientWidth),0), dx=document.documentElement.scrollWidth-document.documentElement.clientWidth;
+  parent.postMessage({hkDemoH:b>0?Math.ceil(b+4):document.documentElement.scrollHeight,hkDemoW:document.documentElement.clientWidth+Math.max(xw,dx>2?dx:0)},"*")}catch(x){}};
  try{new ResizeObserver(post).observe(document.body)}catch(x){} setTimeout(post,300);
  const setup=(n=0)=>{if(!TR){if(n<30)setTimeout(()=>setup(n+1),400);return}
   if(DEMO==="member"){sel=TR.top; selH=null; drawMap(); chart()}

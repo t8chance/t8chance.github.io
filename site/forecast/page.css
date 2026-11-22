@@ -428,6 +428,7 @@ html.demo .sheet{display:block!important;border-top:0;padding-top:0}   /* !impor
 html.demo .dhide{display:none!important}   /* the parts a tour frame drops (the tour script tags them); a redraw cannot bring them back */
 html.demo-answer .tlcard,html.demo-headline .tlcard,html.demo-timeline .hero{display:none}
 html.demo-headline #status .hero>.ans~*,html.demo-headline #status>.hero~*{display:none!important}   /* Expert: the bars, not the station rows */
+html.demo-stationtable table.sgm{min-width:0}   /* 2026-11-22 (user: 'so many words cut off'): a tour frame cannot scroll sideways, so the table fits the frame */
 @media (max-width:760px){
  html.demo .mapwrap{margin-left:0;margin-right:0}
  html.demo #map,html.demo .bmapc svg{border-left:1px solid var(--line);border-right:1px solid var(--line)}

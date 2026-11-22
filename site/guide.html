@@ -66,6 +66,8 @@ b{font-weight:700}
 .btn{display:inline-block;background:var(--ink);color:var(--bg);text-decoration:none;font-weight:700;padding:12px 22px;border-radius:12px;font-size:17px}
 .btn:hover{background:color-mix(in srgb,var(--ink) 86%,var(--link))}
 .hero figure{margin:0}
+/* past-example notice (2026-11-22, user: 'You need to emphasize that it is using a past exam for ragasa and is not for today!') */
+.pastex{margin:0 0 12px;padding:8px 12px;border:2px solid var(--ink);border-radius:10px;background:var(--card);color:var(--ink);font:700 16px/1.35 var(--body)}
 figure img{display:block;width:100%;height:auto;cursor:zoom-in}   /* the pictures carry the page's own background: no frame, they sit on the page */
 figure.tile img{border-radius:14px;box-shadow:var(--shadow)}   /* the check page has its own background */
 
@@ -122,6 +124,7 @@ figure.tile img{border-radius:14px;box-shadow:var(--shadow)}   /* the check page
  .slide .pair picture:first-child img{max-height:calc(100vh - 230px)}
  .slide .frames{width:100%;max-height:calc(100vh - 120px)}
  .slide .live{max-height:calc(100vh - 110px);overflow:auto}
+ .js .col>.pastex{display:none}   /* the stage carries it on the desktop */
 }
 @media (max-width:899px){
  .hero{grid-template-columns:1fr;gap:28px;padding:24px 0 40px}
@@ -245,11 +248,11 @@ h2,h3{letter-spacing:0}
   <p class="fine" id="tourrun"></p>
   <div class="acts"><a class="btn openF" href="index.html">Open the forecasts</a></div>
  </div>
- <figure><div class="live"><iframe id="heroF" data-src="index.html?run=2025092112&amp;f=ifsens&amp;demo=headline" title="The answer cards of ECMWF's forecast for Ragasa, 21 Sep 2025" loading="lazy"></iframe></div></figure>
+ <figure><p class="pastex">This is a past example, Ragasa in September 2025. It is not today&#39;s forecast.</p><div class="live"><iframe id="heroF" data-src="index.html?run=2025092112&amp;f=ifsens&amp;demo=headline" title="The answer cards of ECMWF's forecast for Ragasa, 21 Sep 2025" loading="lazy"></iframe></div></figure>
 </section>
 </div>
 
-<main class="wrap" id="estory"><ol>
+<main class="wrap" id="estory"><p class="pastex">This is a past example, Ragasa in September 2025. It is not today&#39;s forecast.</p><ol>
  <li id="e1"><h2>1. How likely is No. 3, No. 8 or No. 10?</h2>
   <figure><div class="live"><iframe data-bsrc="index.html?run=2025092112&amp;f=ifsens&amp;demo=answer&amp;mode=basic" title="The answer: the chance of each signal"></iframe></div></figure><p>The headline tells you whether HKO is likely to issue a signal within the forecast's 15 days (6 days for ECMWF's physics runs at 06 and 18 UTC), and which one.</p><p>Each row shows the chance that HKO issues No. 3, No. 8 or No. 10, with the signal's number on a coloured square. Each percentage is the share of about 50 computer forecasts in which HKO would need to issue that signal or a higher one. Beside it are the hours when that signal is expected, in Hong Kong time.</p><p>Under the rows you can see how close ECMWF's main forecast brings the storm to Hong Kong.</p></li>
  <li id="e2"><h2>2. When and where</h2><p>The strip of days shows when each signal is expected, in Hong Kong time. For a past storm, the row marked HKO shows the signals HKO actually issued.</p><p>The map shows the storm's path in ECMWF's main forecast. Its colour shows the signal expected in Hong Kong as the storm passes, and the dots mark the centre at 08:00 Hong Kong time each day. The shaded area is where seven of every ten of ECMWF's computer forecasts put the centre of the storm.</p><p>For a past storm, the white dot marks the storm on HKO's best track when the forecast started, and the circles show how far its gale (green), storm (orange) and hurricane (red) winds reached. For Google DeepMind's forecasts, the line and the shaded area come from ECMWF's physics model, because Google DeepMind does not make a main forecast.</p></li>
@@ -257,7 +260,7 @@ h2,h3{letter-spacing:0}
   <a class="btn openF" href="index.html?mode=easy">Open the forecasts</a></li>
 </ol></main>
 
-<main class="wrap" id="bstory"><ol>
+<main class="wrap" id="bstory"><p class="pastex">This is a past example, Ragasa in September 2025. It is not today&#39;s forecast.</p><ol>
  <li id="b1"><h2>1. How likely is No. 3, No. 8 or No. 10?</h2>
   <figure><div class="live"><iframe data-bsrc="index.html?run=2025092112&amp;f=ifsens&amp;demo=answer&amp;mode=basic" title="The answer: the chance of each signal"></iframe></div></figure><p>The headline tells you whether HKO is likely to issue a signal within the forecast's 15 days (6 days for ECMWF's physics runs at 06 and 18 UTC), and which one.</p><p>Each row shows the chance that HKO issues No. 3, No. 8 or No. 10, with the signal's number on a coloured square. Each percentage is the share of about 50 computer forecasts in which HKO would need to issue that signal or a higher one. Beside it are the hours when that signal is expected, in Hong Kong time.</p><p>Under the rows you can see how close ECMWF's main forecast brings the storm to Hong Kong.</p><p>In Advanced, a table under the rows compares this forecast with the one before it and with the other forecasts made at the same time.</p></li>
  <li id="b2"><h2>2. When each signal is expected</h2><p>The strip of days shows when each signal is expected, in Hong Kong time. The solid part is when most forecasts have it, and the pale part runs from the earliest start to the latest end. For a past storm, the row marked HKO shows the signals HKO actually issued.</p></li>
@@ -274,9 +277,10 @@ h2,h3{letter-spacing:0}
 <main class="wrap story" id="story">
  <aside class="stage" id="stage" aria-hidden="true">
   <div class="where"><span>On the page</span><button type="button" data-w="run">Run</button><button type="button" data-w="answer">Summary</button><button type="button" data-w="timeline">Timeline</button><button type="button" data-w="map">Map</button><button type="button" data-w="charts">Charts</button></div>
+  <p class="pastex">This is a past example, Ragasa in September 2025. It is not today&#39;s forecast.</p>
   <div class="slides" id="slides"></div>
  </aside>
- <div class="col">
+ <div class="col"><p class="pastex">This is a past example, Ragasa in September 2025. It is not today&#39;s forecast.</p>
  <div class="modebar" role="group" aria-label="How much text"><span>Text</span><button type="button" data-m="short" aria-pressed="true">Short</button><button type="button" data-m="full" aria-pressed="false">Full</button></div>
  <ol class="steps">
 
@@ -423,11 +427,17 @@ function liveCue(box,on){const f=box&&box.querySelector(".live iframe"); if(!f)r
 const MONS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 addEventListener("message",e=>{const r=e.data&&e.data.hkTourRun; if(!r||window.HK_TOURRUN)return; window.HK_TOURRUN=r; const c=r.cyc;
  const lab=document.getElementById("tourrun"), ea=document.getElementById("ex-answer"), es=document.getElementById("ex-stations");
- if(lab)lab.innerHTML=`The examples below use one past ECMWF forecast, which started at <b>${(k=>`${k.getUTCDate()} ${MONS[k.getUTCMonth()]} ${k.getUTCFullYear()}, ${String(k.getUTCHours()).padStart(2,"0")}:00 Hong Kong time`)(new Date(Date.UTC(+c.slice(0,4),+c.slice(4,6)-1,+c.slice(6,8),+c.slice(8,10))+288e5))}</b>${r.past?` (${r.past})`:""}.`;
+ if(lab)lab.innerHTML=`The examples below use one past ECMWF forecast, which started at <b>${(k=>`${k.getUTCDate()} ${MONS[k.getUTCMonth()]} ${k.getUTCFullYear()}, ${String(k.getUTCHours()).padStart(2,"0")}:00 Hong Kong time`)(new Date(Date.UTC(+c.slice(0,4),+c.slice(4,6)-1,+c.slice(6,8),+c.slice(8,10))+288e5))}</b>${r.past?` (${r.past})`:""}. These examples are not today's forecast.`;
  if(ea)ea.innerHTML=r.top?`In this example, ${r.n} of the ${r.M} members ${r.n===1?"gives":"give"} <span class="c${r.top}">No.&nbsp;${r.top}</span>`+(r.h!=null?`, lasting about ${r.h}&nbsp;hours.`:"."):r.n?`In this example only ${r.n} of the ${r.M} members ${r.n===1?"gives":"give"} No.&nbsp;3 or higher, which is fewer than half.`:`In this example no member gives No.&nbsp;3.`;
  if(es)es.textContent=!r.st?"":r.st[1]==="≤F7"?"In this run no station goes above F7.":`In this run ${r.st[0]} reaches ${r.st[1]}.`});
+function fit(f){if(!f._h)return; const box=f.parentElement, fig=box&&box.parentElement, aw=fig&&fig.clientWidth; if(!aw)return;
+ const ah=f.closest("#slides")?Math.max(240,slides.clientHeight-4):Infinity, nw=Math.min(Math.max(aw,f._w||0),Math.round(aw*1.6)), s=Math.min(1,aw/nw,ah/f._h);
+ box.style.position="relative"; f.style.position="absolute"; f.style.left="0"; f.style.top="0";
+ f.style.width=nw+"px"; f.style.height=f._h+"px"; f.style.transformOrigin="0 0"; f.style.transform=s<1?`scale(${s.toFixed(4)})`:"";
+ box.style.height=Math.floor(f._h*s)+"px"; box.style.width=s<1&&nw*s<aw-1?Math.floor(nw*s)+"px":""}
 addEventListener("message",e=>{if(!e.data||!e.data.hkDemoH)return;
- D.querySelectorAll(".live iframe").forEach(f=>{if(f.contentWindow===e.source){f._ready=true; f.style.height=Math.min(1400,e.data.hkDemoH+4)+"px"}})});
+ D.querySelectorAll(".live iframe").forEach(f=>{if(f.contentWindow===e.source){f._ready=true; f._h=Math.min(1400,e.data.hkDemoH+4); f._w=e.data.hkDemoW||0; fit(f)}})});
+addEventListener("resize",()=>D.querySelectorAll(".live iframe").forEach(fit));
 let cur=null;
 function activate(s){
  if(cur===s)return;cur=s;
