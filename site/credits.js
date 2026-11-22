@@ -23,8 +23,10 @@
   var P = function (s) { return '<p lang="en" translate="no" class="cr">' + s + "</p>"; };
   var sum = zh ? "<p>" + zhs + "時間均為香港時間。</p>"
     : "<p>Times are Hong Kong time. Data come from ECMWF, Google DeepMind, NOAA, Copernicus and the Hong Kong Observatory. This site is research output and is not endorsed by any of them.</p>";
-  f.innerHTML = "<h2>" + (zh ? "資料來源及鳴謝" : "Data and credits") + "</h2>" + sum + [en[0], en[2], en[3]].map(P).join("")
-    + "<details><summary>" + (zh ? "其他鳴謝及授權" : "More credits and licences") + "</summary>" + [en[1], en[4], en[5], en[6]].map(P).join("") + "</details>";
+  var open1 = "This service is based on data and products of the European Centre for Medium-Range Weather Forecasts (ECMWF), "
+    + A("https://www.ecmwf.int", "www.ecmwf.int") + ". Contains modified Copernicus Climate Change Service information (2026).";
+  f.innerHTML = "<h2>" + (zh ? "資料來源及鳴謝" : "Data and credits") + "</h2>" + sum + P(open1)
+    + "<details><summary>" + (zh ? "其他鳴謝及授權" : "More credits and licences") + "</summary>" + [en[0], en[2], en[3], en[1], en[4], en[5], en[6]].map(P).join("") + "</details>";
   var go = function () { var w = document.querySelector(".wrap"), mw = w ? getComputedStyle(w).maxWidth : "";
     if (/px$/.test(mw)) { f.style.maxWidth = mw; f.style.paddingLeft = f.style.paddingRight = "16px" } document.body.appendChild(f); };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go();
