@@ -40,3 +40,17 @@ try{const q=new URLSearchParams(location.search), f=q.get("f"); let r=q.get("run
  if(r&&HK[r]){cyc=r; if(f&&HK[r][f]){ens=f; mode=modeOf(f)||mode; CHOSEN=true} else{const e2=DEFE(r)||(DROPPED[r]&&ORDER.find(e=>HK[r][e])); if(e2){ens=e2; mode=modeOf(ens)||mode}}}}catch(e){}
 head();load();
 setTimeout(hkoNow,0); setInterval(hkoNow,6e5);
+if(!DEMO)(function(){const a=document.querySelector(".mast nav a.tour"), mb=document.querySelector(".mast .menu");
+ if(!a||!mb||getComputedStyle(mb).display==="none")return;
+ const K="hk_tourask"; let n=0, s="";
+ try{const v=localStorage.getItem(K); if(v==="done")return; n=+v||0; s=sessionStorage.getItem(K)||"";
+  if(!s){n++; localStorage.setItem(K,String(n)); sessionStorage.setItem(K,s="1")}}catch(e){return}
+ if(n>3||s==="x")return;
+ const end=()=>{try{localStorage.setItem(K,"done")}catch(e){}};
+ document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest('a[href*="guide"]'))end()},true);
+ let t=0; const go=()=>{if(document.documentElement.classList.contains("loading")&&t++<60)return setTimeout(go,300);
+  const b=document.createElement("div"); b.className="tourask"; b.setAttribute("role","dialog"); b.setAttribute("aria-label","Tour");
+  b.innerHTML=`<p>New here? The tour shows how to read this page in a few short steps.</p><div><a href="${a.getAttribute("href")}">Take the tour</a><button type="button">Not now</button></div>`;
+  b.querySelector("button").onclick=()=>{try{sessionStorage.setItem(K,"x")}catch(e){} b.remove()};
+  document.body.appendChild(b)};
+ setTimeout(go,800)})();

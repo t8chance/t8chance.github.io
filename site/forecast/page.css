@@ -433,3 +433,11 @@ html.demo-stationtable table.sgm{min-width:0}   /* 2026-11-22 (user: 'so many wo
  html.demo .mapwrap{margin-left:0;margin-right:0}
  html.demo #map,html.demo .bmapc svg{border-left:1px solid var(--line);border-right:1px solid var(--line)}
 }
+/* tour offer on phones (2026-11-22, start.js): a bar at the bottom in the title band's colours, flat like the rest of the page */
+.tourask{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--band);color:var(--bandink);border-top:2px solid var(--ink);
+ padding:12px 16px calc(12px + env(safe-area-inset-bottom));font:400 16px/1.4 var(--body)}
+.tourask p{margin:0 0 10px}
+.tourask div{display:flex;gap:10px}
+.tourask a,.tourask button{flex:1;text-align:center;padding:10px 12px;border-radius:3px;font:700 16px/1.2 var(--body);text-decoration:none;cursor:pointer}
+.tourask a{background:var(--bandink);color:var(--band);border:1px solid var(--bandink)}
+.tourask button{background:none;color:var(--bandink);border:1px solid #7b8188;font-weight:400}

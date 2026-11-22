@@ -87,7 +87,7 @@ const EX=new Map(Object.entries({
  "Recent storms":"近期熱帶氣旋","Storm":"熱帶氣旋","HKO's highest signal":"天文台發出的最高信號","None":"沒有","All past storms":"所有歷史個案","See the details":"查看詳情",
  "Run names are in UTC, and 12Z is 20:00 Hong Kong time.":"預報名稱以協調世界時（UTC）標示，12Z 即香港時間下午 8 時。",
  "Hong Kong typhoon signal forecasts":"香港熱帶氣旋警告信號預報","How to read the forecasts":"使用指南","How good is it?":"預報表現","Open the forecasts":"查看預報",
- "New here? Take the tour":"第一次使用？查看使用指南","Forecasts":"預報","Tour":"使用指南","Show":"顯示","Today":"最新預報","Past storms":"歷史個案","Run":"起報時間","Forecast":"預報模式",
+ "New here? Take the tour":"第一次使用？查看使用指南","New here? The tour shows how to read this page in a few short steps.":"第一次使用？使用指南會以幾個簡短步驟，介紹如何閱讀本頁。","Take the tour":"查看使用指南","Not now":"暫不查看","Forecasts":"預報","Tour":"使用指南","Show":"顯示","Today":"最新預報","Past storms":"歷史個案","Run":"起報時間","Forecast":"預報模式",
  "ECMWF physics (IFS)":"ECMWF 物理模式（IFS）","ECMWF AI (AIFS)":"ECMWF 人工智能模式（AIFS）",
  "ECMWF and Google DeepMind ensemble forecasts turned into Hong Kong signal chances. Research output — the Hong Kong Observatory is the only authority for actual signals.":"本網站根據歐洲中期預報中心（ECMWF）及 Google DeepMind 的集合預報，由電腦自動估算香港各熱帶氣旋警告信號的機會率，不經人手修訂，只供研究參考。熱帶氣旋警告信號以香港天文台發出的為準。",
  "Highest signal a majority gives":"超過半數集合預報成員預測會達到的最高級別信號","Highest signal":"最高級別警告信號","Storm name":"熱帶氣旋","* HKO issued No. 9":"* 天文台曾發出九號信號","Pangu":"盤古氣象","none":"沒有","no majority":"未有任何一級信號獲過半數成員支持","Gale stations":"烈風","Storm force":"暴風","Hurricane force":"颶風","Forecast, at any time from this run onward":"本次預報時段內任何時間","Reference stations reaching gale force":"達烈風程度的參考測風站","Reference stations reaching storm force":"達暴風程度的參考測風站","Reference stations reaching hurricane force":"達颶風程度的參考測風站",
