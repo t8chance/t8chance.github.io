@@ -413,7 +413,7 @@ b.forEach(x=>x.onclick=()=>{V=x.dataset.v;show()});fb.forEach(x=>x.onclick=()=>{
  const EN={ifsens:"ECMWF physics (IFS)",aifsens:"ECMWF AI (AIFS)",deepmind:"Google DeepMind (AI)"}, MO=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
  const day=c=>`${+c.slice(6,8)} ${MO[+c.slice(4,6)-1]} ${c.slice(0,4)}`, hkY=c=>{const t=new Date(Date.UTC(+c.slice(0,4),+c.slice(4,6)-1,+c.slice(6,8),+c.slice(8,10))+288e5); return `${t.getUTCDate()} ${MO[t.getUTCMonth()]} ${t.getUTCFullYear()} ${String(t.getUTCHours()).padStart(2,"0")}:00`}, hk=s=>{const t=new Date(Date.parse(s.replace(" ","T")+":00Z")+288e5); return `${t.getUTCDate()} ${MO[t.getUTCMonth()]} ${String(t.getUTCHours()).padStart(2,"0")}:${String(t.getUTCMinutes()).padStart(2,"0")}`};
  const sh=(s,h)=>new Date(Date.parse(s.replace(" ","T")+":00Z")+h*36e5).toISOString().slice(0,16).replace("T"," ");
- let E="ifsens", L="3";
+ let E=R.forecasts.deepmind&&R.forecasts.deepmind.runs?"deepmind":"ifsens", L="3";
  const draw=()=>{const o=R.forecasts[E], v=o.lv[L];
   $("rcE").innerHTML=Object.keys(EN).filter(e=>R.forecasts[e]&&R.forecasts[e].runs).map(e=>`<button data-e="${e}" class="${e===E?"on":""}">${EN[e]}</button>`).join("");
   $("rcL").innerHTML=["3","8","10"].map(l=>`<button data-l="${l}" class="${l===L?"on":""}">No. ${l}</button>`).join("");

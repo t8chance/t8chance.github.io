@@ -26,7 +26,7 @@ function load(){
    +` · produced ${new Date(g.getTime()+288e5).toISOString().slice(0,16).replace("T"," ")} HKT (${hrs<1?"<1 h":Math.round(hrs)+" h"} ago)`
    +((NR=>NR?` · <span class="nextrun">next run ${fmtc(NR.c)} expected about ${hktS(NR.t)} HKT${Date.now()>NR.t+36e5?" (running late)":""}</span>`:"")(RECENT(cyc)&&LIVEF.includes(ens)&&cyc===cycles.find(c=>(HK[c]||{})[ens])?nextRun(ens):null))
    +(cyc===cycles[0]&&hrs>18?` — <b style="color:var(--no8)">this copy is behind</b>`:"")
-   +(d.rerun?`<span> · worked out again in 2026 from ECMWF's stored forecast (not on the site at the time)</span>`:"")
+   +(d.rerun?`<span> · worked out again in 2026 from ${ens==="deepmind"?"Google DeepMind's":"ECMWF's"} stored forecast (not on the site at the time)</span>`:"")
    +(pastOf(cyc)?` · past case: ${pastOf(cyc)}${cyc<"2025"?" (this storm was used to set up the site)":" (a fair test: not used to set up the site)"}`:"")
 ;}
  else $("#stamp").textContent="";
@@ -35,7 +35,7 @@ function load(){
     return P.includes(" / ")&&w?`For ${nm_}, ${w[0].toLowerCase()+w.slice(1)}`:w}).filter(Boolean):[];
   const NR=RECENT(cyc)&&cyc===cycles.find(c=>(HK[c]||{})[ens])?nextRun(ens):null;
   $("#stamp").innerHTML=[...ps.map(x=>`<span class="sl">${x}</span>`), EASY?"":`<span class="sl">From the ${FCN[ens]||ens} forecast.</span>`,
-   d.rerun?`<span class="sl">This forecast was not on the site at the time. It was added later, made the same way from ECMWF's stored forecast.</span>`:"",
+   d.rerun?`<span class="sl">This forecast was not on the site at the time. It was added later, made the same way from ${ens==="deepmind"?"Google DeepMind's":"ECMWF's"} stored forecast.</span>`:"",
    P||d.rerun||EASY?"":`<span class="sl">Updated ${t.getUTCDate()} ${MON[t.getUTCMonth()]} ${z(t.getUTCHours())}:${z(t.getUTCMinutes())} (Hong Kong time).</span>`,
    !EASY&&ens==="ifsens"&&/^(06|18)$/.test(cyc.slice(8,10))?`<span class="sl">This update looks 6 days ahead.</span>`:"",
    NR?`<span class="sl">The next update is expected about ${hktS(NR.t)} (Hong Kong time).</span>`:""].filter(Boolean).join(ZHPG?"":" ")+(ens==="deepmind"?DMCITE(d):"")}
