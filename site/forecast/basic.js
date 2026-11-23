@@ -71,7 +71,7 @@ function heatAnchor(t){
   if(best)return best}
  return heatCPA(t)}
 function heatAt(HD,m,sig,dx,dy){const v=HD.m[String(m)]; if(!v)return 0; const A=v[sig], i0=HD.shifts.indexOf(0), r=Math.hypot(dx,dy); if(r>50)return null;
- const tm=(TR&&TR.tracks||[]).find(x=>x.m===m), c0=tm&&tm["p"+sig]!=null?+tm["p"+sig]:A[0][i0];
+ const tm=(TR&&TR.tracks||[]).find(x=>x.m===m), c0=HD.drawn_only?A[0][i0]:(tm&&tm["p"+sig]!=null?+tm["p"+sig]:A[0][i0]);
  let ang=Math.atan2(dy,dx)*180/Math.PI; if(ang<0)ang+=360;
  const a=ang/30, k0=Math.floor(a)%12, k1=(k0+1)%12, fa=a-Math.floor(a), q=r/10, j0=Math.min(Math.floor(q),5), j1=Math.min(j0+1,5), fr=q-j0;
  const val=(k,j)=>j===0?c0:A[k%6][HD.shifts.indexOf(k<6?j*10:-j*10)];
