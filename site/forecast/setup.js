@@ -22,7 +22,7 @@ function rank8Member(t){if(!t||!t.gst)return "";
  const obs=hk?(o=>`<div class="r8s">HKO recorded ${o.toFixed(1)} km/h, ${ordE(r8rank(o,hk[0].toLowerCase()))} of the ${R8N}.</div>`)(r8hko(hk[0],hk[1])):"";
  const head=`8-station average in this forecast (reference only): <b>${Math.round(v)} km/h</b>`;
  const go8=`<div class="r8s"><a href="ranking.html?v=${v.toFixed(1)}&g=${t.gale!=null?Math.round(t.gale):""}&glo=${t.gale_lo??""}&ghi=${t.gale_hi??""}&f=${ens}&r=${cyc}&m=${t.m}${memLab(t.m)!=="member "+t.m?"&det="+(t.m===52?"1":"2"):""}${TR&&t.m===TR.top&&ens!=="deepmind"?"&top=1":""}${FILLF?caQ(t):""}&c=${encodeURIComponent(casesOf(cyc)[0]||"")}" data-rktab="1">See it in the storm ranking</a></div>`;
- if(v<R8MIN)return `<div class="r8"><div>${head}</div><div class="r8s">Below ${R8MIN} km/h: outside the top ${RANK8.filter(r=>r[2]>=R8MIN).length} of the ${R8N} storms since 2007; the forecast cannot rank weaker storms finely.</div>${obs}${go8}</div>`;
+ if(v<R8MIN)return `<div class="r8"><div>${head}</div>${obs}${go8}</div>`;
  return `<div class="r8"><div>${head} · would rank about <b>${ordE(r8rank(v,skip))}</b> of the ${R8N} storms since 2007</div>${r8near(v,skip)}${obs}${go8}</div>`}
 const caseOf=c=>{const p=PAST.find(p=>c>=p[0]&&c<=p[1]);return p?p[2].split(" — ")[0]:null};
 const pastOf=c=>PAST.filter(p=>c>=p[0]&&c<=p[1]).map(p=>p[2]).join(" / ");
