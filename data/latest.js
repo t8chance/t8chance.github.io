@@ -1,1 +1,1 @@
-window.HK_LATEST = {"cycle": "2026112406", "ens": ["deepmind"], "by": {"aifsens": "2026112400", "deepmind": "2026112406", "era5": "2007080412", "gefs": "2006080300", "ifsens": "2026112400", "pangu": "2022103012", "tigge": "2024111212"}, "quiet": ["aifsens", "deepmind"]};
+window.HK_LATEST = {"cycle": "2026112406", "ens": ["aifsens", "deepmind", "ifsens"], "by": {"aifsens": "2026112406", "deepmind": "2026112406", "era5": "2007080412", "gefs": "2006080300", "ifsens": "2026112406", "pangu": "2022103012", "tigge": "2024111212"}, "quiet": ["deepmind", "ifsens"]};
